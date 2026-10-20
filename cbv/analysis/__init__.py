@@ -16,6 +16,10 @@ from cbv.analysis.rankings import (
     get_serve_ranking,
     display_rankings,
 )
+from cbv.analysis.tactics import (
+    get_match_tactical_report,
+    display_match_tactics,
+)
 
 __all__ = [
     "calc_attack_success_pct",
@@ -30,4 +34,7 @@ __all__ = [
     "get_block_ranking",
     "get_serve_ranking",
     "display_rankings",
+    "get_match_tactical_report",
+    "display_match_tactics",
 ]
+

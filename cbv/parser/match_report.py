@@ -200,19 +200,33 @@ def parse_match_report_pdf(pdf_path: Path, match_id: int) -> MatchData:
         away_sets=away_sets,
     )
 
+    from cbv.parser.tactical import extract_tactical_data
+
+    # 6. Extract Tactical Intelligence
+    tactical_data = extract_tactical_data(
+        pdf_path=pdf_path,
+        match_id=match_id,
+        home_team=home_team,
+        away_team=away_team,
+        home_lines=home_lines,
+        away_lines=away_lines,
+    )
+
     match_data = MatchData(
         match=match_model,
         sets=sets,
         players=all_players,
         teams=all_teams,
+        tactical=tactical_data,
         parser_version=PARSER_VERSION,
     )
 
-    # 6. Validation
+    # 7. Validation
     status, warnings = MatchValidator.validate(match_data)
     match_data.validation_status = status
     match_data.validation_warnings = warnings
     match_data.match.validation_status = status
+
 
     logger.info(
         f"game={match_id} parsed {len(all_players)} players, "

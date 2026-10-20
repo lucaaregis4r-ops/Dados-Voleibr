@@ -75,3 +75,63 @@ CREATE TABLE IF NOT EXISTS team_match_stats (
     opponent_errors INTEGER,
     PRIMARY KEY (match_id, team)
 );
+
+CREATE TABLE IF NOT EXISTS team_tactical_stats (
+    match_id BIGINT,
+    team VARCHAR,
+    sideout_points INTEGER,
+    sideout_receptions INTEGER,
+    sideout_rate DOUBLE,
+    breakpoint_points INTEGER,
+    breakpoint_serves INTEGER,
+    breakpoint_rate DOUBLE,
+    p1_diff INTEGER,
+    p2_diff INTEGER,
+    p3_diff INTEGER,
+    p4_diff INTEGER,
+    p5_diff INTEGER,
+    p6_diff INTEGER,
+    pos_rec_att_attempts INTEGER,
+    pos_rec_att_points INTEGER,
+    pos_rec_att_points_pct DOUBLE,
+    pos_rec_att_blocked INTEGER,
+    pos_rec_att_errors INTEGER,
+    pos_rec_att_efficiency_pct DOUBLE,
+    neg_rec_att_attempts INTEGER,
+    neg_rec_att_points INTEGER,
+    neg_rec_att_points_pct DOUBLE,
+    neg_rec_att_blocked INTEGER,
+    neg_rec_att_errors INTEGER,
+    neg_rec_att_efficiency_pct DOUBLE,
+    trans_att_attempts INTEGER,
+    trans_att_points INTEGER,
+    trans_att_points_pct DOUBLE,
+    trans_att_blocked INTEGER,
+    trans_att_errors INTEGER,
+    trans_att_efficiency_pct DOUBLE,
+    PRIMARY KEY (match_id, team)
+);
+
+CREATE TABLE IF NOT EXISTS set_tactical_stats (
+    match_id BIGINT,
+    team VARCHAR,
+    set_number INTEGER,
+    serve_points_won INTEGER,
+    attack_points_won INTEGER,
+    block_points_won INTEGER,
+    opponent_errors_won INTEGER,
+    serve_total INTEGER,
+    serve_errors INTEGER,
+    serve_aces INTEGER,
+    reception_total INTEGER,
+    reception_errors INTEGER,
+    reception_positive_pct DOUBLE,
+    reception_excellent_pct DOUBLE,
+    attack_total INTEGER,
+    attack_errors INTEGER,
+    attack_blocked INTEGER,
+    attack_points INTEGER,
+    attack_points_pct DOUBLE,
+    PRIMARY KEY (match_id, team, set_number)
+);
+

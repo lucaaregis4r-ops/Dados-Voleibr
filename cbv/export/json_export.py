@@ -32,17 +32,35 @@ def export_all_to_json(target_dir: Path = EXPORTS_DIR) -> Path:
 
         players = conn.execute("SELECT * FROM player_match_stats ORDER BY match_id, team, player_number").fetchdf().to_dict(orient="records")
         teams = conn.execute("SELECT * FROM team_match_stats ORDER BY match_id, team").fetchdf().to_dict(orient="records")
+        tac_teams = conn.execute("SELECT * FROM team_tactical_stats ORDER BY match_id, team").fetchdf().to_dict(orient="records")
+        tac_sets = conn.execute("SELECT * FROM set_tactical_stats ORDER BY match_id, team, set_number").fetchdf().to_dict(orient="records")
+
+    from cbv.analysis.tactics import get_competition_tactical_summary
+    tac_summary = get_competition_tactical_summary()
+    tac_summary_payload = {
+        k: df.to_dict(orient="records") for k, df in tac_summary.items()
+    }
 
     (target_dir / "matches.json").write_text(json.dumps(matches, indent=2, ensure_ascii=False), encoding="utf-8")
     (target_dir / "players.json").write_text(json.dumps(players, indent=2, ensure_ascii=False), encoding="utf-8")
     (target_dir / "teams.json").write_text(json.dumps(teams, indent=2, ensure_ascii=False), encoding="utf-8")
+    (target_dir / "tactical.json").write_text(
+        json.dumps({
+            "teams": tac_teams,
+            "sets": tac_sets,
+            "competition_summary": tac_summary_payload,
+        }, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
 
     rankings_payload = {
         "scoring": get_scoring_ranking(limit=50),
         "attack": get_attack_ranking(min_attempts=10, limit=50),
         "serve": get_serve_ranking(min_attempts=10, limit=50),
         "block": get_block_ranking(limit=50),
+        "tactical_summary": tac_summary_payload,
     }
+
     (target_dir / "rankings.json").write_text(json.dumps(rankings_payload, indent=2, ensure_ascii=False), encoding="utf-8")
 
     console.print(f"[green]✓ Exportação JSON concluída com sucesso em [bold]{target_dir}[/bold][/green]")

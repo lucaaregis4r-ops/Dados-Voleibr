@@ -48,7 +48,10 @@ class DatabaseRepository:
                 conn.execute("DELETE FROM sets WHERE match_id = ?", [match_id])
                 conn.execute("DELETE FROM player_match_stats WHERE match_id = ?", [match_id])
                 conn.execute("DELETE FROM team_match_stats WHERE match_id = ?", [match_id])
+                conn.execute("DELETE FROM team_tactical_stats WHERE match_id = ?", [match_id])
+                conn.execute("DELETE FROM set_tactical_stats WHERE match_id = ?", [match_id])
                 conn.execute("DELETE FROM matches WHERE match_id = ?", [match_id])
+
 
                 # 2. Insert match
                 m = data.match
@@ -172,9 +175,104 @@ class DatabaseRepository:
                         ],
                     )
 
+                # 6. Insert tactical intelligence if available
+                if data.tactical:
+                    for team_tac in [data.tactical.home_tactics, data.tactical.away_tactics]:
+                        so = team_tac.sideout
+                        rot = team_tac.rotations
+                        k1_pos = team_tac.positive_reception_attack
+                        k1_neg = team_tac.negative_reception_attack
+                        k2 = team_tac.transition_attack
+
+                        conn.execute(
+                            """
+                            INSERT INTO team_tactical_stats (
+                                match_id, team, sideout_points, sideout_receptions, sideout_rate,
+                                breakpoint_points, breakpoint_serves, breakpoint_rate,
+                                p1_diff, p2_diff, p3_diff, p4_diff, p5_diff, p6_diff,
+                                pos_rec_att_attempts, pos_rec_att_points, pos_rec_att_points_pct,
+                                pos_rec_att_blocked, pos_rec_att_errors, pos_rec_att_efficiency_pct,
+                                neg_rec_att_attempts, neg_rec_att_points, neg_rec_att_points_pct,
+                                neg_rec_att_blocked, neg_rec_att_errors, neg_rec_att_efficiency_pct,
+                                trans_att_attempts, trans_att_points, trans_att_points_pct,
+                                trans_att_blocked, trans_att_errors, trans_att_efficiency_pct
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            """,
+                            [
+                                match_id,
+                                team_tac.team,
+                                so.sideout_points,
+                                so.receptions_total,
+                                so.sideout_rate,
+                                so.breakpoint_points,
+                                so.serves_total,
+                                so.breakpoint_rate,
+                                rot.get("p1", 0),
+                                rot.get("p2", 0),
+                                rot.get("p3", 0),
+                                rot.get("p4", 0),
+                                rot.get("p5", 0),
+                                rot.get("p6", 0),
+                                k1_pos.attempts,
+                                k1_pos.points,
+                                k1_pos.points_pct,
+                                k1_pos.blocked,
+                                k1_pos.errors,
+                                k1_pos.efficiency_pct,
+                                k1_neg.attempts,
+                                k1_neg.points,
+                                k1_neg.points_pct,
+                                k1_neg.blocked,
+                                k1_neg.errors,
+                                k1_neg.efficiency_pct,
+                                k2.attempts,
+                                k2.points,
+                                k2.points_pct,
+                                k2.blocked,
+                                k2.errors,
+                                k2.efficiency_pct,
+                            ],
+                        )
+
+                        # Set tactical breakdowns
+                        for set_tac in team_tac.set_breakdowns:
+                            conn.execute(
+                                """
+                                INSERT INTO set_tactical_stats (
+                                    match_id, team, set_number,
+                                    serve_points_won, attack_points_won, block_points_won, opponent_errors_won,
+                                    serve_total, serve_errors, serve_aces,
+                                    reception_total, reception_errors, reception_positive_pct, reception_excellent_pct,
+                                    attack_total, attack_errors, attack_blocked, attack_points, attack_points_pct
+                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                """,
+                                [
+                                    match_id,
+                                    set_tac.team,
+                                    set_tac.set_number,
+                                    set_tac.serve_points_won,
+                                    set_tac.attack_points_won,
+                                    set_tac.block_points_won,
+                                    set_tac.opponent_errors_won,
+                                    set_tac.serve_total,
+                                    set_tac.serve_errors,
+                                    set_tac.serve_aces,
+                                    set_tac.reception_total,
+                                    set_tac.reception_errors,
+                                    set_tac.reception_positive_pct,
+                                    set_tac.reception_excellent_pct,
+                                    set_tac.attack_total,
+                                    set_tac.attack_errors,
+                                    set_tac.attack_blocked,
+                                    set_tac.attack_points,
+                                    set_tac.attack_points_pct,
+                                ],
+                            )
+
                 conn.commit()
-                logger.info(f"game={match_id} saved to DuckDB ({len(data.players)} players)")
+                logger.info(f"game={match_id} saved to DuckDB ({len(data.players)} players, tactical={'yes' if data.tactical else 'no'})")
             except Exception as e:
+
                 conn.rollback()
                 logger.error(f"game={match_id} DuckDB transaction error: {e}")
                 raise

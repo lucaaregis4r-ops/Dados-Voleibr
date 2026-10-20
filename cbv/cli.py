@@ -69,8 +69,48 @@ def rankings_cmd(
     )
 
 
+@app.command("match-tactics")
+def match_tactics_cmd(
+    match_id: int = typer.Argument(..., help="ID numérico da partida (ex: 2590834)"),
+):
+    """Exibe relatório tático detalhado de uma partida (Side-out, Break point, K1/K2, Rotações P1-P6)."""
+    from cbv.analysis.tactics import display_match_tactics
+
+    display_match_tactics(match_id)
+
+
+@app.command("competition-tactics")
+def competition_tactics_cmd():
+    """Exibe inteligência tática consolidada de toda a competição (SO/BP, K1/K2, Matriz P1-P6, Alvos de Saque, Carga Ofensiva)."""
+    from cbv.analysis.tactics import display_competition_tactics
+
+    display_competition_tactics()
+
+
+@app.command("team-tactics")
+def team_tactics_cmd(
+    team: str = typer.Argument(..., help="Nome ou sigla da equipe (ex: 'SÃO PAULO', 'PARANÁ', 'MINAS')"),
+):
+    """Exibe dossiê tático e relatório de scouting completo de uma equipe."""
+    from cbv.analysis.tactics import display_team_tactics
+
+    display_team_tactics(team)
+
+
+@app.command("compare")
+def compare_cmd(
+    team_a: str = typer.Argument(..., help="Primeira equipe do confronto"),
+    team_b: str = typer.Argument(..., help="Segunda equipe do confronto"),
+):
+    """Gera relatório de confronto tático direto (Head-to-Head Matchup Scouting)."""
+    from cbv.analysis.tactics import display_head_to_head_tactics
+
+    display_head_to_head_tactics(team_a, team_b)
+
+
 export_app = typer.Typer(help="Exporta dados do banco e rankings para arquivos externos.")
 app.add_typer(export_app, name="export")
+
 
 
 @export_app.command("csv")

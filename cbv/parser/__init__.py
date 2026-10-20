@@ -9,6 +9,7 @@ from cbv.parser.match_report import (
 )
 from cbv.parser.player_stats import parse_player_row, extract_player_rows
 from cbv.parser.team_stats import extract_team_totals
+from cbv.parser.tactical import extract_tactical_data
 
 __all__ = [
     "parse_match_report_pdf",
@@ -19,4 +20,6 @@ __all__ = [
     "parse_player_row",
     "extract_player_rows",
     "extract_team_totals",
+    "extract_tactical_data",
 ]
+

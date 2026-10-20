@@ -4,6 +4,7 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 from cbv.models.match import Match, SetScore
 from cbv.models.player import PlayerMatchStats
+from cbv.models.tactical import MatchTacticalData
 
 
 class TeamMatchStats(BaseModel):
@@ -49,6 +50,8 @@ class MatchData(BaseModel):
     sets: List[SetScore] = Field(default_factory=list)
     players: List[PlayerMatchStats] = Field(default_factory=list)
     teams: List[TeamMatchStats] = Field(default_factory=list)
+    tactical: Optional[MatchTacticalData] = None
     validation_status: str = "PENDING"
     validation_warnings: List[str] = Field(default_factory=list)
     parser_version: str = "0.1.0"
+
