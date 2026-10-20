@@ -108,9 +108,30 @@ def compare_cmd(
     display_head_to_head_tactics(team_a, team_b)
 
 
+@app.command("dashboard")
+def dashboard_cmd(
+    open_browser: bool = typer.Option(True, "--open/--no-open", help="Abre o dashboard automaticamente no navegador"),
+):
+    """Compila dados e gera o Dashboard HTML interativo com visão de scouting completa."""
+    import webbrowser
+    from cbv.export.html_dashboard import export_dashboard_html
+
+    html_path = export_dashboard_html()
+    if open_browser:
+        console.print(f"[dim]Abrindo no navegador: {html_path.resolve()}[/dim]")
+        webbrowser.open(html_path.resolve().as_uri())
+
+
 export_app = typer.Typer(help="Exporta dados do banco e rankings para arquivos externos.")
 app.add_typer(export_app, name="export")
 
+
+@export_app.command("html")
+def export_html_cmd():
+    """Exporta o Dashboard HTML interativo e independente."""
+    from cbv.export.html_dashboard import export_dashboard_html
+
+    export_dashboard_html()
 
 
 @export_app.command("csv")
