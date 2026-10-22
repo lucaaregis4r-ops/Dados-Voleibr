@@ -178,13 +178,15 @@ def predict_matchup(
     team_a_query: str,
     team_b_query: str,
     include_evaluation: bool = True,
+    season: Optional[str] = "2025-2026",
 ) -> Optional[Dict[str, Any]]:
     """
     Computes data-driven tactical match predictions, win probabilities,
     precision metrics, projected set scores, key player x-factors, and gameplan recommendations.
+    Prioritizes active season statistics with empirical Bayes shrinkage against prior seasons.
     """
-    dossier_a = get_team_tactical_dossier(team_a_query)
-    dossier_b = get_team_tactical_dossier(team_b_query)
+    dossier_a = get_team_tactical_dossier(team_a_query, season=season)
+    dossier_b = get_team_tactical_dossier(team_b_query, season=season)
 
     if not dossier_a or not dossier_b:
         return None
@@ -243,9 +245,14 @@ def predict_matchup(
         confidence = "Baixa (Jogo Equilibrado)"
 
     # 7. Statistical Precision & Calibration of Probabilities
-    sets_a = ((rec_a.get("sets_won") or 0) + (rec_a.get("sets_lost") or 0)) if rec_a else 10
-    sets_b = ((rec_b.get("sets_won") or 0) + (rec_b.get("sets_lost") or 0)) if rec_b else 10
-    total_effective_sets = max(6, sets_a + sets_b)
+    curr_sets_a = ((rec_a.get("sets_won") or 0) + (rec_a.get("sets_lost") or 0)) if rec_a.get("is_current_season_driven") else 0
+    curr_sets_b = ((rec_b.get("sets_won") or 0) + (rec_b.get("sets_lost") or 0)) if rec_b.get("is_current_season_driven") else 0
+    prior_sets_a = max(4, rec_a.get("prior_season_games", 0) * 3)
+    prior_sets_b = max(4, rec_b.get("prior_season_games", 0) * 3)
+
+    effective_sets_a = curr_sets_a if curr_sets_a > 0 else prior_sets_a
+    effective_sets_b = curr_sets_b if curr_sets_b > 0 else prior_sets_b
+    total_effective_sets = max(6, effective_sets_a + effective_sets_b)
 
     # Standard error for proportion: SE = sqrt(p * (1-p) / N_sets)
     p_norm_a = prob_a / 100.0
@@ -258,16 +265,17 @@ def predict_matchup(
     ci_b_low = round(max(5.0, prob_b - margin_a), 1)
     ci_b_high = round(min(95.0, prob_b + margin_a), 1)
 
-    # Sample adequacy
-    if sets_a >= 10 and sets_b >= 10:
-        sample_reliability = "Robusta (Ampla base de sets auditados)"
-    elif sets_a >= 5 and sets_b >= 5:
-        sample_reliability = "Consistente (Volume adequado de sets)"
+    curr_g_a = rec_a.get("current_season_games", 0)
+    curr_g_b = rec_b.get("current_season_games", 0)
+    if curr_g_a >= 6 and curr_g_b >= 6:
+        sample_reliability = "Robusta (Temporada Vigente Consolidada)"
+    elif curr_g_a > 0 or curr_g_b > 0:
+        sample_reliability = f"Início de Temporada ({ta}: {curr_g_a}J, {tb}: {curr_g_b}J - Ponderado Bayesiano)"
     else:
-        sample_reliability = "Preliminar (Poucos sets no torneio, maior incerteza)"
+        sample_reliability = "Histórico Calibrado (Sem jogos na temporada atual para os clubes)"
 
     precision_metrics = {
-        "sample_sets": {ta: sets_a, tb: sets_b, "total": total_effective_sets},
+        "sample_sets": {ta: effective_sets_a, tb: effective_sets_b, "total": total_effective_sets},
         "sample_games": {ta: rec_a.get("games", 0), tb: rec_b.get("games", 0)},
         "margin_of_error_pct": margin_a,
         "ci_90": {
@@ -278,6 +286,24 @@ def predict_matchup(
         "brier_score": 0.164,
         "sample_reliability": sample_reliability,
         "confidence_level": confidence,
+        "season_calibration": {
+            "target_season": rec_a.get("target_season", "2025-2026"),
+            "method": "Bayesian Shrinkage (Temporada Vigente Primária + Calibração Histórica)",
+            ta: {
+                "current_season_games": curr_g_a,
+                "prior_games": rec_a.get("prior_season_games", 0),
+                "current_weight_pct": rec_a.get("current_season_weight_pct", 100.0),
+                "prior_weight_pct": rec_a.get("prior_weight_pct", 0.0),
+                "status": rec_a.get("sample_status", "Consolidado"),
+            },
+            tb: {
+                "current_season_games": curr_g_b,
+                "prior_games": rec_b.get("prior_season_games", 0),
+                "current_weight_pct": rec_b.get("current_season_weight_pct", 100.0),
+                "prior_weight_pct": rec_b.get("prior_weight_pct", 0.0),
+                "status": rec_b.get("sample_status", "Consolidado"),
+            },
+        },
     }
 
     # 8. Identify Key Players (X-Factors)

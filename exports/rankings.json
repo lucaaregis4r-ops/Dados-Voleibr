@@ -1181,6 +1181,25 @@
       "ace_rate": 5.19
     },
     {
+      "player_name": "SANTOS MATHEUS",
+      "team": "VÔLEI RENATA",
+      "matches_played": 1,
+      "total_points": 14.0,
+      "total_serve_attempts": 19.0,
+      "total_serve_errors": 4.0,
+      "total_aces": 3.0,
+      "total_reception_attempts": 3.0,
+      "total_reception_errors": 0.0,
+      "total_attack_attempts": 10.0,
+      "total_attack_errors": 0.0,
+      "total_attack_blocked": 0.0,
+      "total_attack_points": 7.0,
+      "total_blocks": 4.0,
+      "attack_success_pct": 70.0,
+      "attack_efficiency": 70.0,
+      "ace_rate": 15.79
+    },
+    {
       "player_name": "WITALLO",
       "team": "VÔLEI RENATA",
       "matches_played": 11,
@@ -1217,25 +1236,6 @@
       "attack_success_pct": 70.0,
       "attack_efficiency": 70.0,
       "ace_rate": 20.0
-    },
-    {
-      "player_name": "SANTOS MATHEUS",
-      "team": "VÔLEI RENATA",
-      "matches_played": 1,
-      "total_points": 14.0,
-      "total_serve_attempts": 19.0,
-      "total_serve_errors": 4.0,
-      "total_aces": 3.0,
-      "total_reception_attempts": 3.0,
-      "total_reception_errors": 0.0,
-      "total_attack_attempts": 10.0,
-      "total_attack_errors": 0.0,
-      "total_attack_blocked": 0.0,
-      "total_attack_points": 7.0,
-      "total_blocks": 4.0,
-      "attack_success_pct": 70.0,
-      "attack_efficiency": 70.0,
-      "ace_rate": 15.79
     },
     {
       "player_name": "PEDRO H",
@@ -1314,25 +1314,6 @@
       "ace_rate": 3.45
     },
     {
-      "player_name": "CLEDENÍLSON",
-      "team": "SADA CRUZEIRO VÔLEI",
-      "matches_played": 18,
-      "total_points": 38.0,
-      "total_serve_attempts": 69.0,
-      "total_serve_errors": 12.0,
-      "total_aces": 6.0,
-      "total_reception_attempts": 7.0,
-      "total_reception_errors": 0.0,
-      "total_attack_attempts": 41.0,
-      "total_attack_errors": 7.0,
-      "total_attack_blocked": 0.0,
-      "total_attack_points": 27.0,
-      "total_blocks": 5.0,
-      "attack_success_pct": 65.85,
-      "attack_efficiency": 48.78,
-      "ace_rate": 8.7
-    },
-    {
       "player_name": "PINTA",
       "team": "VÔLEI RENATA",
       "matches_played": 11,
@@ -1350,6 +1331,25 @@
       "attack_success_pct": 65.85,
       "attack_efficiency": 54.88,
       "ace_rate": 3.06
+    },
+    {
+      "player_name": "CLEDENÍLSON",
+      "team": "SADA CRUZEIRO VÔLEI",
+      "matches_played": 18,
+      "total_points": 38.0,
+      "total_serve_attempts": 69.0,
+      "total_serve_errors": 12.0,
+      "total_aces": 6.0,
+      "total_reception_attempts": 7.0,
+      "total_reception_errors": 0.0,
+      "total_attack_attempts": 41.0,
+      "total_attack_errors": 7.0,
+      "total_attack_blocked": 0.0,
+      "total_attack_points": 27.0,
+      "total_blocks": 5.0,
+      "attack_success_pct": 65.85,
+      "attack_efficiency": 48.78,
+      "ace_rate": 8.7
     },
     {
       "player_name": "HENRIQUE BATISTA SILVA ROMULO",
@@ -1542,23 +1542,23 @@
       "ace_rate": 2.3
     },
     {
-      "player_name": "RENAN SEABRA",
-      "team": "PARANÁ",
-      "matches_played": 6,
-      "total_points": 22.0,
-      "total_serve_attempts": 74.0,
-      "total_serve_errors": 11.0,
-      "total_aces": 5.0,
-      "total_reception_attempts": 0.0,
+      "player_name": "MIKAEL",
+      "team": "AZULIM SICOOB ARACOOP",
+      "matches_played": 11,
+      "total_points": 15.0,
+      "total_serve_attempts": 23.0,
+      "total_serve_errors": 9.0,
+      "total_aces": 2.0,
+      "total_reception_attempts": 2.0,
       "total_reception_errors": 0.0,
       "total_attack_attempts": 19.0,
       "total_attack_errors": 1.0,
       "total_attack_blocked": 1.0,
       "total_attack_points": 12.0,
-      "total_blocks": 5.0,
+      "total_blocks": 1.0,
       "attack_success_pct": 63.16,
       "attack_efficiency": 52.63,
-      "ace_rate": 6.76
+      "ace_rate": 8.7
     },
     {
       "player_name": "G. GOMES",
@@ -1580,23 +1580,23 @@
       "ace_rate": 0.0
     },
     {
-      "player_name": "MIKAEL",
-      "team": "AZULIM SICOOB ARACOOP",
-      "matches_played": 11,
-      "total_points": 15.0,
-      "total_serve_attempts": 23.0,
-      "total_serve_errors": 9.0,
-      "total_aces": 2.0,
-      "total_reception_attempts": 2.0,
+      "player_name": "RENAN SEABRA",
+      "team": "PARANÁ",
+      "matches_played": 6,
+      "total_points": 22.0,
+      "total_serve_attempts": 74.0,
+      "total_serve_errors": 11.0,
+      "total_aces": 5.0,
+      "total_reception_attempts": 0.0,
       "total_reception_errors": 0.0,
       "total_attack_attempts": 19.0,
       "total_attack_errors": 1.0,
       "total_attack_blocked": 1.0,
       "total_attack_points": 12.0,
-      "total_blocks": 1.0,
+      "total_blocks": 5.0,
       "attack_success_pct": 63.16,
       "attack_efficiency": 52.63,
-      "ace_rate": 8.7
+      "ace_rate": 6.76
     },
     {
       "player_name": "MAICON",
@@ -1637,25 +1637,6 @@
       "ace_rate": 0.0
     },
     {
-      "player_name": "PEDRO",
-      "team": "SESI VÔLEI BAURU",
-      "matches_played": 7,
-      "total_points": 26.0,
-      "total_serve_attempts": 18.0,
-      "total_serve_errors": 1.0,
-      "total_aces": 2.0,
-      "total_reception_attempts": 21.0,
-      "total_reception_errors": 1.0,
-      "total_attack_attempts": 32.0,
-      "total_attack_errors": 3.0,
-      "total_attack_blocked": 1.0,
-      "total_attack_points": 20.0,
-      "total_blocks": 4.0,
-      "attack_success_pct": 62.5,
-      "attack_efficiency": 50.0,
-      "ace_rate": 11.11
-    },
-    {
       "player_name": "SARAIVA MICHEL",
       "team": "ITAMBÉ MINAS",
       "matches_played": 2,
@@ -1673,6 +1654,25 @@
       "attack_success_pct": 62.5,
       "attack_efficiency": 62.5,
       "ace_rate": 4.76
+    },
+    {
+      "player_name": "PEDRO",
+      "team": "SESI VÔLEI BAURU",
+      "matches_played": 7,
+      "total_points": 26.0,
+      "total_serve_attempts": 18.0,
+      "total_serve_errors": 1.0,
+      "total_aces": 2.0,
+      "total_reception_attempts": 21.0,
+      "total_reception_errors": 1.0,
+      "total_attack_attempts": 32.0,
+      "total_attack_errors": 3.0,
+      "total_attack_blocked": 1.0,
+      "total_attack_points": 20.0,
+      "total_blocks": 4.0,
+      "attack_success_pct": 62.5,
+      "attack_efficiency": 50.0,
+      "ace_rate": 11.11
     },
     {
       "player_name": "CARRARO",
@@ -3085,6 +3085,25 @@
       "ace_rate": 5.81
     },
     {
+      "player_name": "DIANA",
+      "team": "SESI VÔLEI BAURU",
+      "matches_played": 14,
+      "total_points": 145.0,
+      "total_serve_attempts": 191.0,
+      "total_serve_errors": 20.0,
+      "total_aces": 14.0,
+      "total_reception_attempts": 8.0,
+      "total_reception_errors": 1.0,
+      "total_attack_attempts": 174.0,
+      "total_attack_errors": 8.0,
+      "total_attack_blocked": 10.0,
+      "total_attack_points": 92.0,
+      "total_blocks": 39.0,
+      "attack_success_pct": 52.87,
+      "attack_efficiency": 42.53,
+      "ace_rate": 7.33
+    },
+    {
       "player_name": "GABRIELLA GOMES MACHADO LANNA",
       "team": "FLOR DE YPÊ PAULISTANO BARUERI",
       "matches_played": 12,
@@ -3121,25 +3140,6 @@
       "attack_success_pct": 52.24,
       "attack_efficiency": 35.07,
       "ace_rate": 5.47
-    },
-    {
-      "player_name": "DIANA",
-      "team": "SESI VÔLEI BAURU",
-      "matches_played": 14,
-      "total_points": 145.0,
-      "total_serve_attempts": 191.0,
-      "total_serve_errors": 20.0,
-      "total_aces": 14.0,
-      "total_reception_attempts": 8.0,
-      "total_reception_errors": 1.0,
-      "total_attack_attempts": 174.0,
-      "total_attack_errors": 8.0,
-      "total_attack_blocked": 10.0,
-      "total_attack_points": 92.0,
-      "total_blocks": 39.0,
-      "attack_success_pct": 52.87,
-      "attack_efficiency": 42.53,
-      "ace_rate": 7.33
     },
     {
       "player_name": "OTÁVIO",
@@ -3674,25 +3674,6 @@
       "ace_rate": 1.35
     },
     {
-      "player_name": "KIARELLE EXPEDITA SOUZA THAINA",
-      "team": "E.C. PINHEIROS",
-      "matches_played": 14,
-      "total_points": 58.0,
-      "total_serve_attempts": 62.0,
-      "total_serve_errors": 12.0,
-      "total_aces": 6.0,
-      "total_reception_attempts": 16.0,
-      "total_reception_errors": 2.0,
-      "total_attack_attempts": 71.0,
-      "total_attack_errors": 11.0,
-      "total_attack_blocked": 11.0,
-      "total_attack_points": 29.0,
-      "total_blocks": 23.0,
-      "attack_success_pct": 40.85,
-      "attack_efficiency": 9.86,
-      "ace_rate": 9.68
-    },
-    {
       "player_name": "OPPENKOSKI",
       "team": "SADA CRUZEIRO VÔLEI",
       "matches_played": 19,
@@ -3710,6 +3691,25 @@
       "attack_success_pct": 58.42,
       "attack_efficiency": 42.43,
       "ace_rate": 3.4
+    },
+    {
+      "player_name": "KIARELLE EXPEDITA SOUZA THAINA",
+      "team": "E.C. PINHEIROS",
+      "matches_played": 14,
+      "total_points": 58.0,
+      "total_serve_attempts": 62.0,
+      "total_serve_errors": 12.0,
+      "total_aces": 6.0,
+      "total_reception_attempts": 16.0,
+      "total_reception_errors": 2.0,
+      "total_attack_attempts": 71.0,
+      "total_attack_errors": 11.0,
+      "total_attack_blocked": 11.0,
+      "total_attack_points": 29.0,
+      "total_blocks": 23.0,
+      "attack_success_pct": 40.85,
+      "attack_efficiency": 9.86,
+      "ace_rate": 9.68
     },
     {
       "player_name": "GABIRU",
@@ -3769,25 +3769,6 @@
       "ace_rate": 5.3
     },
     {
-      "player_name": "GABI MARTINS",
-      "team": "DENTIL PRAIA CLUBE",
-      "matches_played": 19,
-      "total_points": 83.0,
-      "total_serve_attempts": 89.0,
-      "total_serve_errors": 11.0,
-      "total_aces": 1.0,
-      "total_reception_attempts": 5.0,
-      "total_reception_errors": 0.0,
-      "total_attack_attempts": 137.0,
-      "total_attack_errors": 9.0,
-      "total_attack_blocked": 14.0,
-      "total_attack_points": 60.0,
-      "total_blocks": 22.0,
-      "attack_success_pct": 43.8,
-      "attack_efficiency": 27.01,
-      "ace_rate": 1.12
-    },
-    {
       "player_name": "LEO LUKAS",
       "team": "ITAMBÉ MINAS",
       "matches_played": 18,
@@ -3805,6 +3786,25 @@
       "attack_success_pct": 50.83,
       "attack_efficiency": 31.23,
       "ace_rate": 8.7
+    },
+    {
+      "player_name": "EMANUELE SEBASTIAO JHEOVANA",
+      "team": "FLOR DE YPÊ PAULISTANO BARUERI",
+      "matches_played": 12,
+      "total_points": 250.0,
+      "total_serve_attempts": 134.0,
+      "total_serve_errors": 35.0,
+      "total_aces": 16.0,
+      "total_reception_attempts": 7.0,
+      "total_reception_errors": 0.0,
+      "total_attack_attempts": 497.0,
+      "total_attack_errors": 60.0,
+      "total_attack_blocked": 38.0,
+      "total_attack_points": 212.0,
+      "total_blocks": 22.0,
+      "attack_success_pct": 42.66,
+      "attack_efficiency": 22.94,
+      "ace_rate": 11.94
     }
   ],
   "tactical_summary": {
@@ -3894,18 +3894,6 @@
         "bp_rate": 3.42
       },
       {
-        "team": "OSASCO SÃO CRISTÓVÃO SAÚDE",
-        "matches": 19,
-        "so_points": 708,
-        "so_receptions": 1285,
-        "so_pct": 55.1,
-        "so_rate": 1.81,
-        "bp_points": 465,
-        "bp_serves": 1538,
-        "bp_pct": 30.2,
-        "bp_rate": 3.31
-      },
-      {
         "team": "SANEAGO GOIÁS VÔLEI",
         "matches": 17,
         "so_points": 607,
@@ -3916,6 +3904,18 @@
         "bp_serves": 1334,
         "bp_pct": 20.9,
         "bp_rate": 4.78
+      },
+      {
+        "team": "OSASCO SÃO CRISTÓVÃO SAÚDE",
+        "matches": 19,
+        "so_points": 708,
+        "so_receptions": 1285,
+        "so_pct": 55.1,
+        "so_rate": 1.81,
+        "bp_points": 465,
+        "bp_serves": 1538,
+        "bp_pct": 30.2,
+        "bp_rate": 3.31
       },
       {
         "team": "RIO GRANDE DO SUL",
@@ -4074,18 +4074,6 @@
         "bp_rate": 3.15
       },
       {
-        "team": "E.C. PINHEIROS",
-        "matches": 14,
-        "so_points": 532,
-        "so_receptions": 1040,
-        "so_pct": 51.2,
-        "so_rate": 1.95,
-        "bp_points": 271,
-        "bp_serves": 1045,
-        "bp_pct": 25.9,
-        "bp_rate": 3.86
-      },
-      {
         "team": "PARÁ",
         "matches": 5,
         "so_points": 111,
@@ -4096,6 +4084,18 @@
         "bp_serves": 237,
         "bp_pct": 23.6,
         "bp_rate": 4.23
+      },
+      {
+        "team": "E.C. PINHEIROS",
+        "matches": 14,
+        "so_points": 532,
+        "so_receptions": 1040,
+        "so_pct": 51.2,
+        "so_rate": 1.95,
+        "bp_points": 271,
+        "bp_serves": 1045,
+        "bp_pct": 25.9,
+        "bp_rate": 3.86
       },
       {
         "team": "RIO DE JANEIRO",
@@ -4544,18 +4544,6 @@
         "k2_eff_pct": 22.6
       },
       {
-        "team": "RIO DE JANEIRO",
-        "k1_pos_att": 159,
-        "k1_pos_kill_pct": 52.8,
-        "k1_pos_eff_pct": 33.3,
-        "k1_neg_att": 96,
-        "k1_neg_kill_pct": 31.3,
-        "k1_neg_eff_pct": 7.3,
-        "k2_att": 183,
-        "k2_kill_pct": 36.6,
-        "k2_eff_pct": 19.1
-      },
-      {
         "team": "AMAZONAS",
         "k1_pos_att": 204,
         "k1_pos_kill_pct": 51.5,
@@ -4566,6 +4554,18 @@
         "k2_att": 157,
         "k2_kill_pct": 40.8,
         "k2_eff_pct": 17.8
+      },
+      {
+        "team": "RIO DE JANEIRO",
+        "k1_pos_att": 159,
+        "k1_pos_kill_pct": 52.8,
+        "k1_pos_eff_pct": 33.3,
+        "k1_neg_att": 96,
+        "k1_neg_kill_pct": 31.3,
+        "k1_neg_eff_pct": 7.3,
+        "k2_att": 183,
+        "k2_kill_pct": 36.6,
+        "k2_eff_pct": 19.1
       },
       {
         "team": "SANCOR SEGUROS VÔLEI",
@@ -4580,18 +4580,6 @@
         "k2_eff_pct": 19.7
       },
       {
-        "team": "JF VÔLEI",
-        "k1_pos_att": 332,
-        "k1_pos_kill_pct": 52.4,
-        "k1_pos_eff_pct": 33.1,
-        "k1_neg_att": 169,
-        "k1_neg_kill_pct": 41.4,
-        "k1_neg_eff_pct": 25.4,
-        "k2_att": 283,
-        "k2_kill_pct": 35.3,
-        "k2_eff_pct": 19.1
-      },
-      {
         "team": "NEUROLOGIA ATIVA",
         "k1_pos_att": 526,
         "k1_pos_kill_pct": 52.3,
@@ -4602,6 +4590,18 @@
         "k2_att": 355,
         "k2_kill_pct": 38.6,
         "k2_eff_pct": 16.3
+      },
+      {
+        "team": "JF VÔLEI",
+        "k1_pos_att": 332,
+        "k1_pos_kill_pct": 52.4,
+        "k1_pos_eff_pct": 33.1,
+        "k1_neg_att": 169,
+        "k1_neg_kill_pct": 41.4,
+        "k1_neg_eff_pct": 25.4,
+        "k2_att": 283,
+        "k2_kill_pct": 35.3,
+        "k2_eff_pct": 19.1
       },
       {
         "team": "E.C. PINHEIROS",
@@ -5209,17 +5209,6 @@
         "avg_exc_pct": 31.4
       },
       {
-        "player_name": "LEO LUKAS",
-        "team": "ITAMBÉ MINAS",
-        "is_libero": false,
-        "matches": 18,
-        "rec_attempts": 355,
-        "rec_errors": 15,
-        "err_pct": 4.2,
-        "avg_pos_pct": 49.5,
-        "avg_exc_pct": 19.4
-      },
-      {
         "player_name": "BARBOSA DE SOUZA KARINA",
         "team": "SESC RJ FLAMENGO",
         "is_libero": false,
@@ -5229,6 +5218,17 @@
         "err_pct": 5.6,
         "avg_pos_pct": 53.2,
         "avg_exc_pct": 25.3
+      },
+      {
+        "player_name": "LEO LUKAS",
+        "team": "ITAMBÉ MINAS",
+        "is_libero": false,
+        "matches": 18,
+        "rec_attempts": 355,
+        "rec_errors": 15,
+        "err_pct": 4.2,
+        "avg_pos_pct": 49.5,
+        "avg_exc_pct": 19.4
       },
       {
         "player_name": "KARINA",
@@ -5297,17 +5297,6 @@
         "avg_exc_pct": 26.1
       },
       {
-        "player_name": "WANK",
-        "team": "SESC RJ FLAMENGO",
-        "is_libero": false,
-        "matches": 16,
-        "rec_attempts": 323,
-        "rec_errors": 17,
-        "err_pct": 5.3,
-        "avg_pos_pct": 54.3,
-        "avg_exc_pct": 18.8
-      },
-      {
         "player_name": "WENK HOENGEN HELENA",
         "team": "SESC RJ FLAMENGO",
         "is_libero": false,
@@ -5317,6 +5306,17 @@
         "err_pct": 4.6,
         "avg_pos_pct": 44.7,
         "avg_exc_pct": 21.5
+      },
+      {
+        "player_name": "WANK",
+        "team": "SESC RJ FLAMENGO",
+        "is_libero": false,
+        "matches": 16,
+        "rec_attempts": 323,
+        "rec_errors": 17,
+        "err_pct": 5.3,
+        "avg_pos_pct": 54.3,
+        "avg_exc_pct": 18.8
       },
       {
         "player_name": "LEANDRO GROTH SABRINA",

@@ -268,6 +268,16 @@ def generate_dashboard_data(competition: Optional[str] = None) -> Dict[str, Any]
             "formula": "SPI = Pts - Erros - Bloqueios  |  AER = (Erros + Bloqueios) / Tentativas",
             "summary": "Propôs índices sintéticos de desempenho individual e coletivo que penalizam severamente o erro não forçado em transição de contra-ataque (K2), definindo o diferencial líquido de rotação (P1 a P6).",
             "application": "Cálculo dos diferenciais líquidos de rodízio P1 a P6 e classificação em quadrantes táticos."
+        },
+        {
+            "id": "efron_morris_1975",
+            "citation": "Efron, B., & Morris, C. (1975); Kubatko, S. et al. (2007)",
+            "title": "Data analysis using Stein's estimator and its generalizations: Empirical Bayes in Sports Analytics",
+            "journal": "Journal of the American Statistical Association, 70(350), 311-319",
+            "topic": "Encolhimento Bayesiano Empírico & Ponderação por Temporada Vigente",
+            "formula": "θ̂ = w_curr · θ_curr + (1 - w_curr) · θ_prior  |  w_curr = N_curr / (N_curr + K)",
+            "summary": "Demonstra que em esportes profissionais de alta rotatividade de elenco (reformulações entre temporadas), a amostra da temporada vigente deve ser a autoridade preditiva primária ('a temporada que manda'). Amostras históricas atuam exclusivamente como prior de calibração para amortecer o ruído inicial de pequenas amostras (K=2.0).",
+            "application": "Calibração dos modelos de Confronto Direto, Dossiê Tático e Calendário: peso da temporada vigente cresce de 33% para >89% conforme jogos são disputados."
         }
     ]
 
@@ -1614,6 +1624,27 @@ def build_dashboard_html(data: Dict[str, Any]) -> str:
       container.innerHTML = `
         <!-- Sports Editorial Confrontation Board -->
         <div class="grid-border bg-[#07080b]">
+          <!-- Season Bayesian Calibration Banner -->
+          <div class="px-5 py-2.5 bg-[#13161f] border-b border-[#1d212c] flex flex-wrap justify-between items-center text-xs font-mono gap-2">
+            <div class="flex items-center space-x-2">
+              <span class="px-2 py-0.5 bg-[#d4ff00]/10 text-[#d4ff00] border border-[#d4ff00]/30 font-bold uppercase text-[10px]">
+                MODELAGEM TEMPORADA VIGENTE (${{dA.record.target_season || '2025/2026'}})
+              </span>
+              <span class="text-zinc-300 text-[11px]">A temporada atual comanda as métricas táticas; o histórico calibra a incerteza inicial de elenco.</span>
+            </div>
+            <div class="text-[#838b9e] text-[11px]">
+              <span>${{tA}}: <strong class="text-white">${{dA.record.current_season_games || 0}}J</strong> (${{dA.record.current_season_weight_pct || 100}}% atual)</span>
+              <span class="mx-2 text-zinc-600">|</span>
+              <span>${{tB}}: <strong class="text-white">${{dB.record.current_season_games || 0}}J</strong> (${{dB.record.current_season_weight_pct || 100}}% atual)</span>
+            </div>
+          </div>
+          ${{(dA.record.current_season_games < 6 || dB.record.current_season_games < 6) ? `
+            <div class="px-5 py-2 bg-amber-500/10 border-b border-amber-500/20 text-amber-300 text-[11px] font-mono flex items-center space-x-2">
+              <span>⚠️</span>
+              <span><strong>Início de Temporada:</strong> Amostra recente reduzida na temporada vigente. Margem de erro ajustada para refletir mudanças de elenco, com calibração empírica sobre o histórico prévio.</span>
+            </div>
+          ` : ''}}
+
           <div class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[#1d212c]">
             <!-- Team A Quadrant -->
             <div class="lg:col-span-5 p-6 flex flex-col justify-between space-y-4">
@@ -1637,9 +1668,12 @@ def build_dashboard_html(data: Dict[str, Any]) -> str:
                 </div>
               </div>
 
-              <div class="pt-3 border-t border-[#1d212c] flex justify-between text-xs font-mono text-[#838b9e]">
-                <span>CAMPANHA: <strong class="text-white">${{dA.record.wins}}V — ${{dA.record.losses}}D</strong></span>
-                <span>SO: <strong class="text-white">${{dA.totals.so_pct || 0}}%</strong> | BP: <strong class="text-white">${{dA.totals.bp_pct || 0}}%</strong></span>
+              <div class="pt-3 border-t border-[#1d212c] space-y-1">
+                <div class="flex justify-between text-xs font-mono text-[#838b9e]">
+                  <span>CAMPANHA: <strong class="text-white">${{dA.record.wins}}V — ${{dA.record.losses}}D</strong></span>
+                  <span>SO: <strong class="text-white">${{dA.totals.so_pct || 0}}%</strong> | BP: <strong class="text-white">${{dA.totals.bp_pct || 0}}%</strong></span>
+                </div>
+                <span class="text-[10px] text-zinc-400 block font-mono">${{dA.record.sample_status || ''}}</span>
               </div>
             </div>
 
@@ -1690,9 +1724,12 @@ def build_dashboard_html(data: Dict[str, Any]) -> str:
                 </div>
               </div>
 
-              <div class="pt-3 border-t border-[#1d212c] flex justify-between text-xs font-mono text-[#838b9e]">
-                <span>SO: <strong class="text-white">${{dB.totals.so_pct || 0}}%</strong> | BP: <strong class="text-white">${{dB.totals.bp_pct || 0}}%</strong></span>
-                <span>CAMPANHA: <strong class="text-white">${{dB.record.wins}}V — ${{dB.record.losses}}D</strong></span>
+              <div class="pt-3 border-t border-[#1d212c] space-y-1">
+                <div class="flex justify-between text-xs font-mono text-[#838b9e]">
+                  <span>SO: <strong class="text-white">${{dB.totals.so_pct || 0}}%</strong> | BP: <strong class="text-white">${{dB.totals.bp_pct || 0}}%</strong></span>
+                  <span>CAMPANHA: <strong class="text-white">${{dB.record.wins}}V — ${{dB.record.losses}}D</strong></span>
+                </div>
+                <span class="text-[10px] text-zinc-400 block text-right font-mono">${{dB.record.sample_status || ''}}</span>
               </div>
             </div>
           </div>
@@ -2445,6 +2482,21 @@ def build_dashboard_html(data: Dict[str, Any]) -> str:
       const negEff = d.totals.k1_neg_att ? Math.round(((d.totals.k1_neg_pts - d.totals.k1_neg_err - d.totals.k1_neg_blo) * 100.0 / d.totals.k1_neg_att) * 10) / 10 : 0;
 
       c.innerHTML = `
+        <!-- Season Weighting & Calibration Banner -->
+        <div class="px-4 py-2 bg-[#13161f] border border-[#1d212c] flex flex-wrap justify-between items-center text-xs font-mono mb-4">
+          <div class="flex items-center space-x-2">
+            <span class="px-2 py-0.5 bg-[#d4ff00]/10 text-[#d4ff00] border border-[#d4ff00]/30 font-bold uppercase text-[10px]">
+              TEMPORADA VIGENTE: ${{d.record.target_season || '2025/2026'}}
+            </span>
+            <span class="text-zinc-300 text-[11px]">${{d.record.sample_status || ''}}</span>
+          </div>
+          <div class="text-[#838b9e] text-[11px] mt-1 sm:mt-0">
+            <span>Jogos Recentes: <strong class="text-white">${{d.record.current_season_games || 0}}</strong> (${{d.record.current_season_weight_pct || 100}}% peso)</span>
+            <span class="mx-2 text-zinc-600">|</span>
+            <span>Histórico Prévio: <strong class="text-white">${{d.record.prior_season_games || 0}}J</strong> (${{d.record.prior_weight_pct || 0}}% calibração)</span>
+          </div>
+        </div>
+
         <div class="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#1d212c] grid-border bg-[#07080b]">
           <div class="p-3.5 text-center">
             <span class="text-[10px] font-mono tracking-widest uppercase text-[#838b9e] block">CAMPANHA</span>

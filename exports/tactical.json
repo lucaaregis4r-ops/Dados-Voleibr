@@ -35055,18 +35055,6 @@
         "bp_rate": 3.42
       },
       {
-        "team": "OSASCO SÃO CRISTÓVÃO SAÚDE",
-        "matches": 19,
-        "so_points": 708,
-        "so_receptions": 1285,
-        "so_pct": 55.1,
-        "so_rate": 1.81,
-        "bp_points": 465,
-        "bp_serves": 1538,
-        "bp_pct": 30.2,
-        "bp_rate": 3.31
-      },
-      {
         "team": "SANEAGO GOIÁS VÔLEI",
         "matches": 17,
         "so_points": 607,
@@ -35077,6 +35065,18 @@
         "bp_serves": 1334,
         "bp_pct": 20.9,
         "bp_rate": 4.78
+      },
+      {
+        "team": "OSASCO SÃO CRISTÓVÃO SAÚDE",
+        "matches": 19,
+        "so_points": 708,
+        "so_receptions": 1285,
+        "so_pct": 55.1,
+        "so_rate": 1.81,
+        "bp_points": 465,
+        "bp_serves": 1538,
+        "bp_pct": 30.2,
+        "bp_rate": 3.31
       },
       {
         "team": "RIO GRANDE DO SUL",
@@ -35235,18 +35235,6 @@
         "bp_rate": 3.15
       },
       {
-        "team": "E.C. PINHEIROS",
-        "matches": 14,
-        "so_points": 532,
-        "so_receptions": 1040,
-        "so_pct": 51.2,
-        "so_rate": 1.95,
-        "bp_points": 271,
-        "bp_serves": 1045,
-        "bp_pct": 25.9,
-        "bp_rate": 3.86
-      },
-      {
         "team": "PARÁ",
         "matches": 5,
         "so_points": 111,
@@ -35257,6 +35245,18 @@
         "bp_serves": 237,
         "bp_pct": 23.6,
         "bp_rate": 4.23
+      },
+      {
+        "team": "E.C. PINHEIROS",
+        "matches": 14,
+        "so_points": 532,
+        "so_receptions": 1040,
+        "so_pct": 51.2,
+        "so_rate": 1.95,
+        "bp_points": 271,
+        "bp_serves": 1045,
+        "bp_pct": 25.9,
+        "bp_rate": 3.86
       },
       {
         "team": "RIO DE JANEIRO",
@@ -35705,18 +35705,6 @@
         "k2_eff_pct": 22.6
       },
       {
-        "team": "RIO DE JANEIRO",
-        "k1_pos_att": 159,
-        "k1_pos_kill_pct": 52.8,
-        "k1_pos_eff_pct": 33.3,
-        "k1_neg_att": 96,
-        "k1_neg_kill_pct": 31.3,
-        "k1_neg_eff_pct": 7.3,
-        "k2_att": 183,
-        "k2_kill_pct": 36.6,
-        "k2_eff_pct": 19.1
-      },
-      {
         "team": "AMAZONAS",
         "k1_pos_att": 204,
         "k1_pos_kill_pct": 51.5,
@@ -35727,6 +35715,18 @@
         "k2_att": 157,
         "k2_kill_pct": 40.8,
         "k2_eff_pct": 17.8
+      },
+      {
+        "team": "RIO DE JANEIRO",
+        "k1_pos_att": 159,
+        "k1_pos_kill_pct": 52.8,
+        "k1_pos_eff_pct": 33.3,
+        "k1_neg_att": 96,
+        "k1_neg_kill_pct": 31.3,
+        "k1_neg_eff_pct": 7.3,
+        "k2_att": 183,
+        "k2_kill_pct": 36.6,
+        "k2_eff_pct": 19.1
       },
       {
         "team": "SANCOR SEGUROS VÔLEI",
@@ -35741,18 +35741,6 @@
         "k2_eff_pct": 19.7
       },
       {
-        "team": "JF VÔLEI",
-        "k1_pos_att": 332,
-        "k1_pos_kill_pct": 52.4,
-        "k1_pos_eff_pct": 33.1,
-        "k1_neg_att": 169,
-        "k1_neg_kill_pct": 41.4,
-        "k1_neg_eff_pct": 25.4,
-        "k2_att": 283,
-        "k2_kill_pct": 35.3,
-        "k2_eff_pct": 19.1
-      },
-      {
         "team": "NEUROLOGIA ATIVA",
         "k1_pos_att": 526,
         "k1_pos_kill_pct": 52.3,
@@ -35763,6 +35751,18 @@
         "k2_att": 355,
         "k2_kill_pct": 38.6,
         "k2_eff_pct": 16.3
+      },
+      {
+        "team": "JF VÔLEI",
+        "k1_pos_att": 332,
+        "k1_pos_kill_pct": 52.4,
+        "k1_pos_eff_pct": 33.1,
+        "k1_neg_att": 169,
+        "k1_neg_kill_pct": 41.4,
+        "k1_neg_eff_pct": 25.4,
+        "k2_att": 283,
+        "k2_kill_pct": 35.3,
+        "k2_eff_pct": 19.1
       },
       {
         "team": "E.C. PINHEIROS",
@@ -36370,17 +36370,6 @@
         "avg_exc_pct": 31.4
       },
       {
-        "player_name": "LEO LUKAS",
-        "team": "ITAMBÉ MINAS",
-        "is_libero": false,
-        "matches": 18,
-        "rec_attempts": 355,
-        "rec_errors": 15,
-        "err_pct": 4.2,
-        "avg_pos_pct": 49.5,
-        "avg_exc_pct": 19.4
-      },
-      {
         "player_name": "BARBOSA DE SOUZA KARINA",
         "team": "SESC RJ FLAMENGO",
         "is_libero": false,
@@ -36390,6 +36379,17 @@
         "err_pct": 5.6,
         "avg_pos_pct": 53.2,
         "avg_exc_pct": 25.3
+      },
+      {
+        "player_name": "LEO LUKAS",
+        "team": "ITAMBÉ MINAS",
+        "is_libero": false,
+        "matches": 18,
+        "rec_attempts": 355,
+        "rec_errors": 15,
+        "err_pct": 4.2,
+        "avg_pos_pct": 49.5,
+        "avg_exc_pct": 19.4
       },
       {
         "player_name": "KARINA",
@@ -36458,17 +36458,6 @@
         "avg_exc_pct": 26.1
       },
       {
-        "player_name": "WANK",
-        "team": "SESC RJ FLAMENGO",
-        "is_libero": false,
-        "matches": 16,
-        "rec_attempts": 323,
-        "rec_errors": 17,
-        "err_pct": 5.3,
-        "avg_pos_pct": 54.3,
-        "avg_exc_pct": 18.8
-      },
-      {
         "player_name": "WENK HOENGEN HELENA",
         "team": "SESC RJ FLAMENGO",
         "is_libero": false,
@@ -36478,6 +36467,17 @@
         "err_pct": 4.6,
         "avg_pos_pct": 44.7,
         "avg_exc_pct": 21.5
+      },
+      {
+        "player_name": "WANK",
+        "team": "SESC RJ FLAMENGO",
+        "is_libero": false,
+        "matches": 16,
+        "rec_attempts": 323,
+        "rec_errors": 17,
+        "err_pct": 5.3,
+        "avg_pos_pct": 54.3,
+        "avg_exc_pct": 18.8
       },
       {
         "player_name": "LEANDRO GROTH SABRINA",

@@ -118,7 +118,7 @@ def scrape_upcoming_fixtures() -> List[Dict[str, Any]]:
             match_time = dt_raw.split("T")[1][:5] if "T" in dt_raw else ""
 
             # Compute match prediction if teams are known
-            pred = predict_matchup(home_norm, away_norm, include_evaluation=False)
+            pred = predict_matchup(home_norm, away_norm, include_evaluation=False, season=season)
 
             pred_winner = home_norm
             prob_home = 50.0

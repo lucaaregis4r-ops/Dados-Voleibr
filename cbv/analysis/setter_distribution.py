@@ -15,35 +15,57 @@ from cbv.analysis.tactics import get_team_tactical_dossier
 console = Console()
 
 
-@lru_cache(maxsize=256)
-def infer_team_tactical_roles(team_query: str) -> Optional[Dict[str, Any]]:
+@lru_cache(maxsize=512)
+def infer_team_tactical_roles(team_query: str, season: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """
     Identifies functional volleyball roles (Setter, Opposite, Outside Hitters,
     Middle Blockers, Libero) from empirical match data.
+    Prioritizes active season roster when available.
     """
-    dossier = get_team_tactical_dossier(team_query)
+    dossier = get_team_tactical_dossier(team_query, season=season)
     if not dossier:
         return None
 
     actual_team = dossier["team"]
+    target_season = dossier.get("record", {}).get("target_season")
+    curr_games = dossier.get("record", {}).get("current_season_games", 0)
 
     with default_repo.get_connection() as conn:
-        df = conn.execute(
-            """
-            SELECT player_name, is_libero,
-                   COALESCE(SUM(attack_attempts), 0) as att,
-                   COALESCE(SUM(attack_points), 0) as pts,
-                   COALESCE(SUM(reception_attempts), 0) as rec,
-                   COALESCE(SUM(block_points), 0) as blk,
-                   COALESCE(SUM(serve_attempts), 0) as srv,
-                   COALESCE(AVG(rating), 6.0) as avg_rating
-            FROM player_match_stats
-            WHERE team = ?
-            GROUP BY player_name, is_libero
-            ORDER BY att DESC, rec DESC
-            """,
-            [actual_team],
-        ).fetchdf()
+        if curr_games > 0 and target_season:
+            df = conn.execute(
+                """
+                SELECT p.player_name, p.is_libero,
+                       COALESCE(SUM(p.attack_attempts), 0) as att,
+                       COALESCE(SUM(p.attack_points), 0) as pts,
+                       COALESCE(SUM(p.reception_attempts), 0) as rec,
+                       COALESCE(SUM(p.block_points), 0) as blk,
+                       COALESCE(SUM(p.serve_attempts), 0) as srv,
+                       COALESCE(AVG(p.rating), 6.0) as avg_rating
+                FROM player_match_stats p
+                JOIN matches m ON p.match_id = m.match_id
+                WHERE p.team = ? AND m.season = ?
+                GROUP BY p.player_name, p.is_libero
+                ORDER BY att DESC, rec DESC
+                """,
+                [actual_team, target_season],
+            ).fetchdf()
+        else:
+            df = conn.execute(
+                """
+                SELECT p.player_name, p.is_libero,
+                       COALESCE(SUM(p.attack_attempts), 0) as att,
+                       COALESCE(SUM(p.attack_points), 0) as pts,
+                       COALESCE(SUM(p.reception_attempts), 0) as rec,
+                       COALESCE(SUM(p.block_points), 0) as blk,
+                       COALESCE(SUM(p.serve_attempts), 0) as srv,
+                       COALESCE(AVG(p.rating), 6.0) as avg_rating
+                FROM player_match_stats p
+                WHERE p.team = ?
+                GROUP BY p.player_name, p.is_libero
+                ORDER BY att DESC, rec DESC
+                """,
+                [actual_team],
+            ).fetchdf()
 
     if df.empty:
         return None
