@@ -7,11 +7,32 @@ CREATE TABLE IF NOT EXISTS matches (
     competition VARCHAR,
     category VARCHAR,
     gender VARCHAR,
+    season VARCHAR,
     home_team VARCHAR,
     away_team VARCHAR,
     home_sets INTEGER,
     away_sets INTEGER,
     validation_status VARCHAR,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS upcoming_matches (
+    match_id BIGINT PRIMARY KEY,
+    competition VARCHAR,
+    category VARCHAR,
+    gender VARCHAR,
+    season VARCHAR,
+    round_name VARCHAR,
+    match_date VARCHAR,
+    match_time VARCHAR,
+    home_team VARCHAR,
+    away_team VARCHAR,
+    gym VARCHAR,
+    predicted_winner VARCHAR,
+    predicted_prob_home DOUBLE,
+    predicted_prob_away DOUBLE,
+    projected_score VARCHAR,
+    confidence VARCHAR,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

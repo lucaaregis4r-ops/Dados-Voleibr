@@ -22,6 +22,7 @@ class Match(BaseModel):
     competition: Optional[str] = None
     category: Optional[str] = None
     gender: Optional[str] = None
+    season: Optional[str] = None
     home_team: str
     away_team: str
     home_sets: Optional[int] = None

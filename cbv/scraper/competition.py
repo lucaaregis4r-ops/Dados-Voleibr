@@ -10,7 +10,7 @@ from rich.console import Console
 
 from cbv.config import BASE_URL, DATA_DIR, logger
 from cbv.scraper.client import HttpClient, default_client
-from cbv.scraper.downloader import process_single_game, DownloadError
+from cbv.scraper.downloader import process_single_game, DownloadError, MatchReportNotAvailable
 from cbv.database.repository import default_repo
 
 console = Console()
@@ -23,6 +23,65 @@ def normalize_category(category: str) -> str:
     if cat.startswith("sub") and not cat.startswith("sub-"):
         return f"sub-{cat[3:]}"
     return cat
+
+
+def parse_competition_url(url: str) -> Dict[str, Any]:
+    """
+    Parses a CBV competition URL into structured metadata.
+    Handles varied formats, trailing slashes, query parameters, and missing protocols.
+    """
+    raw_url = url.strip()
+    if not raw_url.startswith("http://") and not raw_url.startswith("https://"):
+        raw_url = f"https://{raw_url}"
+
+    from urllib.parse import urlparse
+    parsed = urlparse(raw_url)
+    clean_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}".rstrip("/")
+
+    metadata: Dict[str, Any] = {
+        "url": clean_url,
+        "competition": "cbs",
+        "season": 2026,
+        "gender": "feminino",
+        "category": "sub18",
+        "division": "especial",
+    }
+
+    # Pattern: /volei-de-quadra/{competition}/{season}/{gender}/{endpoint}
+    m = re.search(
+        r"/volei-de-quadra/(?P<competition>[^/]+)/(?P<season>\d{4})/(?P<gender>[^/]+)/(?P<endpoint>[^/?#]+)",
+        parsed.path,
+        re.IGNORECASE,
+    )
+    if m:
+        metadata["competition"] = m.group("competition").lower()
+        metadata["season"] = int(m.group("season"))
+        metadata["gender"] = m.group("gender").lower()
+        endpoint = m.group("endpoint").lower()
+
+        # Parse endpoint, e.g. sub-18-especial or sub-16-1-divisao
+        sub_m = re.search(r"(sub[-_]?\d+)", endpoint)
+        if sub_m:
+            cat_raw = sub_m.group(1).replace("-", "").replace("_", "")
+            metadata["category"] = cat_raw
+            div_part = endpoint.replace(sub_m.group(1), "").strip("-_")
+            if div_part:
+                metadata["division"] = div_part
+        else:
+            metadata["division"] = endpoint
+    else:
+        yr = re.search(r"/(\d{4})/", parsed.path)
+        if yr:
+            metadata["season"] = int(yr.group(1))
+        if "feminino" in parsed.path.lower():
+            metadata["gender"] = "feminino"
+        elif "masculino" in parsed.path.lower():
+            metadata["gender"] = "masculino"
+        sub_m = re.search(r"(sub[-_]?\d+)", parsed.path, re.IGNORECASE)
+        if sub_m:
+            metadata["category"] = sub_m.group(1).lower().replace("-", "").replace("_", "")
+
+    return metadata
 
 
 def build_competition_url(
@@ -108,25 +167,36 @@ def scrape_competition(
     season: int = 2026,
     force: bool = False,
     limit: Optional[int] = None,
+    url: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Executes full competition scraping pipeline with failure tolerance:
-    1. Discovers matches on competition page
+    1. Discovers matches on competition page (via constructed or direct URL)
     2. Checks database to skip existing matches
     3. Processes each match incrementally
     4. Records failures without halting whole run
     5. Displays progress summary
     """
-    comp_title = f"{competition.upper()} {category.upper()} {gender.upper()} {division.upper()} {season}"
-    console.print(f"\n[bold]{comp_title}[/bold]\n")
+    if url:
+        parsed_meta = parse_competition_url(url)
+        comp_url = parsed_meta["url"]
+        competition = parsed_meta["competition"]
+        category = parsed_meta["category"]
+        gender = parsed_meta["gender"]
+        division = parsed_meta["division"]
+        season = parsed_meta["season"]
+    else:
+        comp_url = build_competition_url(
+            competition=competition,
+            category=category,
+            gender=gender,
+            division=division,
+            season=season,
+        )
 
-    comp_url = build_competition_url(
-        competition=competition,
-        category=category,
-        gender=gender,
-        division=division,
-        season=season,
-    )
+    comp_title = f"{competition.upper()} {category.upper()} {gender.upper()} {division.upper()} {season}"
+    console.print(f"\n[bold]{comp_title}[/bold]")
+    console.print(f"[dim]URL: {comp_url}[/dim]\n")
 
     try:
         discovered_matches = discover_matches(comp_url)
@@ -143,6 +213,7 @@ def scrape_competition(
 
     valid_count = 0
     warning_count = 0
+    scheduled_count = 0
     failed_count = 0
     skipped_count = 0
     failed_list: List[Dict[str, Any]] = []
@@ -163,6 +234,10 @@ def scrape_competition(
                 valid_count += 1
             else:
                 warning_count += 1
+        except MatchReportNotAvailable:
+            scheduled_count += 1
+            console.print(f"[{idx:02d}/{len(discovered_matches)}] {mid} [dim](agendado / aguardando súmula)[/dim]")
+            continue
         except Exception as e:
             failed_count += 1
             error_msg = str(e)
@@ -175,15 +250,17 @@ def scrape_competition(
 
     # Print final summary
     console.print("\n[bold]Resumo da Competição:[/bold]")
-    console.print(f"  [green]VALID:   {valid_count}[/green]")
-    console.print(f"  [yellow]WARNING: {warning_count}[/yellow]")
-    console.print(f"  [red]FAILED:  {failed_count}[/red]")
-    console.print(f"  [dim]SKIPPED: {skipped_count}[/dim]\n")
+    console.print(f"  [green]VALID:     {valid_count}[/green]")
+    console.print(f"  [yellow]WARNING:   {warning_count}[/yellow]")
+    console.print(f"  [cyan]AGENDADOS: {scheduled_count}[/cyan]")
+    console.print(f"  [red]FAILED:    {failed_count}[/red]")
+    console.print(f"  [dim]SKIPPED:   {skipped_count}[/dim]\n")
 
     return {
         "total": len(discovered_matches),
         "valid": valid_count,
         "warning": warning_count,
+        "scheduled": scheduled_count,
         "failed": failed_count,
         "skipped": skipped_count,
     }

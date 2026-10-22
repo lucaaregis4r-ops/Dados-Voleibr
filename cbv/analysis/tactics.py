@@ -1,6 +1,7 @@
 """Tactical analysis and match intelligence reporting engine."""
 
 from typing import Optional, Dict, Any, List
+from functools import lru_cache
 import pandas as pd
 from rich.console import Console
 from rich.table import Table
@@ -437,6 +438,7 @@ def display_competition_tactics() -> None:
     console.print()
 
 
+@lru_cache(maxsize=256)
 def get_team_tactical_dossier(team_query: str) -> Optional[Dict[str, Any]]:
     """Fetches in-depth tactical scouting intelligence for a specific team."""
     with default_repo.get_connection() as conn:

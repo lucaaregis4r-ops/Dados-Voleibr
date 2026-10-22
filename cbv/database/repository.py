@@ -2,8 +2,8 @@
 
 from pathlib import Path
 from typing import Optional, List, Dict, Any
+import threading
 import duckdb
-
 from cbv.config import DUCKDB_PATH, logger
 from cbv.models.stats import MatchData
 
@@ -15,23 +15,27 @@ class DatabaseRepository:
 
     def __init__(self, db_path: Path = DUCKDB_PATH):
         self.db_path = db_path
+        self._lock = threading.Lock()
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._conn = duckdb.connect(str(self.db_path))
         self.init_db()
 
     def get_connection(self) -> duckdb.DuckDBPyConnection:
-        return duckdb.connect(str(self.db_path))
+        return self._conn.cursor()
 
     def init_db(self):
         """Initializes database tables from schema.sql."""
         schema_sql = SCHEMA_PATH.read_text(encoding="utf-8")
-        with self.get_connection() as conn:
-            conn.execute(schema_sql)
+        with self._lock:
+            cur = self.get_connection()
+            cur.execute(schema_sql)
         logger.debug(f"DuckDB initialized at {self.db_path}")
 
     def match_exists(self, match_id: int) -> bool:
         """Checks if a match_id is already stored in the database."""
-        with self.get_connection() as conn:
-            res = conn.execute("SELECT 1 FROM matches WHERE match_id = ?", [match_id]).fetchone()
+        with self._lock:
+            cur = self.get_connection()
+            res = cur.execute("SELECT 1 FROM matches WHERE match_id = ?", [match_id]).fetchone()
             return res is not None
 
     def save_match_data(self, data: MatchData) -> None:
@@ -41,7 +45,8 @@ class DatabaseRepository:
         """
         match_id = data.match.match_id
 
-        with self.get_connection() as conn:
+        with self._lock:
+            conn = self.get_connection()
             conn.begin()
             try:
                 # 1. Clean existing records for this match
@@ -55,12 +60,21 @@ class DatabaseRepository:
 
                 # 2. Insert match
                 m = data.match
+                season_val = m.season
+                if not season_val:
+                    if m.competition == "CBS":
+                        season_val = "2026"
+                    elif m.date and str(m.date) >= "2025-08-01":
+                        season_val = "2025-2026"
+                    else:
+                        season_val = "2024-2025"
+
                 conn.execute(
                     """
                     INSERT INTO matches (
-                        match_id, date, time_str, competition, category, gender,
+                        match_id, date, time_str, competition, category, gender, season,
                         home_team, away_team, home_sets, away_sets, validation_status
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     [
                         m.match_id,
@@ -69,6 +83,7 @@ class DatabaseRepository:
                         m.competition,
                         m.category,
                         m.gender,
+                        season_val,
                         m.home_team,
                         m.away_team,
                         m.home_sets,
@@ -272,8 +287,10 @@ class DatabaseRepository:
                 conn.commit()
                 logger.info(f"game={match_id} saved to DuckDB ({len(data.players)} players, tactical={'yes' if data.tactical else 'no'})")
             except Exception as e:
-
-                conn.rollback()
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
                 logger.error(f"game={match_id} DuckDB transaction error: {e}")
                 raise
 

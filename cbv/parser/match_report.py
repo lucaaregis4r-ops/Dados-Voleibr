@@ -53,17 +53,98 @@ BRAZILIAN_STATES = [
 ]
 
 
+CANONICAL_TEAMS = {
+    "SADA CRUZEIRO": "SADA CRUZEIRO VÔLEI",
+    "SADA CRUZEIRO VÔLEI": "SADA CRUZEIRO VÔLEI",
+    "SESI BAURU": "SESI VÔLEI BAURU",
+    "SESI VOLEI BAURU": "SESI VÔLEI BAURU",
+    "SESI VÔLEI BAURU": "SESI VÔLEI BAURU",
+    "DENTIL / PRAIA CLUBE": "DENTIL PRAIA CLUBE",
+    "DENTIL PRAIA CLUBE": "DENTIL PRAIA CLUBE",
+    "PRAIA CLUBE": "DENTIL PRAIA CLUBE",
+    "PRAIA CLUBE UBERLÂNDIA …": "PRAIA CLUBE UBERLÂNDIA",
+    "PRAIA CLUBE UBERLÂNDIA VOLEI": "PRAIA CLUBE UBERLÂNDIA",
+    "BRASILIA VOLEI": "BRASÍLIA VÔLEI",
+    "BRASÍLIA VÔLEI": "BRASÍLIA VÔLEI",
+    "BRASÍLIA VÔLEI / BRB": "BRASÍLIA VÔLEI",
+    "VOLEI RENATA": "VÔLEI RENATA",
+    "VÔLEI RENATA": "VÔLEI RENATA",
+    "SUZANO VOLEI": "SUZANO VÔLEI",
+    "SUZANO VÔLEI": "SUZANO VÔLEI",
+    "SANEAGO GOIÁS VOLEI": "SANEAGO GOIÁS VÔLEI",
+    "SANEAGO GOIÁS VÔLEI": "SANEAGO GOIÁS VÔLEI",
+    "OSASCO S?O CRISTÓV?O SAÚDE": "OSASCO SÃO CRISTÓVÃO SAÚDE",
+    "OSASCO S?O CRISTÓV?O SA…": "OSASCO SÃO CRISTÓVÃO SAÚDE",
+    "OSASCO SÃO CRISTÓVÃO SAÚDE": "OSASCO SÃO CRISTÓVÃO SAÚDE",
+    "OSASCO": "OSASCO SÃO CRISTÓVÃO SAÚDE",
+    "FLUMINENSE": "FLUMINENSE",
+    "FLUMINENSE F.C": "FLUMINENSE",
+    "FLUMINENSE F.C.": "FLUMINENSE",
+    "JF VÔLEI": "JF VÔLEI",
+    "JFVÔLEI": "JF VÔLEI",
+    "VIAPOL VOLEI SAO JOSE": "VIAPOL VÔLEI SÃO JOSÉ",
+    "VIAPOL VÔLEI S?O JOSÉ": "VIAPOL VÔLEI SÃO JOSÉ",
+    "VIAPOL VÔLEI SÃO JOSÉ": "VIAPOL VÔLEI SÃO JOSÉ",
+    "AZULIM SICOOB ARACOOP": "AZULIM SICOOB ARACOOP",
+    "AZULIM SICOOB ARACOOP …": "AZULIM SICOOB ARACOOP",
+    "VOLEI GUARULHOS BATEUB…": "VEDACIT VÔLEI GUARULHOS",
+    "VÔLEI GUARULHOS BATEUB…": "VEDACIT VÔLEI GUARULHOS",
+    "VOLEI GUARULHOS BATEUBET": "VEDACIT VÔLEI GUARULHOS",
+    "VEDACIT VOLEI GUARULHOS": "VEDACIT VÔLEI GUARULHOS",
+    "VEDACIT VÔLEI GUARULHOS": "VEDACIT VÔLEI GUARULHOS",
+    "FLOR DE YP? PAULISTANO B…": "FLOR DE YPÊ PAULISTANO BARUERI",
+    "FLOR DE YPÊ PAULISTANO BARUERI": "FLOR DE YPÊ PAULISTANO BARUERI",
+    "PAULISTANO BARUERI": "FLOR DE YPÊ PAULISTANO BARUERI",
+    "PAULISTANO  BARUERI": "FLOR DE YPÊ PAULISTANO BARUERI",
+    "TIJUCA T?NIS CLUBE": "TIJUCA TÊNIS CLUBE",
+    "TIJUCA TENIS CLUBE": "TIJUCA TÊNIS CLUBE",
+    "TIJUCA TÊNIS CLUBE": "TIJUCA TÊNIS CLUBE",
+    "UNILIFE MARINGA": "UNILIFE MARINGÁ",
+    "UNILIFE MARINGÁ": "UNILIFE MARINGÁ",
+    "SANCOR SEGUROS VOLEI": "SANCOR SEGUROS VÔLEI",
+    "SANCOR SEGUROS VÔLEI": "SANCOR SEGUROS VÔLEI",
+    "BRUSQUE VÔLEI": "ABEL MODA BRUSQUE VÔLEI",
+    "BRUSQUE VOLEI": "ABEL MODA BRUSQUE VÔLEI",
+    "ABEL MODA VOLEI": "ABEL MODA BRUSQUE VÔLEI",
+    "APAN Roll on": "APAN ROLL-ON BLUMENAU",
+    "APAN ROLL-ON BLUMENAU": "APAN ROLL-ON BLUMENAU",
+    "GERDAU MINAS": "GERDAU MINAS",
+    "ITAMBÉ MINAS": "ITAMBÉ MINAS",
+    "SESC RJ FLAMENGO": "SESC RJ FLAMENGO",
+    "BATAVO MACKENZIE": "BATAVO MACKENZIE",
+    "E.C. PINHEIROS": "E.C. PINHEIROS",
+    "RENASCE SOROCABA": "RENASCE SOROCABA",
+    "NEUROLOGIA ATIVA": "NEUROLOGIA ATIVA",
+    "JOINVILLE VÔLEI": "JOINVILLE VÔLEI",
+}
+
+
 def normalize_team_name(name: str) -> str:
-    """Normalizes team names, repairing encoding issues like 'MARANH?O' -> 'MARANHÃO'."""
+    """Normalizes team names to canonical representations, repairing encodings and prefixes."""
     import unicodedata
 
     name_clean = name.strip()
+    name_clean = name_clean.replace("S?O", "SÃO").replace("CRISTÓV?O", "CRISTÓVÃO").replace("YP?", "YPÊ")
+    
+    # Check exact or trimmed canonical match
+    if name_clean in CANONICAL_TEAMS:
+        return CANONICAL_TEAMS[name_clean]
+    
+    trimmed = name_clean.rstrip("… .").strip()
+    if trimmed in CANONICAL_TEAMS:
+        return CANONICAL_TEAMS[trimmed]
+
+    for k, v in CANONICAL_TEAMS.items():
+        if k.upper() == name_clean.upper() or k.upper() == trimmed.upper():
+            return v
+
     if "?" in name_clean:
         pattern = "^" + re.escape(name_clean).replace(r"\?", ".") + "$"
         for state in BRAZILIAN_STATES:
             unacc = "".join(c for c in unicodedata.normalize("NFD", state) if unicodedata.category(c) != "Mn")
             if re.match(pattern, state, re.IGNORECASE) or re.match(pattern, unacc, re.IGNORECASE):
                 return state
+
     return name_clean
 
 
@@ -132,12 +213,39 @@ def extract_set_scores(lines: List[str], match_id: int) -> List[SetScore]:
     return sets
 
 
-def parse_match_report_pdf(pdf_path: Path, match_id: int) -> MatchData:
+def is_team_match(clean: str, target: str) -> bool:
+    """Robust matching for team names in report headers and sections."""
+    if not clean or not target:
+        return False
+    c = clean.rstrip("… .").strip().upper()
+    t = target.rstrip("… .").strip().upper()
+    if c == t:
+        return True
+    if len(c) >= 6 and (c in t or t in c):
+        return True
+    return False
+
+
+def parse_match_report_pdf(
+    pdf_path: Path,
+    match_id: int,
+    competition: Optional[str] = None,
+    category: Optional[str] = None,
+    gender: Optional[str] = None,
+) -> MatchData:
     """
     Parses a Match Report PDF into structured MatchData with validation.
     """
     if not pdf_path.exists():
         raise FileNotFoundError(f"Relatório PDF não encontrado em {pdf_path}")
+
+    import fitz
+    quick_doc = fitz.open(pdf_path)
+    if not quick_doc.page_count:
+        raise ValueError(f"PDF {pdf_path} não contém páginas")
+    quick_text = quick_doc[0].get_text().strip()
+    if not quick_text:
+        raise ValueError(f"PDF {pdf_path} não possui texto extraível (vetorial/curvas)")
 
     with pdfplumber.open(pdf_path) as pdf:
         if not pdf.pages:
@@ -148,8 +256,18 @@ def parse_match_report_pdf(pdf_path: Path, match_id: int) -> MatchData:
     lines = layout_text.split("\n")
 
     # 1. Metadata & Teams
-    match_date, match_time, competition = extract_match_metadata(layout_text, match_id)
+    meta_date, meta_time, meta_comp = extract_match_metadata(layout_text, match_id)
     raw_home, raw_away, home_team, away_team, home_sets, away_sets = extract_teams(lines)
+
+    # Resolve metadata
+    final_comp = competition or meta_comp or ("SUPERLIGA" if "SUPERLIGA" in layout_text.upper() else "CBS")
+    final_gender = gender
+    if not final_gender:
+        if "FEMININ" in layout_text.upper():
+            final_gender = "feminino"
+        else:
+            final_gender = "masculino"
+    final_cat = category or ("A" if "SUPERLIGA" in final_comp.upper() else "sub18")
 
     # 2. Set Scores
     sets = extract_set_scores(lines, match_id)
@@ -161,11 +279,11 @@ def parse_match_report_pdf(pdf_path: Path, match_id: int) -> MatchData:
 
     for i, line in enumerate(lines):
         clean = line.strip()
-        if (clean in (raw_home, home_team)) and i > 5 and home_idx is None:
+        if (is_team_match(clean, raw_home) or is_team_match(clean, home_team)) and i > 5 and home_idx is None:
             home_idx = i
-        elif (clean in (raw_away, away_team)) and home_idx is not None and away_idx is None:
+        elif (is_team_match(clean, raw_away) or is_team_match(clean, away_team)) and home_idx is not None and away_idx is None:
             away_idx = i
-        elif "BP Break point" in line and away_idx is not None:
+        elif any(k in line for k in ["BP Break point", "PONTOS GERAIS", "Pontos GERAIS", "Legenda:"]) and away_idx is not None:
             footer_idx = i
             break
 
@@ -174,7 +292,6 @@ def parse_match_report_pdf(pdf_path: Path, match_id: int) -> MatchData:
 
     home_lines = lines[home_idx:away_idx]
     away_lines = lines[away_idx:footer_idx if footer_idx else len(lines)]
-
 
     # 4. Extract Players
     home_players = extract_player_rows(home_lines, match_id, home_team)
@@ -189,11 +306,11 @@ def parse_match_report_pdf(pdf_path: Path, match_id: int) -> MatchData:
     # Assemble Match
     match_model = Match(
         match_id=match_id,
-        date=match_date,
-        time_str=match_time,
-        competition=competition,
-        category="sub18",  # Default or derived
-        gender="masculino",
+        date=meta_date,
+        time_str=meta_time,
+        competition=final_comp,
+        category=final_cat,
+        gender=final_gender,
         home_team=home_team,
         away_team=away_team,
         home_sets=home_sets,

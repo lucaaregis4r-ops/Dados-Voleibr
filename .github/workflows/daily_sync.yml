@@ -1,0 +1,52 @@
+name: CBV Daily Sync & Push
+
+on:
+  schedule:
+    # 06:00 UTC corresponds to 03:00 BRT (Brasília Standard Time UTC-3)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-por poppler-utils
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Daily Synchronization Pipeline
+        run: |
+          python scripts/daily_update.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/cbv.duckdb exports/ cbv/
+          if git diff --staged --quiet; then
+            echo "Nenhuma alteração detectada. Repositório já está atualizado."
+          else
+            git commit -m "chore(sync): atualização diária automatizada CBV [03:00 BRT] [skip ci]"
+            git push
+          fi

@@ -10,10 +10,8 @@ venv/
 logs/*.log
 data/raw/
 data/processed/
-data/*.duckdb
-data/*.json
-exports/
 .pytest_cache/
+temp_inspect/
 
 *.egg-info/
 dist/

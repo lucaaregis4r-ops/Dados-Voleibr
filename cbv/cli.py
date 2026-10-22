@@ -1,6 +1,6 @@
 """Command-line interface for CBV Volley Data."""
 
-from typing import Optional
+from typing import Optional, List
 import typer
 from rich.console import Console
 
@@ -12,10 +12,37 @@ app = typer.Typer(
 console = Console()
 
 
-@app.callback()
-def main():
-    """CBV Volley Data CLI."""
-    pass
+@app.callback(invoke_without_command=True)
+def main(
+    ctx: typer.Context,
+    menu: bool = typer.Option(False, "--menu", "-m", help="Abre o menu interativo no terminal em vez da aplicação web"),
+):
+    """CBV Volley Data CLI — Inicia a aplicação web unificada por padrão."""
+    if ctx.invoked_subcommand is None:
+        if menu:
+            from cbv.menu import run_interactive_menu
+            run_interactive_menu()
+        else:
+            from cbv.server import start_app
+            start_app()
+
+
+@app.command("app")
+def app_cmd(
+    host: str = typer.Option("127.0.0.1", "--host", "-h", help="Host do servidor web"),
+    port: int = typer.Option(8000, "--port", "-p", help="Porta HTTP inicial"),
+    open_browser: bool = typer.Option(True, "--open/--no-open", help="Abre automaticamente no navegador padrão"),
+):
+    """Inicia a aplicação web unificada da Comissão Técnica (painel + sincronizador + previsões)."""
+    from cbv.server import start_app
+    start_app(host=host, port=port, open_browser=open_browser)
+
+
+@app.command("menu")
+def menu_cmd():
+    """Abre o menu interativo no terminal para execução das rotinas da CT."""
+    from cbv.menu import run_interactive_menu
+    run_interactive_menu()
 
 
 @app.command("scrape-game")
@@ -38,8 +65,9 @@ def scrape_competition_cmd(
     season: int = typer.Option(2026, "--season", help="Ano da temporada"),
     limit: Optional[int] = typer.Option(None, "--limit", "-l", help="Limite máximo de partidas para processar"),
     force: bool = typer.Option(False, "--force", "-f", help="Força reprocessamento"),
+    url: Optional[str] = typer.Option(None, "--url", "-u", help="URL direta da competição na CBV (ex: https://cbv.com.br/volei-de-quadra/cbs/2026/feminino/sub-18-especial)"),
 ):
-    """Raspa todos os jogos de uma competição."""
+    """Raspa todos os jogos de uma competição (via filtros ou URL direta)."""
     from cbv.scraper.competition import scrape_competition
 
     scrape_competition(
@@ -50,7 +78,38 @@ def scrape_competition_cmd(
         season=season,
         force=force,
         limit=limit,
+        url=url,
     )
+
+
+@app.command("scrape-url")
+def scrape_url_cmd(
+    url: str = typer.Argument(..., help="URL completa da página da competição na CBV (ex: https://cbv.com.br/volei-de-quadra/cbs/2026/feminino/sub-18-especial)"),
+    force: bool = typer.Option(False, "--force", "-f", help="Força novo download mesmo se já existir no banco"),
+    limit: Optional[int] = typer.Option(None, "--limit", "-l", help="Limite máximo de partidas para processar"),
+):
+    """Raspa e processa uma competição diretamente a partir de sua URL pública na CBV."""
+    from cbv.scraper.competition import scrape_competition
+
+    scrape_competition(url=url, force=force, limit=limit)
+
+
+@app.command("scrape-superliga")
+def scrape_superliga_cmd(
+    editions: Optional[List[str]] = typer.Option(
+        None,
+        "--edition",
+        "-e",
+        help="Edições a raspar (ex: 2025-2026_masculina, 2025-2026_feminina, 2024-2025_masculina, 2024-2025_feminina, atual_feminina)",
+    ),
+    limit: Optional[int] = typer.Option(None, "--limit", "-l", help="Limite máximo de partidas por edição"),
+    workers: int = typer.Option(6, "--workers", "-w", help="Threads de download/processamento simultâneo"),
+    force: bool = typer.Option(False, "--force", "-f", help="Força novo download mesmo se já existir no banco"),
+):
+    """Raspa todas as edições oficiais da Superliga Masculina e Feminina (Súmulas e Relatórios VolleyStation)."""
+    from cbv.scraper.superliga import scrape_all_superliga_editions
+
+    scrape_all_superliga_editions(editions=editions, limit=limit, workers=workers, force=force)
 
 
 @app.command("rankings")
@@ -106,6 +165,61 @@ def compare_cmd(
     from cbv.analysis.tactics import display_head_to_head_tactics
 
     display_head_to_head_tactics(team_a, team_b)
+
+
+@app.command("predict")
+def predict_cmd(
+    team_a: str = typer.Argument(..., help="Primeira equipe do confronto"),
+    team_b: str = typer.Argument(..., help="Segunda equipe do confronto"),
+):
+    """Gera previsão tática probabilística e diretrizes pré-jogo para a Comissão Técnica."""
+    from cbv.analysis.predictions import display_match_prediction
+
+    display_match_prediction(team_a, team_b)
+
+
+@app.command("sync")
+def sync_cmd(
+    competition: str = typer.Option("cbs", "--competition", "-c", help="Nome da competição (cbs)"),
+    category: str = typer.Option("sub18", "--category", help="Categoria (sub18, sub16, sub19, etc.)"),
+    gender: str = typer.Option("feminino", "--gender", "-g", help="Gênero (feminino ou masculino)"),
+    division: str = typer.Option("especial", "--division", "-d", help="Divisão (especial, primeira-divisao)"),
+    season: int = typer.Option(2026, "--season", "-s", help="Ano da temporada"),
+    url: Optional[str] = typer.Option(None, "--url", "-u", help="URL direta da competição no portal da CBV"),
+    open_browser: bool = typer.Option(True, "--open/--no-open", help="Abre o dashboard atualizado no navegador"),
+):
+    """Sincroniza os jogos do dia da CBV, atualiza o DuckDB, regenera o dashboard e exporta o Boletim para a CT."""
+    from cbv.scraper.sync import run_daily_sync
+
+    run_daily_sync(
+        competition=competition,
+        category=category,
+        gender=gender,
+        division=division,
+        season=season,
+        open_browser=open_browser,
+        url=url,
+    )
+
+
+@app.command("setter-distribution")
+def setter_distribution_cmd(
+    team: str = typer.Argument(..., help="Nome ou sigla da equipe (ex: 'SÃO PAULO', 'PARANÁ', 'MINAS')"),
+    rotation: Optional[str] = typer.Option(None, "--rotation", "-r", help="Rotação específica da levantadora (P1, P2, P3, P4, P5, P6)"),
+    pass_quality: Optional[str] = typer.Option(None, "--pass", "-p", help="Qualidade do passe: 'positive' (+#), 'negative' (-!) ou 'transition' (K2)"),
+):
+    """Prevê acionamento probabilístico de atletas por qualidade de passe e rotação P1-P6."""
+    from cbv.analysis.setter_distribution import display_setter_distribution
+
+    display_setter_distribution(team, rotation=rotation, pass_quality=pass_quality)
+
+
+@app.command("model-accuracy")
+def model_accuracy_cmd():
+    """Exibe avaliação empírica de acurácia, Brier score e calibração das previsões."""
+    from cbv.analysis.predictions import display_model_evaluation
+
+    display_model_evaluation()
 
 
 @app.command("dashboard")

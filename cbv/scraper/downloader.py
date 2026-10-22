@@ -19,6 +19,11 @@ class DownloadError(Exception):
     pass
 
 
+class MatchReportNotAvailable(DownloadError):
+    """Raised when match report is not yet published (scheduled or in-progress match)."""
+    pass
+
+
 def get_report_cache_path(game_id: int) -> Path:
     """Returns local path for stored PDF report."""
     return RAW_REPORTS_DIR / f"{game_id}.pdf"
@@ -99,9 +104,9 @@ def process_single_game(game_id: int, force: bool = False) -> dict:
     report_url = links.get("match_report_url")
 
     if not report_url:
-        logger.warning(f"game={game_id} match report not found on page")
-        console.print("[red]✗[/red] Match Report não encontrado na página")
-        raise DownloadError(f"Match Report não encontrado na página do jogo {game_id}")
+        logger.info(f"game={game_id} match report not available yet (scheduled/in-progress)")
+        console.print("[dim]ℹ Match Report ainda não disponibilizado pela CBV (jogo agendado ou em andamento)[/dim]")
+        raise MatchReportNotAvailable(f"Match Report não disponível para o jogo {game_id}")
 
     console.print(f"[green]✓[/green] Match Report encontrado")
 

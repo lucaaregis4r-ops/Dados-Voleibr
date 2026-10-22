@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=true
+Exec=bash -c 'DIR="$(dirname "%k")"; cd "$DIR" && bash executar.sh'
+Name=CBV Volley Data - Aplicação da CT
+Comment=Aplicação Web Unificada de Scouting, Inteligência Tática e Raspagem da CBV
+Icon=utilities-terminal
+Categories=Sports;Utility;
+Path=/home/lucasregis/Área de trabalho/Projetos/Backup/cbs estudo
