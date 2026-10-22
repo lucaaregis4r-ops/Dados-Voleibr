@@ -1,5 +1,9 @@
 # CBV Volley Data
 
+> 🌐 **Dashboard Tático Oficial Online (GitHub Pages):**  
+> **[https://lucaaregis4r-ops.github.io/Dados-Voleibr/](https://lucaaregis4r-ops.github.io/Dados-Voleibr/)**  
+> *(Sincronizado automaticamente todos os dias às 03:00 BRT via GitHub Actions com novos jogos da Superliga, CBS, calendário oficial e projeções Monte Carlo)*
+
 Sistema em Python para coleta automatizada, estruturação, validação e análise de dados públicos dos relatórios de jogos da Confederação Brasileira de Voleibol (CBV).
 
 ## Ordem de Prioridade
