@@ -43,7 +43,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/cbv.duckdb exports/ cbv/
+          git add data/cbv.duckdb exports/ cbv/ index.html docs/
           if git diff --staged --quiet; then
             echo "Nenhuma alteração detectada. Repositório já está atualizado."
           else

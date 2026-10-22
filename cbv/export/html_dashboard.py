@@ -2703,5 +2703,12 @@ def export_dashboard_html(target_file: Path = DEFAULT_HTML_PATH) -> Path:
     html_content = build_dashboard_html(data)
     target_file.write_text(html_content, encoding="utf-8")
 
-    console.print(f"[green]✓ Dashboard HTML atualizado com sucesso em [bold]{target_file}[/bold][/green]")
+    # Also write to index.html at root and docs/index.html for GitHub Pages compatibility
+    root_index = BASE_DIR / "index.html"
+    docs_index = BASE_DIR / "docs" / "index.html"
+    docs_index.parent.mkdir(parents=True, exist_ok=True)
+    root_index.write_text(html_content, encoding="utf-8")
+    docs_index.write_text(html_content, encoding="utf-8")
+
+    console.print(f"[green]✓ Dashboard HTML atualizado com sucesso em [bold]{target_file}[/bold] e publicado em [bold]index.html[/bold][/green]")
     return target_file
