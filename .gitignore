@@ -10,6 +10,7 @@ venv/
 logs/*.log
 data/raw/
 data/processed/
+*.duckdb.wal
 .pytest_cache/
 temp_inspect/
 
