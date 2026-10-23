@@ -1,13 +1,13 @@
-# Vôlei BR — Dados & scouting
+# Vôlei BR — Central de scout
 
 [Consultar a publicação](https://lucaaregis4r-ops.github.io/Dados-Voleibr/)
 
 Projeto independente • dados públicos disponibilizados pela CBV.
 
 Pipeline Python de coleta, parser, validação, DuckDB e publicação de scouting.
-A interface editorial usa Archivo, base clara, gráficos SVG e tabelas sem dependência
+A interface usa Inter e Roboto Mono, sidebar, filtros e tabelas sem dependência
 de bibliotecas gráficas externas. O HTML contém os dados e funciona no GitHub Pages;
-as fontes são incorporadas no HTML, com licenças SIL OFL preservadas no código.
+as fontes WOFF2 são incorporadas no HTML, com licenças SIL OFL preservadas no código.
 
 ## Executar
 
@@ -22,27 +22,33 @@ python -m cbv app
 
 ## Navegação
 
-- **Visão geral:** SO/BP, eficiência, recepção, erro de saque, dispersão e ranking.
-- **Equipes:** perfil, dot plot, tendência dos últimos cinco jogos, fases, rotações e atletas.
-- **Confronto:** comparação observada, rotações e modelo com validação temporal.
-- **Partidas:** calendário, resultados e links públicos das súmulas.
-- **Dados:** cobertura, qualidade, definições, proveniência e atualização local.
+- **Visão geral:** três KPIs (SO, BP e eficiência), scatter de equipes, dois rankings
+  simples e partidas recentes.
+- **Equipes:** seletor, quatro KPIs, perfil por barras, resumo, rotações e tabela
+  pesquisável/ordenável de atletas.
+- **Confrontos:** comparação geral, ataque por fase, rotações e projeção inicialmente
+  recolhida no final da página.
+- **Partidas:** Próximas, Encerradas e Súmulas. “Ver” abre a partida com comparação,
+  sets, fases, atletas e rotações, sem previsão.
+- **Dados:** cobertura, definições, tipos de métrica e atualização. A análise
+  experimental de distribuição fica em um detalhe, fora da navegação principal.
 
-Todos os recortes separam competição, categoria, gênero e temporada. Somente
-partidas VALID entram nos indicadores; ressalvas ficam visíveis em Dados/Partidas.
-Cada taxa oferece denominador e definição. Percentuais arredondados da fonte
-não são convertidos em contagens exatas para inventar intervalos.
+A sidebar fixa de 232px vira menu em telas menores. Tabelas têm rolagem interna;
+a home mostra apenas três KPIs. Fórmulas, amostras, intervalos, percentis e ajustes
+ficam em tooltip ou detalhe. As fontes são incorporadas no HTML para uso offline.
 
-SO/BP usam contagens, Kill% é distinto de eficiência, Wilson é aplicado somente
-às proporções compatíveis. Rankings oferecem taxa bruta e média posterior
-beta-binomial empírica. Previsões usam regressão logística L2 com backtest
-walk-forward estrito, Brier, log loss e calibração calculados; não há garantia de
-acurácia nem IC preditivo artificial. Com histórico insuficiente, ficam indisponíveis.
+Os recortes continuam separando competição, categoria, gênero e temporada. Somente
+partidas VALID entram nos indicadores consolidados. Partidas com ressalvas podem
+ser consultadas individualmente e são sinalizadas. Nenhum modelo estatístico,
+parser, scraper ou schema foi substituído durante este redesenho.
 
-A fonte atual não permite SO/BP separados por rotação, xSO/xBP, distribuição real
-da levantadora, FBSO, Set Assist ou crunch. O schema de eventos está preparado,
-sem preencher dados sintéticos. A heurística de disponibilidade ofensiva fica
-em `/experimental` no servidor local, identificada como Modelo.
+SO/BP usam contagens, Kill% é distinto de eficiência. Wilson, deltas, percentis,
+shrinkage beta-binomial e validação temporal permanecem implementados. A previsão
+é o modelo existente, com Brier, log loss e calibração em detalhe. Sem intervalo
+preditivo validado ou denominador de rotação, a interface informa a ausência.
+
+A distribuição estimada é experimental: não representa frequência observada de
+levantamentos. A literatura permanece apenas na documentação interna.
 
 ## Coleta e exportação
 
@@ -68,13 +74,14 @@ A data de geração do HTML é diferente da data de inserção/consulta à fonte
 ```bash
 pytest -q
 python -c "from cbv.export.html_dashboard import export_dashboard_html; export_dashboard_html()"
-# QA opcional das quatro larguras; requer Google Chrome instalado
+# QA opcional das quatro larguras; usa o Chromium de teste do Playwright
 pip install playwright
+python -m playwright install chromium
 python scripts/check_dashboard_ui.py
 ```
 
 - `cbv/export/templates/scouting.html`: interface compartilhada por local e Pages.
-- `cbv/analysis/scouting.py`: taxas, cobertura, Wilson, percentil, shrinkage e tendência.
+- `cbv/analysis/scouting.py`: taxas, cobertura, Wilson, percentil, shrinkage e tendência (cálculos preservados).
 - `cbv/analysis/temporal.py`: treinamento e validação cronológica.
 - `cbv/metric_definitions.py`: catálogo versionado, materializado no DuckDB.
 - `docs/METRIC_SOURCES.md`: fontes verificadas e limites metodológicos internos.

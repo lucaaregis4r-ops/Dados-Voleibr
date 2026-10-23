@@ -1,4 +1,4 @@
-"""Standalone editorial scouting publication; the live server uses the same payload."""
+"""Standalone scouting interface; the live server uses the same payload."""
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
@@ -101,13 +101,13 @@ def build_dashboard_html(data):
     template=(Path(__file__).parent/'templates'/'scouting.html').read_text(encoding='utf-8')
     payload=json.dumps(data,ensure_ascii=False,allow_nan=False).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
     fonts = []
-    for font in sorted((Path(__file__).parent/'templates'/'fonts').glob('*.ttf')):
+    for font in sorted((Path(__file__).parent/'templates'/'fonts').glob('*.woff2')):
         if not font.name.startswith(('inter-', 'roboto-mono-')):
             continue
         family = 'Inter' if font.name.startswith('inter-') else 'Roboto Mono'
         weight = font.stem.rsplit('-', 1)[1]
         encoded = base64.b64encode(font.read_bytes()).decode('ascii')
-        fonts.append(f"@font-face{{font-family:'{family}';font-style:normal;font-weight:{weight};font-display:swap;src:url(data:font/ttf;base64,{encoded}) format('truetype')}}")
+        fonts.append(f"@font-face{{font-family:'{family}';font-style:normal;font-weight:{weight};font-display:swap;src:url(data:font/woff2;base64,{encoded}) format('woff2')}}")
     return template.replace('__SCOUTING_DATA__',payload).replace('__FONT_CSS__', ''.join(fonts))
 
 
