@@ -40,3 +40,20 @@ modelo novo substitui o baseline automaticamente.
   declarar inferência. P1–P6 absoluto exige evidência; ciclo relativo é distinto.
 - Validar placares, SO/BP, troca de saque, avanço da rotação e presença de atletas.
 - Preservar a última base publicada quando qualquer nova fonte falhar.
+
+## Diferença de definição confirmada
+
+Na partida 2590834, o relatório informa para RJ SO=23, BP=18 e 16 erros do
+adversário; 23+18+16=57 pontos de placar. Para MG: 19+18+22=59. Portanto as
+contagens de SO/BP do relatório não equivalem a todos os pontos de placar ganhos
+em recepção/saque. A reconstrução por serviço dá RJ 34/58 e 23/58 e MG 35/58 e
+24/58. As séries não podem ser sobrescritas ou misturadas silenciosamente.
+O baseline legado permanece reproduzível; o Atlas deve identificar a definição
+por fonte e utilizar taxas de todos os pontos apenas quando houver sequência
+reconciliada. A diferença de recepções para rallies recebendo inclui saques
+errados que não geram uma recepção registrada.
+
+O Match Report também distingue visualmente a levantadora inicial: seu número
+na coluna do set tem caixa vazia, enquanto os demais titulares têm fundo cinza.
+Essa marcação será testada como fonte independente da posição inicial, sem
+inferir a levantadora dos resultados dos rallies.
