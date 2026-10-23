@@ -67,3 +67,27 @@ Temporada, categoria e gênero legados permanecem identificadores da coorte. Dat
 fora de uma janela esportiva esperada não são reclassificadas automaticamente
 como outra temporada sem identidade oficial da competição. O HTML original
 preserva essa evidência para auditoria; não inferir regulamento pelo placar.
+
+## Correção de edições — 23/10/2026
+
+A auditoria da página oficial “Temporada 26/27”, cruzada por identificador de
+partida, corrigiu seis jogos femininos (2584995 a 2585000) e o calendário que
+estavam rotulados como 2025–2026. Os jogos pertencem a 2026–2027. O erro era causado
+pela inferência fixa no repositório e pelo rótulo fixo do calendário; a ingestão
+agora recebe a edição da fonte. A rotina diária acompanha as páginas atuais dos
+dois gêneros e confirma o título de temporada antes de atribuir seus jogos.
+
+Os modelos e agregados das edições afetadas foram recalculados. Treinos anteriores
+sobre o recorte incorreto ficam em `superseded_model_runs`, com motivo explícito;
+não são os treinos ativos. `season_assignments` registra edição anterior, edição
+corrigida, URL e hash da evidência. A página oficial e seu hash ficam em
+`competition_editions` e nos exports de auditoria. Não houve alteração dos pontos
+ou resultados originais. O dossiê legado deixou de combinar temporadas ou trocar
+silenciosamente a edição solicitada por outra com mais dados.
+
+Fontes: [Superliga feminina](https://cbv.com.br/volei-de-quadra/superliga-a-feminina)
+e [Superliga masculina](https://cbv.com.br/volei-de-quadra/superliga-a-masculina).
+
+Os rankings e resumos táticos legados em CSV/JSON também são agrupados por
+competição, categoria, gênero e temporada, com essas colunas explícitas. O total
+da equipe usado no cálculo de participação ofensiva pertence à mesma coorte.

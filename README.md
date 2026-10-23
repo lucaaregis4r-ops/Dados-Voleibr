@@ -106,3 +106,15 @@ python scripts/check_dashboard_ui.py
 A API `/api/data` agora oferece `cohorts`, com estatísticas e validação por recorte;
 consumidores do payload antigo devem migrar para essa estrutura. Campos preditivos
 sem evidência retornam null. `/api/setter-distribution` permanece experimental.
+
+## Temporadas e legenda
+
+O Atlas abre a edição atual confirmada pela CBV, atualmente **2026–2027** para a
+Superliga. **2025–2026** aparece como encerrada. Cada temporada mantém seus próprios
+agregados, rankings, atletas, tendências e treinos; uma amostra insuficiente não
+puxa automaticamente estatísticas da edição anterior. O calendário e a coleta
+diária acompanham as páginas oficiais atuais dos dois gêneros.
+
+**Legenda**, no menu, explica siglas e variáveis, com busca e catálogo de fórmulas.
+Cada página também oferece **Como ler as variáveis desta página**. O contexto da
+temporada e um acesso à legenda ficam visíveis em todas as áreas.

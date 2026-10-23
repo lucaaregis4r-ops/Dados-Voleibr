@@ -2,6 +2,17 @@
 
 Gerado por `python -m cbv.metrics.methodology`. Não editar este arquivo manualmente.
 
+## Temporadas e guia de leitura
+
+A edição é identificada pela página oficial da competição. Superliga 2026–2027
+é separada de 2025–2026; CBS usa edição anual. Datas isoladas não definem a edição.
+Médias, tendências, rankings, atletas e modelos usam somente a coorte selecionada
+(competição, categoria, gênero e temporada). Uma edição sem jogos apresenta dados
+ausentes, sem reaproveitar silenciosamente a temporada anterior. O dossiê legado
+também não mistura pesos de outras temporadas. Histórico permanece consultável
+como outra edição. A interface identifica temporada atual e encerrada e oferece
+uma legenda pesquisável com significado, unidade, fórmula e limitações.
+
 ## Fontes, unidades e ausência
 
 OBSERVADO: publicado pela CBV. RECONSTRUÍDO: transformação determinística da fonte.

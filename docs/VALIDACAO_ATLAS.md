@@ -27,3 +27,27 @@ As contagens referem-se a este snapshot e serão atualizadas pela rotina diária
 - Os três HTML publicados têm conteúdo idêntico. A promoção usa staging, quality gates e cópia de recuperação.
 
 A avaliação temporal de um modelo de ponto não valida automaticamente a probabilidade de vitória por partida. Modelos novos permanecem experimentais; o baseline pré-jogo logístico L2 permanece ativo. Limitações detalhadas em [LIMITACOES_ATLAS.md](LIMITACOES_ATLAS.md).
+
+## Revisão de temporadas e legenda
+
+Na revisão seguinte, seis partidas femininas foram reatribuídas por match ID,
+cruzado com a página oficial “Temporada 26/27”. O banco mantém 583 partidas:
+2025–2026 passa a 148 jogos femininos e 148 masculinos; 2026–2027 tem seis jogos
+femininos e nenhum masculino concluído coletado. O calendário de ambos os gêneros
+pertence a 2026–2027. Cinco dos seis jogos femininos novos têm reconstrução
+aprovada, totalizando 732 pontos elegíveis nesse recorte.
+
+Agregados, tendências, elenco e modelos foram recalculados por edição. Ausência
+de histórico atual não usa silenciosamente a temporada anterior. Os treinos
+anteriores do recorte incorreto foram arquivados com o motivo da substituição.
+
+A interface agora tem sete páginas, com legenda pesquisável, 24 explicações de
+leitura e catálogo das 74 métricas. Verificação em quatro larguras e teste extra
+de todas as áreas na edição masculina sem jogos: aprovados. Testes de identidade
+da fonte, migração por ID, recorte vazio, prevenção de fallback entre temporadas,
+dossiê sem mistura e documentação gerada: aprovados.
+
+Regressões finais de rankings, resumos táticos, exports, identidade da edição e
+registry: 18 testes aprovados. O teste adicional com a mesma atleta e equipe em
+duas temporadas confirma que pontos, SO e denominador de participação ofensiva
+ficam separados; seis testes de temporadas aprovados.
