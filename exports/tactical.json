@@ -35055,18 +35055,6 @@
         "bp_rate": 3.42
       },
       {
-        "team": "SANEAGO GOIÁS VÔLEI",
-        "matches": 17,
-        "so_points": 607,
-        "so_receptions": 1102,
-        "so_pct": 55.1,
-        "so_rate": 1.82,
-        "bp_points": 279,
-        "bp_serves": 1334,
-        "bp_pct": 20.9,
-        "bp_rate": 4.78
-      },
-      {
         "team": "OSASCO SÃO CRISTÓVÃO SAÚDE",
         "matches": 19,
         "so_points": 708,
@@ -35079,16 +35067,16 @@
         "bp_rate": 3.31
       },
       {
-        "team": "RIO GRANDE DO SUL",
-        "matches": 6,
-        "so_points": 166,
-        "so_receptions": 302,
-        "so_pct": 55.0,
+        "team": "SANEAGO GOIÁS VÔLEI",
+        "matches": 17,
+        "so_points": 607,
+        "so_receptions": 1102,
+        "so_pct": 55.1,
         "so_rate": 1.82,
-        "bp_points": 79,
-        "bp_serves": 330,
-        "bp_pct": 23.9,
-        "bp_rate": 4.18
+        "bp_points": 279,
+        "bp_serves": 1334,
+        "bp_pct": 20.9,
+        "bp_rate": 4.78
       },
       {
         "team": "DENTIL PRAIA CLUBE",
@@ -35101,6 +35089,18 @@
         "bp_serves": 1778,
         "bp_pct": 30.4,
         "bp_rate": 3.29
+      },
+      {
+        "team": "RIO GRANDE DO SUL",
+        "matches": 6,
+        "so_points": 166,
+        "so_receptions": 302,
+        "so_pct": 55.0,
+        "so_rate": 1.82,
+        "bp_points": 79,
+        "bp_serves": 330,
+        "bp_pct": 23.9,
+        "bp_rate": 4.18
       },
       {
         "team": "SESI VÔLEI BAURU",
@@ -35199,18 +35199,6 @@
         "bp_rate": 4.73
       },
       {
-        "team": "PARANÁ",
-        "matches": 6,
-        "so_points": 162,
-        "so_receptions": 309,
-        "so_pct": 52.4,
-        "so_rate": 1.91,
-        "bp_points": 108,
-        "bp_serves": 401,
-        "bp_pct": 26.9,
-        "bp_rate": 3.71
-      },
-      {
         "team": "APAN ROLL-ON BLUMENAU",
         "matches": 5,
         "so_points": 183,
@@ -35221,6 +35209,18 @@
         "bp_serves": 359,
         "bp_pct": 20.6,
         "bp_rate": 4.85
+      },
+      {
+        "team": "PARANÁ",
+        "matches": 6,
+        "so_points": 162,
+        "so_receptions": 309,
+        "so_pct": 52.4,
+        "so_rate": 1.91,
+        "bp_points": 108,
+        "bp_serves": 401,
+        "bp_pct": 26.9,
+        "bp_rate": 3.71
       },
       {
         "team": "FLUMINENSE",
@@ -35235,18 +35235,6 @@
         "bp_rate": 3.15
       },
       {
-        "team": "PARÁ",
-        "matches": 5,
-        "so_points": 111,
-        "so_receptions": 217,
-        "so_pct": 51.2,
-        "so_rate": 1.95,
-        "bp_points": 56,
-        "bp_serves": 237,
-        "bp_pct": 23.6,
-        "bp_rate": 4.23
-      },
-      {
         "team": "E.C. PINHEIROS",
         "matches": 14,
         "so_points": 532,
@@ -35257,6 +35245,18 @@
         "bp_serves": 1045,
         "bp_pct": 25.9,
         "bp_rate": 3.86
+      },
+      {
+        "team": "PARÁ",
+        "matches": 5,
+        "so_points": 111,
+        "so_receptions": 217,
+        "so_pct": 51.2,
+        "so_rate": 1.95,
+        "bp_points": 56,
+        "bp_serves": 237,
+        "bp_pct": 23.6,
+        "bp_rate": 4.23
       },
       {
         "team": "RIO DE JANEIRO",
@@ -35705,18 +35705,6 @@
         "k2_eff_pct": 22.6
       },
       {
-        "team": "AMAZONAS",
-        "k1_pos_att": 204,
-        "k1_pos_kill_pct": 51.5,
-        "k1_pos_eff_pct": 33.3,
-        "k1_neg_att": 55,
-        "k1_neg_kill_pct": 30.9,
-        "k1_neg_eff_pct": 3.6,
-        "k2_att": 157,
-        "k2_kill_pct": 40.8,
-        "k2_eff_pct": 17.8
-      },
-      {
         "team": "RIO DE JANEIRO",
         "k1_pos_att": 159,
         "k1_pos_kill_pct": 52.8,
@@ -35727,6 +35715,18 @@
         "k2_att": 183,
         "k2_kill_pct": 36.6,
         "k2_eff_pct": 19.1
+      },
+      {
+        "team": "AMAZONAS",
+        "k1_pos_att": 204,
+        "k1_pos_kill_pct": 51.5,
+        "k1_pos_eff_pct": 33.3,
+        "k1_neg_att": 55,
+        "k1_neg_kill_pct": 30.9,
+        "k1_neg_eff_pct": 3.6,
+        "k2_att": 157,
+        "k2_kill_pct": 40.8,
+        "k2_eff_pct": 17.8
       },
       {
         "team": "SANCOR SEGUROS VÔLEI",
@@ -35741,18 +35741,6 @@
         "k2_eff_pct": 19.7
       },
       {
-        "team": "NEUROLOGIA ATIVA",
-        "k1_pos_att": 526,
-        "k1_pos_kill_pct": 52.3,
-        "k1_pos_eff_pct": 33.1,
-        "k1_neg_att": 263,
-        "k1_neg_kill_pct": 42.2,
-        "k1_neg_eff_pct": 23.6,
-        "k2_att": 355,
-        "k2_kill_pct": 38.6,
-        "k2_eff_pct": 16.3
-      },
-      {
         "team": "JF VÔLEI",
         "k1_pos_att": 332,
         "k1_pos_kill_pct": 52.4,
@@ -35763,6 +35751,18 @@
         "k2_att": 283,
         "k2_kill_pct": 35.3,
         "k2_eff_pct": 19.1
+      },
+      {
+        "team": "NEUROLOGIA ATIVA",
+        "k1_pos_att": 526,
+        "k1_pos_kill_pct": 52.3,
+        "k1_pos_eff_pct": 33.1,
+        "k1_neg_att": 263,
+        "k1_neg_kill_pct": 42.2,
+        "k1_neg_eff_pct": 23.6,
+        "k2_att": 355,
+        "k2_kill_pct": 38.6,
+        "k2_eff_pct": 16.3
       },
       {
         "team": "E.C. PINHEIROS",
