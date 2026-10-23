@@ -36458,17 +36458,6 @@
         "avg_exc_pct": 26.1
       },
       {
-        "player_name": "WENK HOENGEN HELENA",
-        "team": "SESC RJ FLAMENGO",
-        "is_libero": false,
-        "matches": 16,
-        "rec_attempts": 323,
-        "rec_errors": 15,
-        "err_pct": 4.6,
-        "avg_pos_pct": 44.7,
-        "avg_exc_pct": 21.5
-      },
-      {
         "player_name": "WANK",
         "team": "SESC RJ FLAMENGO",
         "is_libero": false,
@@ -36478,6 +36467,17 @@
         "err_pct": 5.3,
         "avg_pos_pct": 54.3,
         "avg_exc_pct": 18.8
+      },
+      {
+        "player_name": "WENK HOENGEN HELENA",
+        "team": "SESC RJ FLAMENGO",
+        "is_libero": false,
+        "matches": 16,
+        "rec_attempts": 323,
+        "rec_errors": 15,
+        "err_pct": 4.6,
+        "avg_pos_pct": 44.7,
+        "avg_exc_pct": 21.5
       },
       {
         "player_name": "LEANDRO GROTH SABRINA",
