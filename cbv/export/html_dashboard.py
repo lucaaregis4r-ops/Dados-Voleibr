@@ -64,17 +64,27 @@ def generate_dashboard_data(competition=None,include_atlas=True):
         upcoming = records(conn, 'SELECT * FROM upcoming_matches ORDER BY match_date, match_time')
         definitions = records(conn, 'SELECT * FROM metric_definitions ORDER BY metric_key')
         provenance = records(conn, 'SELECT * FROM match_provenance')
+        edition_rows=records(conn,'SELECT * FROM competition_editions') if 'competition_editions' in {r[0] for r in conn.execute('SHOW TABLES').fetchall()} else []
         sets = conn.execute('select count(*) from sets').fetchone()[0]
     grouped = defaultdict(list)
     for m in matches:
         if competition and competition!='ALL' and competition.upper() not in (str(m['competition']).upper(),f"{m['competition']}_{m['gender']}".upper()):
             continue
         grouped[(m['competition'],m['category'],m['gender'],m['season'])].append(m)
+    for item in upcoming+edition_rows:
+        if competition and competition!='ALL' and competition.upper() not in (str(item['competition']).upper(),f"{item['competition']}_{item['gender']}".upper()):continue
+        grouped[tuple(item.get(k) for k in ('competition','category','gender','season'))]
     cohorts=[]
     for key, mm in grouped.items():
         ids={m['match_id'] for m in mm}; rr=[r for r in rows if r['match_id'] in ids]
         pp=[p for p in players if p['match_id'] in ids]
-        c=aggregate_cohort(mm,rr,pp)
+        scheduled=[u for u in upcoming if tuple(u.get(k) for k in ('competition','category','gender','season'))==key]
+        c=aggregate_cohort(mm,rr,pp,{u[side+'_team'] for u in scheduled for side in ('home','away')})
+        from cbv.seasons import edition_status
+        edition=next((e for e in edition_rows if tuple(e.get(k) for k in ('competition','category','gender'))==key[:3]),None)
+        c['edition_status']=edition_status(key[3],edition['season']) if edition else 'UNKNOWN'
+        c['edition_source']=edition
+        c['statistics_scope']='Somente partidas desta edição; médias, atletas, tendências e modelos não incorporam temporadas anteriores.'
         if include_atlas:
             from cbv.analysis.atlas import summarize_team
             from cbv.analysis.rally_models import enrich_temporal
@@ -158,7 +168,7 @@ def generate_dashboard_data(competition=None,include_atlas=True):
                 c['baseline_run_id']=baseline_run
         c['upcoming']=[u for u in upcoming if tuple(u.get(k) for k in ('competition','category','gender','season'))==key]
         cohorts.append(c)
-    cohorts.sort(key=lambda c:(c['competition']=='SUPERLIGA',str(c['season']),c['gender']=='feminino'),reverse=True)
+    cohorts.sort(key=lambda c:(c['competition']=='SUPERLIGA',c['edition_status']=='CURRENT',str(c['season']),c['gender']=='feminino'),reverse=True)
     source_by_id={p['match_id']:p for p in provenance}
     for c in cohorts:
         for m in c['matches']:
@@ -173,6 +183,8 @@ def generate_dashboard_data(competition=None,include_atlas=True):
 def build_dashboard_html(data):
     from cbv.metrics.registry import REGISTRY,catalog
     data['metric_registry']=catalog()
+    from cbv.metrics.glossary import glossary
+    data['glossary']=glossary()
     for cohort in data.get('cohorts',[]):
         groups=[cohort.get('metrics',{})]
         for team in cohort.get('teams',[]):

@@ -23,6 +23,8 @@ with sync_playwright() as p:
     page.route('https://**/*',lambda route:route.abort())
     page.goto(Path(os.getenv('CBV_UI_HTML',ROOT/'index.html')).resolve().as_uri(),wait_until='domcontentloaded',timeout=60000)
     page.wait_for_selector('.kpis')
+    if page.evaluate("DATA.cohorts.some(c=>c.edition_status==='CURRENT')"):
+        assert page.evaluate("C().edition_status==='CURRENT'")
     for width in [1440,1024,768,390]:
         page.set_viewport_size(dict(width=width,height=1000))
         navigate(page,'Visão geral');check(page,'overview',width)
@@ -49,7 +51,20 @@ with sync_playwright() as p:
             page.locator('[data-athlete]').first.click();assert page.locator('.athlete-profile').count()==1
         navigate(page,'Dados');check(page,'data',width)
         assert page.get_by_text('Abrir caderno metodológico',exact=True).count()
+        navigate(page,'Legenda');check(page,'legend',width)
+        page.locator('#legend-search').fill('WPA')
+        assert page.locator('[data-legend-item]:visible').count()>0
+        assert page.locator('[data-legend-item]:visible').count()<page.locator('[data-legend-item]').count()
+        page.locator('#legend-search').fill('zzzz-no-variable');assert page.locator('#legend-empty').is_visible()
+        page.locator('#legend-search').fill('')
+    empty_current=page.evaluate("DATA.cohorts.findIndex(c=>c.edition_status==='CURRENT'&&!c.matches.length)")
+    if empty_current>=0:
+        page.evaluate('(i)=>{state.cohort=i;state.team=C().teams[0]?.team;state.opponent=C().teams[1]?.team;render()}',empty_current)
+        for name in ['Visão geral','Equipes','Confrontos','Partidas','Atletas','Dados']:
+            navigate(page,name);check(page,'empty-'+name,390)
+        assert page.evaluate("C().metrics.so.value===null&&C().model_matchups.length===0")
+        assert 'Ainda sem partidas concluídas' in page.locator('.season-context').inner_text()
     assert not errors,errors
     assert page.evaluate('document.fonts.check("400 12px Inter")')
     browser.close()
-print('Atlas: 6 páginas × 4 larguras; quadra, matriz, replay, busca e fontes offline verificados.')
+print('Atlas: 7 páginas × 4 larguras; temporada atual sem jogos, legenda pesquisável, quadra, matriz, replay, busca e fontes offline verificados.')

@@ -3,3 +3,8 @@
 @media(max-width:1100px){.atlas-courts,.replay-grid{grid-template-columns:1fr 1fr}.atlas-sheet{padding:18px}.atlas-courts{gap:16px}}
 @media(max-width:700px){.atlas-courts,.atlas-courts.comparison,.replay-grid{grid-template-columns:1fr}.atlas-courts .wheel-svg{max-height:280px}.atlas-sheet{padding:16px}.atlas-heading{align-items:start;flex-direction:column;gap:4px}.court-svg{max-height:420px}.coverage-bars{grid-template-columns:100px 1fr 65px;gap:10px}.scoreboard{padding:14px}.scoreboard strong{font-size:26px}h1{font-size:25px}.matchup-matrix button{min-height:52px}.kpis{background:transparent;gap:1px}.matrix-detail table{min-width:480px}}
 .atlas-courts>*,.replay-grid>*{min-width:0}
+
+.season-context{display:flex;justify-content:space-between;align-items:center;gap:16px;border-left:3px solid var(--navy);padding:10px 14px;margin:0 0 24px;background:var(--surface)}
+.season-context p{font-size:12px;margin:5px 0 0;max-width:900px;color:var(--text-muted)}
+.legend-list{margin:16px 0}.legend-list>div{padding:12px 0;border-bottom:1px solid var(--line)}.legend-list dt{font-weight:600;margin-bottom:5px}.legend-list dd{margin:0;line-height:1.6}.legend-list .note{display:block;margin-top:6px}.legend-metric{padding:12px 0;border-bottom:1px solid var(--line)}.legend-metric summary{cursor:pointer;font-weight:600}.legend-search{display:block;max-width:650px;margin-bottom:25px}.legend-search input{display:block;width:100%;margin-top:8px}[data-legend-item][hidden],#legend-empty[hidden]{display:none!important}
+@media(max-width:600px){.season-context{align-items:flex-start;flex-direction:column;gap:8px}.legend-list dd{overflow-wrap:anywhere}}

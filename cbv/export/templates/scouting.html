@@ -69,9 +69,9 @@ function filters(){
   $('#competition').innerHTML=options([...new Set(DATA.cohorts.map(compKey))],compKey(c));
   const comps=DATA.cohorts.filter(x=>compKey(x)===compKey(c));
   $('#gender').innerHTML=options([...new Set(comps.map(x=>x.gender||'Não informado'))],c.gender||'Não informado');
-  $('#season').innerHTML=options(comps.filter(x=>x.gender===c.gender).map(x=>x.season),c.season);
+  $('#season').innerHTML=comps.filter(x=>x.gender===c.gender).map(x=>`<option value="${esc(x.season)}" ${x===c?'selected':''}>${esc(seasonLabel(x.season))}${x.edition_status==='CURRENT'?' · atual':x.edition_status==='COMPLETED'?' · encerrada':''}</option>`).join('');
   $('#updated').textContent='Atualizado em '+dateText(lastUpdate());
-  $('#updated').title='Último registro no banco; não equivale ao horário da coleta na fonte.';
+  $('#updated').title='Último registro ou verificação da edição; fontes individuais têm data de coleta em Dados.';
   $('#edition').textContent='Página gerada em '+dateText(DATA.generated_at);
 }
 
@@ -83,7 +83,7 @@ function teamLink(t){return `<button class="team-link" data-team="${esc(t)}">${e
 function tooltip(m){
   return `<details class="metric-info"><summary aria-label="Detalhes de ${esc(m.label)}" title="Definição, amostra e intervalo">i</summary><div class="info-body">
     <p><strong>${esc(m.label)}</strong> ${badge(m.metric_class)}</p>
-    <p>${esc(m.formula)} × 100.</p>
+    <p>${esc(m.formula)}</p>
     <p>Amostra: <span class="numeric">${m.approximate?'≈ ':''}${num(m.numerator)} / ${num(m.n)}</span>. ${m.n>0&&m.n<50?'<span class="sample-warning">Amostra baixa</span>':''} ${m.ci?'IC 95%: '+m.ci.map(v=>fmt(v)).join('–')+'%.':'Intervalo não disponível.'}</p>
     ${m.delta!=null?`<p>Diferença para a competição: ${signed(m.delta)} pp. Percentil: ${fmt(m.percentile,0)}.</p>`:''}
     ${m.adjusted!=null?`<p>Taxa ajustada: ${pct(m.adjusted)} (modelo beta-binomial).</p>`:''}
@@ -225,7 +225,7 @@ function dataPage(){
 }
 
 function dateText(value){return value?new Date(value).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'}):'não registrado'}
-function lastUpdate(){return [...C().matches.map(m=>m.created_at),...(C().source_snapshots||[]).map(s=>s.fetched_at)].filter(Boolean).sort().at(-1)}
+function lastUpdate(){return [C().edition_source?.verified_at,...C().matches.map(m=>m.created_at),...(C().source_snapshots||[]).map(s=>s.fetched_at)].filter(Boolean).sort().at(-1)}
 function seasonLabel(value){return String(value||'').replace(/(\d{4})-(\d{2})(\d{2})/,'$1–$3')}
 function competitionLabel(c=C()){return (c.competition==='SUPERLIGA'?'Superliga':c.competition+' '+String(c.category||'').replace('sub','Sub-'))+' '+(c.gender==='feminino'?'Feminina':'Masculina')}
 function heading(title,subtitle=''){return `<div class="page-heading"><h1>${esc(title)}</h1>${subtitle?`<p>${esc(subtitle)}</p>`:''}</div>`}
@@ -295,12 +295,12 @@ function render(){
  if(state.team&&!c.teams.some(t=>t.team===state.team))state.team='';
  if(state.opponent===state.team||!c.teams.some(t=>t.team===state.opponent))state.opponent='';
  filters();
- $('#primary').innerHTML=['Visão geral','Equipes','Confrontos','Partidas','Atletas','Dados'].map(page=>`<button data-page="${page}" ${page===state.page?'aria-current="page"':''}>${page}</button>`).join('');
+ $('#primary').innerHTML=['Visão geral','Equipes','Confrontos','Partidas','Atletas','Dados','Legenda'].map(page=>`<button data-page="${page}" ${page===state.page?'aria-current="page"':''}>${page}</button>`).join('');
  const tabs=state.page==='Partidas'&&state.matchId==null?['Próximas','Encerradas','Súmulas']:[];
  if(tabs.length&&!tabs.includes(state.sub))state.sub=tabs[0];
  const subnav=tabs.length?`<nav class="subnav" aria-label="Listas de partidas">${tabs.map(tab=>`<button data-sub="${tab}" ${tab===state.sub?'aria-current="page"':''}>${tab}</button>`).join('')}</nav>`:'';
- const page={'Visão geral':overview,Equipes:teams,Confrontos:confrontation,Partidas:matchesPage,Atletas:athletesPage,Dados:dataPage}[state.page];
- $('#main').innerHTML=(tabs.length?heading('Partidas')+subnav:'')+page();
+ const page={'Visão geral':overview,Equipes:teams,Confrontos:confrontation,Partidas:matchesPage,Atletas:athletesPage,Dados:dataPage,Legenda:legendPage}[state.page];
+ $('#main').innerHTML=seasonContext()+(tabs.length?heading('Partidas')+subnav:'')+page()+contextLegend();
  bind();
 }
 

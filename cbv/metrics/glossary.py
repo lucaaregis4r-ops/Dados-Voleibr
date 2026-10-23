@@ -1,0 +1,31 @@
+"""Plain-language reading guide, complementary to the complete metric registry."""
+GLOSSARY=[
+ ('so','SO · Side-Out','Percentual de pontos conquistados quando a equipe recebe o saque.','Na quadra e no replay usa o placar reconstruído; nos agregados Match Report usa os pontos creditados no relatório, que excluem erros adversários.'),
+ ('bp','BP · Break Point','Percentual de pontos conquistados quando a equipe está sacando.','Mesma distinção de fonte do SO: não compare a série do relatório com a série completa do placar como se fossem iguais.'),
+ ('kill','Kill%','Ataques que viraram ponto / tentativas de ataque × 100.','Um ataque defendido conta como tentativa, mas não como ponto.'),
+ ('eff','Eficiência de ataque','(Pontos de ataque − erros − ataques bloqueados) / tentativas × 100.','Pode ser negativa. Difere de Kill%, que não subtrai os erros.'),
+ ('positive','Passe + · recepção positiva','Percentual de recepções classificadas como positivas pelo relatório oficial.','Agregado ponderado por recepções; a contagem derivada de percentuais arredondados é aproximada.'),
+ ('excellent','Passe excelente','Percentual de recepções classificadas como excelentes pelo relatório.','É a classificação da fonte; não confundir com qualquer passe positivo.'),
+ ('k1','K1+ · K1− · K2','K1+: ataque após recepção positiva. K1−: ataque após recepção negativa. K2: ataque de transição.','São as fases publicadas no Match Report; não há sequência observada de todos os contatos.'),
+ ('rotation','P1–P6 · Z1–Z6 · #','P identifica a passagem pela posição de referência da levantadora inicial; Z identifica a zona da quadra; # é o número da camisa.','Ciclo de rotação: P1 → P6 → P5 → P4 → P3 → P2. P permanece uma referência mesmo se a levantadora inicial for substituída.'),
+ ('n','n · amostra','Quantidade de oportunidades usadas naquele número.','Pode contar rallies, saques, recepções, ataques ou jogos: confira a unidade da tabela. n pequeno exige cautela; n=0 aparece como —.'),
+ ('pp','% · pp · Δ','% é uma taxa; pp são pontos percentuais; Δ é uma diferença.','Exemplo: de 40% para 45% = +5 pp. Δ equipe compara com a própria equipe; Δ competição compara com o mesmo recorte de temporada e gênero.'),
+ ('ci','IC 95% · Wilson','Intervalo que expressa a incerteza de uma taxa binomial, quando a contagem é exata.','Amostras menores geram intervalos maiores. Não é fornecido para contagens aproximadas ou medidas sem intervalo validado.'),
+ ('expected','xSO · xBP · xPoints · acima do esperado','x indica o valor esperado pelo modelo a partir de jogos anteriores da mesma edição.','xPoints é expresso em pontos por 100 rallies. Acima do esperado é observado menos esperado, na mesma amostra com previsão; modelo experimental.'),
+ ('xattack','xAttack · ataque acima do esperado','Kills esperados a partir da taxa histórica da fase; diferença para os kills aproximados publicados.','Não mede qualidade do contato individual nem responsabilidade da levantadora. Modelo experimental.'),
+ ('wp','WP · probabilidade de vitória','Chance estimada de vencer a partida naquele estado de placar, sets e saque.','É uma estimativa experimental; não representa certeza nem probabilidade validada por partida.'),
+ ('wpa','WPA','Mudança na probabilidade de vitória entre antes e depois do ponto.','Na interface aparece em pp. Não atribui o mérito do ponto a uma atleta.'),
+ ('leverage','Leverage · pressão','Quanto o resultado daquele rally pode alterar a probabilidade de vitória.','Alta pressão usa o percentil 75 do histórico anterior da competição. Não é simplesmente o tamanho da vantagem no placar.'),
+ ('crunch','Crunch · Super Crunch','Sinalizadores de placares finais e equilibrados segundo a convenção do projeto.','São condições de placar, diferentes do leverage probabilístico. A regra exata está no catálogo metodológico.'),
+ ('runs','Passagem completa · censurada · sobrevivência','Passagem: sequência em que a equipe mantém o saque. Completa termina com a perda do saque; censurada termina com o fim do set.','A média usa passagens completas. Sobrevivência mostra a proporção das completas que alcança pelo menos aquela quantidade de pontos.'),
+ ('onoff','On/off · efeito contextual','On/off compara pontos com e sem a atleta. O efeito contextual tenta controlar adversário, rotação, saque, placar e companheiras.','Somente presença reconciliada habilita a análise. Associação não demonstra causalidade; o coeficiente ajustado está em log-odds e permanece experimental.'),
+ ('shrinkage','Taxa ajustada · shrinkage','Aproxima taxas de amostras pequenas de uma referência estimada na mesma coorte.','É um valor modelado, separado da taxa observada. Não incorpora automaticamente a temporada anterior.'),
+ ('distribution','Peso · prior de volume · entropia','Peso é a participação estimada de cada atacante no volume da formação; entropia de Shannon resume quão espalhados estão os pesos, em bits.','São estimativas de volume, não levantamentos observados. A fase selecionada muda a eficiência comparada, sem alterar os pesos; mais entropia não significa melhor.'),
+ ('evaluation','Brier · Log Loss · ECE · acurácia','Brier: erro quadrático das probabilidades. Log Loss: penaliza especialmente previsões erradas muito confiantes. ECE: diferença entre confiança e frequência observada. Acurácia: proporção de vencedores acertados.','Brier, Log Loss e ECE menores são melhores na mesma amostra. Acurácia isolada não mede calibração. Comparação usa datas anteriores, sem misturar edições.'),
+ ('missing','— · cobertura · confiança','— significa informação indisponível ou amostra insuficiente; cobertura indica quanto da fonte foi reconciliado.','Não é zero. Formação parcial não confirma seis atletas presentes; falhas de fonte não são preenchidas por suposição.'),
+ ('classes','OBSERVADO · DERIVADO · RECONSTRUÍDO · MODELADO · EXPERIMENTAL','Observado vem diretamente da fonte; derivado aplica uma fórmula; reconstruído recompõe informação por regras; modelado usa um modelo; experimental ainda tem limitações de validação.','A classe, a fonte e a amostra acompanham a medida. Uma previsão não vira dado observado.'),
+]
+
+
+def glossary():
+    return [dict(key=key,label=label,meaning=meaning,reading=reading) for key,label,meaning,reading in GLOSSARY]
