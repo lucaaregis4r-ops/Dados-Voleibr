@@ -35055,18 +35055,6 @@
         "bp_rate": 3.42
       },
       {
-        "team": "SANEAGO GOIÁS VÔLEI",
-        "matches": 17,
-        "so_points": 607,
-        "so_receptions": 1102,
-        "so_pct": 55.1,
-        "so_rate": 1.82,
-        "bp_points": 279,
-        "bp_serves": 1334,
-        "bp_pct": 20.9,
-        "bp_rate": 4.78
-      },
-      {
         "team": "OSASCO SÃO CRISTÓVÃO SAÚDE",
         "matches": 19,
         "so_points": 708,
@@ -35077,6 +35065,18 @@
         "bp_serves": 1538,
         "bp_pct": 30.2,
         "bp_rate": 3.31
+      },
+      {
+        "team": "SANEAGO GOIÁS VÔLEI",
+        "matches": 17,
+        "so_points": 607,
+        "so_receptions": 1102,
+        "so_pct": 55.1,
+        "so_rate": 1.82,
+        "bp_points": 279,
+        "bp_serves": 1334,
+        "bp_pct": 20.9,
+        "bp_rate": 4.78
       },
       {
         "team": "RIO GRANDE DO SUL",
@@ -35549,18 +35549,6 @@
         "k2_eff_pct": 18.3
       },
       {
-        "team": "JOINVILLE VÔLEI",
-        "k1_pos_att": 503,
-        "k1_pos_kill_pct": 54.7,
-        "k1_pos_eff_pct": 40.6,
-        "k1_neg_att": 371,
-        "k1_neg_kill_pct": 37.7,
-        "k1_neg_eff_pct": 20.2,
-        "k2_att": 509,
-        "k2_kill_pct": 42.8,
-        "k2_eff_pct": 28.9
-      },
-      {
         "team": "VIAPOL VÔLEI SÃO JOSÉ",
         "k1_pos_att": 648,
         "k1_pos_kill_pct": 54.9,
@@ -35571,6 +35559,18 @@
         "k2_att": 570,
         "k2_kill_pct": 40.7,
         "k2_eff_pct": 21.4
+      },
+      {
+        "team": "JOINVILLE VÔLEI",
+        "k1_pos_att": 503,
+        "k1_pos_kill_pct": 54.7,
+        "k1_pos_eff_pct": 40.6,
+        "k1_neg_att": 371,
+        "k1_neg_kill_pct": 37.7,
+        "k1_neg_eff_pct": 20.2,
+        "k2_att": 509,
+        "k2_kill_pct": 42.8,
+        "k2_eff_pct": 28.9
       },
       {
         "team": "AZULIM SICOOB ARACOOP",
@@ -35705,18 +35705,6 @@
         "k2_eff_pct": 22.6
       },
       {
-        "team": "AMAZONAS",
-        "k1_pos_att": 204,
-        "k1_pos_kill_pct": 51.5,
-        "k1_pos_eff_pct": 33.3,
-        "k1_neg_att": 55,
-        "k1_neg_kill_pct": 30.9,
-        "k1_neg_eff_pct": 3.6,
-        "k2_att": 157,
-        "k2_kill_pct": 40.8,
-        "k2_eff_pct": 17.8
-      },
-      {
         "team": "RIO DE JANEIRO",
         "k1_pos_att": 159,
         "k1_pos_kill_pct": 52.8,
@@ -35727,6 +35715,18 @@
         "k2_att": 183,
         "k2_kill_pct": 36.6,
         "k2_eff_pct": 19.1
+      },
+      {
+        "team": "AMAZONAS",
+        "k1_pos_att": 204,
+        "k1_pos_kill_pct": 51.5,
+        "k1_pos_eff_pct": 33.3,
+        "k1_neg_att": 55,
+        "k1_neg_kill_pct": 30.9,
+        "k1_neg_eff_pct": 3.6,
+        "k2_att": 157,
+        "k2_kill_pct": 40.8,
+        "k2_eff_pct": 17.8
       },
       {
         "team": "SANCOR SEGUROS VÔLEI",
@@ -36603,17 +36603,6 @@
         "eff_pct": 39.1
       },
       {
-        "player_name": "LUCCA PERAZZO",
-        "team": "RIO DE JANEIRO",
-        "matches": 6,
-        "pts": 59,
-        "att": 126,
-        "usage_pct": 28.8,
-        "atk_pts": 55,
-        "kill_pct": 43.7,
-        "eff_pct": 23.0
-      },
-      {
         "player_name": "GUSTAVO STANOGA",
         "team": "PARANÁ",
         "matches": 6,
@@ -36623,6 +36612,17 @@
         "atk_pts": 59,
         "kill_pct": 44.0,
         "eff_pct": 29.1
+      },
+      {
+        "player_name": "LUCCA PERAZZO",
+        "team": "RIO DE JANEIRO",
+        "matches": 6,
+        "pts": 59,
+        "att": 126,
+        "usage_pct": 28.8,
+        "atk_pts": 55,
+        "kill_pct": 43.7,
+        "eff_pct": 23.0
       },
       {
         "player_name": "PAULA",
