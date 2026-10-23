@@ -1,23 +1,22 @@
-"""Scraper module for CBV web pages and match reports."""
+"""Scraper exports are lazy: collecting source files must not open the production DB."""
+from importlib import import_module
 
-from cbv.scraper.client import HttpClient
-from cbv.scraper.game_page import fetch_game_page, extract_match_report_url
-from cbv.scraper.downloader import download_match_report, process_single_game, DownloadError
-from cbv.scraper.competition import (
-    discover_matches,
-    build_competition_url,
-    scrape_competition,
-)
+_EXPORTS = {
+    'HttpClient':('client','HttpClient'),
+    'fetch_game_page':('game_page','fetch_game_page'),
+    'extract_match_report_url':('game_page','extract_match_report_url'),
+    'download_match_report':('downloader','download_match_report'),
+    'process_single_game':('downloader','process_single_game'),
+    'DownloadError':('downloader','DownloadError'),
+    'discover_matches':('competition','discover_matches'),
+    'build_competition_url':('competition','build_competition_url'),
+    'scrape_competition':('competition','scrape_competition'),
+}
+__all__=list(_EXPORTS)
 
-__all__ = [
-    "HttpClient",
-    "fetch_game_page",
-    "extract_match_report_url",
-    "download_match_report",
-    "process_single_game",
-    "DownloadError",
-    "discover_matches",
-    "build_competition_url",
-    "scrape_competition",
-]
 
+def __getattr__(name):
+    if name not in _EXPORTS:
+        raise AttributeError(name)
+    module,attribute=_EXPORTS[name]
+    return getattr(import_module('cbv.scraper.'+module),attribute)
