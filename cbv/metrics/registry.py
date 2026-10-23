@@ -62,7 +62,10 @@ for key,label,columns,denominator,cls,formula in LEGACY_BINDINGS:
     if key=='so':formula='Pontos creditados em recepção no relatório / recepções do relatório'
     if key=='bp':formula='Pontos creditados em saque no relatório / saques do relatório'
     approximate=key in ('positive','excellent') or key.startswith(('pos_rec','neg_rec','trans'))
-    register(key,label,formula,cls,numerator=' + '.join(columns),denominator=denominator,
+    source_definition=formula
+    expression=' + '.join(columns).replace('+ -','− ')
+    formula=f'100 × ({expression}) / {denominator}'
+    register(key,label,formula,cls,description=source_definition,numerator=' + '.join(columns),denominator=denominator,
         confidence_interval='Wilson 95% somente para contagem binomial exata.' if not approximate and key!='eff' else 'Não calculado: agregado arredondado ou contraste não binomial.',
         limitations='Percentuais arredondados; contagem reconstruída aproximada.' if approximate else 'SO/BP do relatório excluem pontos creditados a erro adversário; não equivalem à sequência completa de placar.' if key in ('so','bp') else 'Agregado sem sequência de contatos.')
 
@@ -141,14 +144,37 @@ EXAMPLES={'wilson':'6 sucessos em 10: 60%; Wilson 95% aproximadamente 31,3%–83
  'serve_run':'Após recuperar o saque, equipe ganha 3 BP e perde o próximo: passagem de 3 pontos; 4 saques.',
  'on_off':'Com atleta 6/10=60%; sem atleta 5/10=50%: diferença bruta +10 pp; sem causalidade.',
 }
+for key,name,formula in [
+ ('lineup_volume_distribution','Distribuição estimada por volume','Ataques da atleta na coorte / soma de ataques das atletas não líbero na formação modal reconciliada de P'),
+ ('lineup_volume_entropy','Entropia do prior de volume','−Σ peso_i log₂(peso_i), sobre a distribuição estimada por volume'),
+ ('volume_diversity_efficiency','Diversidade do modelo × eficiência','Entropia do prior de volume em P × eficiência agregada da equipe em K1+/K1−/K2')]:
+    register(key,name,formula,'EXPERIMENTAL',sources=('Volume de ataque do Match Report na coorte','Formação reconciliada da súmula e líbero'),
+        model_name='lineup volume prior',model_version='lineup-volume-prior-v1',level='equipe/rotação/coorte',unit='peso, bits ou associação',
+        minimum_data_required='Seis nomes reconciliados, rotação conhecida e volume positivo entre atacantes da formação modal.',
+        limitations='Sem sequência recepção→levantamento→ataque. Passe filtra eficiência, mas NÃO altera pesos de distribuição. Amostras de disponibilidade e eficiência podem diferir. Entropia alta não implica qualidade; não há causalidade.',
+        validation_method='Normalização e escopo por fixtures; modelo descritivo não validado preditivamente. Não usar como feature temporal.',
+        implementation_status='CONDITIONAL',example='Dois atacantes com pesos 0,5: entropia do modelo=1 bit; isso não informa quantos levantamentos receberam.')
+
 MODEL_VERSIONS={**{key:'atlas-rally-beta-v2' for key in ('xso','xbp','soae','bpae','xpoints','rotation_ae','wp','wpa','leverage','pressure_map')},
     **{key:'phase-prior-v1' for key in ('xattack','attack_ae')},'opponent_rating':'opponent-logistic-l2-v1',
     **{key:'setter-heuristic-legacy-v1' for key in ('setter_distribution','entropy','predictability_efficiency')}}
 for key,metric in list(REGISTRY.items()):
     updates={}
     if key in MODEL_VERSIONS:updates['model_version']=MODEL_VERSIONS[key]
+    units={'record':'jogos, vitórias e derrotas','wilson':'intervalo em %','percentile':'percentil 0–100','delta':'pp',
+        'shrinkage':'%','trend':'%','serve_run':'pontos ganhos por passagem','run_survival':'probabilidade 0–1; interface em %',
+        'streak':'pontos consecutivos','soae':'pp','bpae':'pp','xpoints':'pontos por 100 rallies','rotation_ae':'pp',
+        'xattack':'kills esperados; kill% esperado em %','attack_ae':'kills','wp':'probabilidade 0–1',
+        'wpa':'diferença de probabilidade; interface ×100 em pp','leverage':'sensibilidade 0–1; interface ×100 em pp',
+        'pressure_map':'% e pp por faixa de leverage','opponent_rating':'força em %; coeficientes em log-odds',
+        'entropy':'bits; versão normalizada 0–1','predictability_efficiency':'bits × eficiência em %',
+        'lineup_volume_distribution':'peso 0–1; interface em %','lineup_volume_entropy':'bits','volume_diversity_efficiency':'bits × eficiência em %'}
+    if key in units:updates['unit']=units[key]
+    if key=='record':updates['formula']='Contagens de jogos, vitórias e derrotas; campanha apresentada como vitórias–derrotas'
+
+    if key in ('opponent_rating','xattack','attack_ae'):updates['required_sources']=('Match Report validado','Identidade e data da partida')
     if key=='shrinkage':updates.update(metric_class='MODELADO',model_name='beta-binomial empirical Bayes',model_version='eb-moments-v1',validation_method='Prior por momentos, mínimo 3 equipes com contagens binomiais exatas; ajuste descritivo da coorte completa, não feature temporal.')
-    if key=='contextual_effect':updates.update(model_version=None,implementation_status='UNAVAILABLE_NOT_VALIDATED')
+    if key=='contextual_effect':updates.update(model_version='lineup-context-l2-v1',implementation_status='CONDITIONAL',formula='Coeficiente de presença em regressão logística L2=100, com adversário, rotação, saque, placar/set e seis companheiras; unidade log-odds',unit='log-odds',minimum_data_required='Presença HIGH com seis nomes; ≥3 jogos anteriores; ≥5 jogos de avaliação; ≥20 pontos com/sem atleta.',validation_method='Blocos de dia; Brier e log loss médios por jogo menores e ECE não maior na mesma amostra contra contexto sem atletas; manter NULL sem ganho.',limitations='Associação, não causalidade; colinearidade de seis atletas identificada pela convenção L2; sem intervalo validado.')
     if key in REFERENCES:updates['literature_basis']=REFERENCES[key]
     if key in EXAMPLES:updates['example']=EXAMPLES[key]
     elif metric.unit=='%':updates['example']='6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.'

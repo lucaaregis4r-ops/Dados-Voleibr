@@ -72,6 +72,11 @@ def aggregate_cohort(matches, rows, players):
             if p['team']==name:
                 pr[p['player_name']].append(enrich_record(dict(p)))
         athletes = [dict(name=pn, games=len({r['match_id'] for r in rr}), receptions=sum(r.get('reception_attempts') or 0 for r in rr), metrics={k:v for k,v in metric_values(rr).items() if k in ('kill','eff','positive','excellent','rec_error','attack_error')}, points=sum(r.get('points_total') or 0 for r in rr)) for pn, rr in pr.items()]
+        for athlete in athletes:
+            source=pr[athlete['name']]
+            fields=['points_total','serve_attempts','serve_points','serve_errors','reception_attempts','reception_errors','attack_attempts','attack_points','attack_errors','attack_blocked','block_points']
+            athlete['observed']={key:sum(r[key] for r in source if r.get(key) is not None) if any(r.get(key) is not None for r in source) else None for key in fields}
+            athlete['observed_matches']={key:sum(r.get(key) is not None for r in source) for key in fields}
         rotations = [dict(rotation=f'P{i}', observed_balance=sum(r[f'p{i}_diff'] for r in records if r.get(f'p{i}_diff') is not None), covered_matches=sum(r.get(f'p{i}_diff') is not None for r in records), so=None, bp=None) for i in range(1,7)]
         teams.append(dict(team=name, games=len(games), wins=wins, losses=len(games)-wins, metrics=metric_values(records), rotations=rotations, trend=trend, athletes=sorted(athletes,key=lambda a:-a['points'])))
     overall = metric_values([r for rr in by_team.values() for r in rr])

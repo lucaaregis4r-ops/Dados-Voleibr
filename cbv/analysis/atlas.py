@@ -31,6 +31,9 @@ def serve_runs(rows,side):
         median=median(complete) if complete else None,maximum=max((r['points'] for r in runs),default=None),
         distribution=[dict(points=k,n=v) for k,v in sorted(distribution.items())],
         survival=[dict(points=k,value=sum(p>=k for p in complete)/len(complete) if complete else None) for k in range(1,max(complete,default=4)+1)],
+        by_rotation=[dict(position=p,n=len([r for r in runs if r['rotation']==p and not r['censored']]),
+            mean=mean([r['points'] for r in runs if r['rotation']==p and not r['censored']]) if any(r['rotation']==p and not r['censored'] for r in runs) else None,
+            censored=sum(r['rotation']==p and r['censored'] for r in runs)) for p in range(1,7)],
         runs=runs,metric_class='DERIVADO',source_type='SCORESHEET_RECONSTRUCTED',
         definition='Pontos ganhos sacando; passagens encerradas pelo fim do set são censuradas e excluídas de média/sobrevivência.')
 
@@ -97,8 +100,13 @@ def summarize_team(rows,team,opponent=None):
         a,b=rate(on,'own'),rate(off,'own')
         onoff.append(dict(player=player,on=a,off=b,difference=a['value']-b['value'] if a['n'] and b['n'] else None,
             adjusted_contextual_effect=None,limitation='Contraste bruto; sem interpretação causal. Ajuste contextual não validado.'))
+    from cbv.analysis.contextual_effects import contextual_effects
+    contextual=contextual_effects(selected,team)
+    for athlete in onoff:
+        effect=next((e for e in contextual['effects'] if e['player']==athlete['player']),None)
+        athlete['adjusted_contextual_effect']=effect
     return dict(expected=expected_summary(selected),team=team,so=total_so,bp=total_bp,rotations=rotations,matrix=matrix,serve_runs=runs,readings=readings,
-        lineups=sorted(formation,key=lambda r:r['points']['n'],reverse=True),on_off=onoff,
+        lineups=sorted(formation,key=lambda r:r['points']['n'],reverse=True),on_off=onoff,contextual_effect=contextual,
         coverage=dict(rallies=len(selected),rotation_rallies=sum(r['own_rotation'] is not None for r in selected),reliable_presence_rallies=len(reliable)))
 
 

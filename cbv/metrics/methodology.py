@@ -62,6 +62,7 @@ def render():
         for field,label in LABELS.items():
             value=getattr(m,field)
             if isinstance(value,tuple):value=', '.join(value)
+            if isinstance(value,str):value=value.strip()
             parts.append(f'\n**{label}:** {value if value is not None else "Não se aplica"}\n')
     return ''.join(parts)
 

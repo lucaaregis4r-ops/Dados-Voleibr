@@ -48,3 +48,20 @@ def test_opponent_effects_are_regularized_and_empty_validation_never_promotes():
     assert .4<predict(fitted,'B','A')<.5
     result=evaluate_ratings([],[])
     assert all(not r['improved'] and not r['ratings'] for r in result.values())
+
+
+def test_opponent_adjustment_uses_previous_days_and_future_does_not_change_past():
+    from datetime import date,timedelta
+    from cbv.analysis.opponent_ratings import evaluate_ratings
+    matches=[dict(match_id=i,date=(date(2026,1,1)+timedelta(days=i//2)).isoformat(),home_team='A',away_team='B',validation_status='VALID') for i in range(24)]
+    records=[]
+    for m in matches:
+        for team,k in [('A',6),('B',4)]:records.append(dict(match_id=m['match_id'],team=team,sideout_points=k,sideout_receptions=10,breakpoint_points=10-k,breakpoint_serves=10))
+    result=evaluate_ratings(matches,records)['so']
+    dates={m['match_id']:m['date'] for m in matches}
+    assert result['predictions']
+    assert all(p['trained_through']<dates[p['match_id']] for p in result['predictions'])
+    assert result['candidate']['matches']==result['baseline']['matches']
+    changed=[dict(r,sideout_points=10-r['sideout_points']) if r['match_id']>=22 else r for r in records]
+    after=evaluate_ratings(matches,changed)['so']
+    assert [p for p in after['predictions'] if p['match_id']<22]==[p for p in result['predictions'] if p['match_id']<22]
