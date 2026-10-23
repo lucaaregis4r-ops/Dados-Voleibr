@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vôlei BR — Central de scout</title>
+<title>Vôlei BR — Atlas Tático</title>
 <style>
 __FONT_CSS__
 :root {
@@ -40,10 +40,11 @@ main{max-width:1400px;padding:32px;margin:auto;min-height:calc(100vh - 140px)}h1
 @media(max-width:900px){.sidebar{display:none;top:60px;width:232px;border-top:1px solid var(--border)}.sidebar.open{display:flex}.workspace{margin-left:0}.topbar{position:relative;padding:12px 24px}.menu-toggle{display:block;position:absolute;left:24px;top:12px}.filters{margin-top:44px}.global-search{min-width:180px}.updated{position:absolute;top:23px;right:24px;margin:0}main{padding:24px}.footer{padding:16px 24px}.rotations{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.topbar{padding:12px 18px;gap:12px}.menu-toggle{left:18px}.filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}.filters label:first-child{grid-column:1/-1}.filters select{max-width:none}.filters label{min-width:0}.updated{font-size:10px;right:18px}.global-search{flex-basis:100%}main{padding:24px 18px}.footer{padding:16px 18px}.kpis,.kpis.four{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.kpis>.kpi:last-child{grid-column:1/-1}.kpis.four>.kpi:last-child{grid-column:auto}.kpi strong{font-size:24px}.kpis{margin-bottom:24px}.grid{gap:24px}.block{margin-top:24px}.large-section{margin-top:32px}.toolbar{flex-direction:column;align-items:stretch;gap:12px}.toolbar label{max-width:none}.vs{display:none}.rotations{grid-template-columns:1fr}.data-list{grid-template-columns:1fr 1fr;gap:12px}.card{padding:16px}.info-body{width:260px}.chart.scatter{min-height:360px}.chart.scatter text{font-size:14px}table{min-width:560px}h1{font-size:22px}.section-heading{align-items:start}.section-heading{gap:8px}.rank-list .team-link{max-width:200px}.data-list dd{overflow-wrap:anywhere}}
 @media print{.sidebar,.topbar,.toolbar,.footer{display:none}.workspace{margin:0}main{max-width:none;padding:0}.card{break-inside:avoid}.table-wrap{overflow:visible;max-height:none}.details-panel:not([open]){display:none}}
+__ATLAS_CSS__
 </style></head>
 <body>
 <a class="sr-only" href="#main">Ir para o conteúdo</a>
-<aside class="sidebar" id="sidebar"><a class="brand" href="#">Vôlei BR</a><nav id="primary" aria-label="Navegação principal"></nav><div class="sidebar-bottom">Central de scout</div></aside>
+<aside class="sidebar" id="sidebar"><a class="brand" href="#">Vôlei BR</a><nav id="primary" aria-label="Navegação principal"></nav><div class="sidebar-bottom">Atlas Tático</div></aside>
 <div class="workspace"><header class="topbar">
 <button class="menu-toggle" id="menu-toggle" aria-controls="sidebar" aria-expanded="false">Menu</button>
 <div class="filters"><label>Competição<select id="competition" aria-label="Competição"></select></label><label>Gênero<select id="gender" aria-label="Gênero"></select></label><label>Temporada<select id="season" aria-label="Temporada"></select></label></div>
@@ -60,7 +61,7 @@ const state={page:'Visão geral',sub:'',cohort:0,team:'',opponent:'',query:'',at
 const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(v,d=1)=>v==null?'—':Number(v).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const pct=v=>v==null?'—':fmt(v)+'%';const num=v=>fmt(v,0);const C=()=>DATA.cohorts[state.cohort];const team=()=>C()?.teams.find(t=>t.team===state.team);
-const badge=(cls='DERIVADO')=>`<span class="badge ${cls==='MODELO'?'model':''}">${cls}</span>`;
+const badge=(cls='DERIVADO')=>`<span class="badge ${['MODELADO','EXPERIMENTAL'].includes(cls)?'model':''}">${cls}</span>`;
 function options(values,current){return values.map(v=>`<option value="${esc(v)}" ${v===current?'selected':''}>${esc(v)}</option>`).join('')}
 const compKey=c=>c.competition+' · '+(c.category||'Sem categoria');
 function filters(){
@@ -150,7 +151,7 @@ function athletes(t){
  list.sort((a,b)=>{const av=value(a,state.athleteSort),bv=value(b,state.athleteSort);if(av==null)return bv==null?0:1;if(bv==null)return -1;return state.athleteDirection*(typeof av==='string'?av.localeCompare(bv,'pt-BR'):av-bv)});
  const columns=[['name','Atleta'],['games','Jogos'],['points','Pontos'],['attacks','Ataques'],['kill','Kill%'],['eff','Eficiência'],['receptions','Recepções'],['positive','Passe +'],['error','Erro']];
  const headers=columns.map(([key,title],i)=>`<th scope="col" class="${i?'num':''}" aria-sort="${state.athleteSort===key?(state.athleteDirection===1?'ascending':'descending'):'none'}"><button data-athlete-sort="${key}" title="Ordenar por ${title}">${title}${state.athleteSort===key?(state.athleteDirection===1?' ↑':' ↓'):''}</button></th>`).join('');
- return `<div class="toolbar narrow"><label>Buscar atleta<input id="athlete-search" value="${esc(state.athleteQuery)}" placeholder="Nome do atleta"></label></div><div class="table-wrap"><table id="athlete-table"><thead><tr>${headers}</tr></thead><tbody>${list.map(a=>`<tr><td>${esc(teamName(a.name))}</td><td class="num">${num(value(a,'games'))}</td><td class="num">${num(a.points)}</td><td class="num numeric">${num(a.metrics.kill.n)}</td><td class="num">${metricCell(a.metrics.kill)}</td><td class="num">${metricCell(a.metrics.eff)}</td><td class="num numeric">${num(value(a,'receptions'))}</td><td class="num">${metricCell(a.metrics.positive)}</td><td class="num">${metricCell(a.metrics.rec_error)}</td></tr>`).join('')||'<tr><td colspan="9">Nenhum atleta encontrado.</td></tr>'}</tbody></table></div><p class="note">Erro: taxa de erro de recepção. Jogos: partidas com registro do atleta na fonte.</p>`;
+ return `<div class="toolbar narrow"><label>Buscar atleta<input id="athlete-search" value="${esc(state.athleteQuery)}" placeholder="Nome do atleta"></label></div><div class="table-wrap"><table id="athlete-table"><thead><tr>${headers}</tr></thead><tbody>${list.map(a=>`<tr data-athlete-name="${esc(a.name)}" data-athlete-team="${esc(a.team||t.team||state.team)}"><td>${esc(teamName(a.name))}</td><td class="num">${num(value(a,'games'))}</td><td class="num">${num(a.points)}</td><td class="num numeric">${num(a.metrics.kill.n)}</td><td class="num">${metricCell(a.metrics.kill)}</td><td class="num">${metricCell(a.metrics.eff)}</td><td class="num numeric">${num(value(a,'receptions'))}</td><td class="num">${metricCell(a.metrics.positive)}</td><td class="num">${metricCell(a.metrics.rec_error)}</td></tr>`).join('')||'<tr><td colspan="9">Nenhum atleta encontrado.</td></tr>'}</tbody></table></div><p class="note">Erro: taxa de erro de recepção. Jogos: partidas com registro do atleta na fonte.</p>`;
 }
 
 function trend(t){const points=t.trend.filter(r=>r.so!=null);if(!points.length)return '<p class="empty">Sem histórico datado suficiente.</p>';const X=i=>55+i/Math.max(1,points.length-1)*590,Y=v=>220-v*2;return `<h3>Tendência de Side-Out</h3><svg class="chart" viewBox="0 0 700 270" role="img" aria-label="Média móvel ponderada dos últimos cinco jogos e média da temporada"><path d="M55,20 V220 H645" fill="none" stroke="var(--border-strong)"/>${[0,25,50,75,100].map(v=>`<text x="45" y="${Y(v)+4}" text-anchor="end">${v}%</text>`).join('')}<path d="M55,${Y(t.metrics.so.value)} H645" stroke="var(--text)" stroke-dasharray="4 4"/><polyline points="${points.map((p,i)=>X(i)+','+Y(p.so)).join(' ')}" fill="none" stroke="var(--primary)" stroke-width="2"/>${points.map((p,i)=>`<circle cx="${X(i)}" cy="${Y(p.so)}" r="3" fill="var(--primary)"><title>${esc(p.date.slice(0,10))}: ${pct(p.so)}, n=${num(p.n)}</title></circle>`).join('')}<text x="55" y="250">${esc(points[0].date.slice(0,10))}</text><text x="645" y="250" text-anchor="end">${esc(points.at(-1).date.slice(0,10))}</text></svg><p class="note">Linha contínua: razão das contagens dos últimos 5 jogos (ou menos no início). Tracejado: temporada ${pct(t.metrics.so.value)} · n=${num(t.metrics.so.n)}.</p><details><summary>Valores da tendência</summary>${table(['Data','SO móvel · n'],points.map(p=>row([esc(p.date.slice(0,10)),pct(p.so)+' · '+num(p.n)])))}</details>`}
@@ -170,7 +171,7 @@ function teams(){
 function model(a,b){
  const c=C(),m=c.model_matchups.find(m=>[m.team_a,m.team_b].includes(a.team)&&[m.team_a,m.team_b].includes(b.team));
  const ev=c.evaluation,p=m?(m.team_a===a.team?m.probability_a:1-m.probability_a):null;
- return `<details class="details-panel" id="projection"><summary>Ver projeção</summary><h2>Probabilidade de vitória ${badge('MODELO')}</h2>
+ return `<details class="details-panel" id="projection"><summary>Ver projeção</summary><h2>Probabilidade de vitória ${badge('MODELADO')}</h2>
    ${p!=null?`<div class="probabilities"><div class="prob-row"><span>${esc(teamName(a.team))}</span><strong>${pct(100*p)}</strong></div><div class="prob-row"><span>${esc(teamName(b.team))}</span><strong>${pct(100*(1-p))}</strong></div></div>`:'<p class="empty">Histórico insuficiente para este confronto.</p>'}
    <p class="note">Intervalo: ainda não estimado.</p><p class="note">Amostra de avaliação: <span class="numeric">${ev.total_matches}</span> partidas · avaliado em <span class="numeric">${dateText(DATA.generated_at)}</span>.</p>
    ${ev.total_matches===0?'<p class="notice">Modelo ainda sem avaliação fora da amostra neste recorte.</p>':''}
@@ -216,15 +217,15 @@ function dataPage(){
  const parser=[...new Set(c.matches.map(m=>m.provenance?.parser_version).filter(Boolean))];
  const fetched=c.matches.map(m=>m.provenance?.fetched_at).filter(Boolean).sort().at(-1);
  return heading('Dados')+`<section class="card"><h2>Cobertura</h2><dl class="data-list"><dt>Partidas coletadas</dt><dd>${c.matches.length}</dd><dt>Partidas validadas</dt><dd>${valid}</dd><dt>Partidas com erro</dt><dd>${error}</dd><dt>Partidas com ressalvas</dt><dd>${warning}</dd><dt>Competições na base</dt><dd>${[...new Set(DATA.cohorts.map(x=>x.competition))].map(x=>x==='SUPERLIGA'?'Superliga':x).join(', ')}</dd><dt>Último registro no banco</dt><dd class="numeric">${dateText(lastUpdate())}</dd></dl><p class="note block">Indicadores incluem apenas partidas validadas do recorte selecionado.</p></section>
- <section class="card block"><h2>Métricas</h2>${table(['Métrica','Definição','Tipo'],[row(['Pontos de ataque','Contagem de ataques que terminam em ponto.',badge('OBSERVADO')],[1,2]),row(['Aces','Pontos diretos de saque registrados no relatório.',badge('OBSERVADO')],[1,2]),...metricKeys.map(k=>{const m=c.metrics[k];return row([esc(m.label),esc(m.formula),badge(m.metric_class)],[1,2])}),row(['Probabilidade de vitória','Estimativa do modelo a partir do histórico anterior de partidas.',badge('MODELO')],[1,2])],[1,2])}
+ <section class="card block"><h2>Métricas</h2>${table(['Métrica','Definição','Tipo'],[row(['Pontos de ataque','Contagem de ataques que terminam em ponto.',badge('OBSERVADO')],[1,2]),row(['Aces','Pontos diretos de saque registrados no relatório.',badge('OBSERVADO')],[1,2]),...metricKeys.map(k=>{const m=c.metrics[k];return row([esc(m.label),esc(m.formula),badge(m.metric_class)],[1,2])}),row(['Probabilidade de vitória','Estimativa do modelo a partir do histórico anterior de partidas.',badge('MODELADO')],[1,2])],[1,2])}
  <details class="block"><summary>Qualidade dos dados e detalhes estatísticos</summary><p class="note">Partidas sem data: ${c.matches.filter(m=>!m.date).length}. Falhas de download sem registro não são contabilizadas.</p>${table(['Métrica','Registros disponíveis','Amostra'],metricKeys.map(k=>{const m=c.metrics[k];return row([esc(m.label),`${m.covered_matches} / ${m.total_matches}`,num(m.n)])}))}<p class="note">Percentuais de passe e kills por fase podem ser reconstruídos de valores arredondados da fonte. Intervalos e ajustes ficam indisponíveis quando faltam contagens adequadas.</p><p class="note">Wilson 95%, deltas, percentis, ajuste beta-binomial e validação temporal permanecem nos cálculos. Consulte o detalhe de cada indicador para amostra e intervalo. Os rótulos de amostra são apenas orientações de leitura.</p><p class="note">SO/BP por rotação e métricas de sequência exigem eventos por rally, ausentes da base atual.</p></details></section>
  <section class="card block"><h2>Atualização</h2><dl class="data-list"><dt>Versão do banco</dt><dd>${esc(DATA.data_version)}</dd><dt>Parser</dt><dd>${esc(parser.join(', ')||'Não registrado no legado')}</dd><dt>Última coleta na fonte</dt><dd class="numeric">${dateText(fetched)}</dd><dt>Página gerada em</dt><dd class="numeric">${dateText(DATA.generated_at)}</dd></dl>
  <details class="block"><summary>Atualizar dados</summary><label>URL da competição<input id="sync-url" type="url" placeholder="https://cbv.com.br/..."></label><p class="block"><button id="sync">Sincronizar dados</button> <button id="export">Exportar dados</button></p><p id="operation-status" role="status"></p><p class="note">Disponível no servidor local. No site, a coleta é executada pela rotina diária.</p></details></section>
- <details class="details-panel"><summary>Experimental</summary><h2>Distribuição estimada ${badge('MODELO')}</h2><p>Estimativa baseada no modelo atual. Não representa frequência observada de levantamentos.</p><p class="note">Disponível na área experimental do servidor local.</p><a href="http://127.0.0.1:8000/experimental" target="_blank" rel="noopener">Abrir distribuição estimada</a></details>`;
+ <details class="details-panel"><summary>Experimental</summary><h2>Distribuição estimada ${badge('EXPERIMENTAL')}</h2><p>Estimativa baseada no modelo atual. Não representa frequência observada de levantamentos.</p><p class="note">Disponível na área experimental do servidor local.</p><a href="http://127.0.0.1:8000/experimental" target="_blank" rel="noopener">Abrir distribuição estimada</a></details>`;
 }
 
 function dateText(value){return value?new Date(value).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'}):'não registrado'}
-function lastUpdate(){return C().matches.map(m=>m.created_at).filter(Boolean).sort().at(-1)}
+function lastUpdate(){return [...C().matches.map(m=>m.created_at),...(C().source_snapshots||[]).map(s=>s.fetched_at)].filter(Boolean).sort().at(-1)}
 function seasonLabel(value){return String(value||'').replace(/(\d{4})-(\d{2})(\d{2})/,'$1–$3')}
 function competitionLabel(c=C()){return (c.competition==='SUPERLIGA'?'Superliga':c.competition+' '+String(c.category||'').replace('sub','Sub-'))+' '+(c.gender==='feminino'?'Feminina':'Masculina')}
 function heading(title,subtitle=''){return `<div class="page-heading"><h1>${esc(title)}</h1>${subtitle?`<p>${esc(subtitle)}</p>`:''}</div>`}
@@ -294,11 +295,11 @@ function render(){
  if(state.team&&!c.teams.some(t=>t.team===state.team))state.team='';
  if(state.opponent===state.team||!c.teams.some(t=>t.team===state.opponent))state.opponent='';
  filters();
- $('#primary').innerHTML=['Visão geral','Equipes','Confrontos','Partidas','Dados'].map(page=>`<button data-page="${page}" ${page===state.page?'aria-current="page"':''}>${page}</button>`).join('');
+ $('#primary').innerHTML=['Visão geral','Equipes','Confrontos','Partidas','Atletas','Dados'].map(page=>`<button data-page="${page}" ${page===state.page?'aria-current="page"':''}>${page}</button>`).join('');
  const tabs=state.page==='Partidas'&&state.matchId==null?['Próximas','Encerradas','Súmulas']:[];
  if(tabs.length&&!tabs.includes(state.sub))state.sub=tabs[0];
  const subnav=tabs.length?`<nav class="subnav" aria-label="Listas de partidas">${tabs.map(tab=>`<button data-sub="${tab}" ${tab===state.sub?'aria-current="page"':''}>${tab}</button>`).join('')}</nav>`:'';
- const page={'Visão geral':overview,Equipes:teams,Confrontos:confrontation,Partidas:matchesPage,Dados:dataPage}[state.page];
+ const page={'Visão geral':overview,Equipes:teams,Confrontos:confrontation,Partidas:matchesPage,Atletas:athletesPage,Dados:dataPage}[state.page];
  $('#main').innerHTML=(tabs.length?heading('Partidas')+subnav:'')+page();
  bind();
 }
@@ -345,5 +346,6 @@ $('#team-search').oninput=globalSearch;
 $('#team-search').onkeydown=e=>{if(e.key==='Escape'){$('#team-results').hidden=true;e.target.setAttribute('aria-expanded','false')}if(e.key==='ArrowDown'){$('#team-results button')?.focus();e.preventDefault()}if(e.key==='Enter'){const first=$('#team-results button');if(first){first.click();e.preventDefault()}}};
 document.addEventListener('click',e=>{if(!e.target.closest('.global-search')){$('#team-results').hidden=true;$('#team-search').setAttribute('aria-expanded','false')}});
 for(const id of ['competition','gender','season'])$('#'+id).onchange=e=>chooseFilter(id,e.target.value);
+__ATLAS_JS__
 render();
 </script></body></html>

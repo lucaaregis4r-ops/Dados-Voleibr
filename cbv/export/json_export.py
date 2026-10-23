@@ -1,6 +1,7 @@
 """JSON export engine for CBV matches, players, teams, and rankings."""
 
 from pathlib import Path
+import os
 import json
 from rich.console import Console
 
@@ -14,7 +15,7 @@ from cbv.analysis.rankings import (
 )
 
 console = Console()
-EXPORTS_DIR = BASE_DIR / "exports"
+EXPORTS_DIR = Path(os.getenv("CBV_PUBLISH_DIR",BASE_DIR)) / "exports"
 
 
 def export_all_to_json(target_dir: Path = EXPORTS_DIR) -> Path:
