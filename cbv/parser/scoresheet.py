@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 import pymupdf
 
-PARSER_VERSION='scoresheet-1.0'
+PARSER_VERSION='scoresheet-1.1'
 ROMAN=('I','II','III','IV','V','VI')
 
 
@@ -98,22 +98,25 @@ def parse_scoresheet(path,match_id):
     for number,panel in enumerate(panels,1):
         panel['set_number']=number
     # Names in the original header connect A/B to the Match Report's canonical team names.
-    header_spans=[]
+    header_lines=[]
     for block in page.get_text('dict')['blocks']:
         for line in block.get('lines',[]):
-            for span in line['spans']:
-                x0,y0,x1,y1=span['bbox']
-                if .045*page.rect.height<y0<.11*page.rect.height and x0>.45*page.rect.width:
-                    header_spans.append(dict(text=span['text'].strip(),x=(x0+x1)/2,y=(y0+y1)/2))
+            x0,y0,x1,y1=line['bbox']
+            if .045*page.rect.height<y0<.11*page.rect.height and x0>.45*page.rect.width:
+                header_lines.append(dict(text=''.join(span['text'] for span in line['spans']).strip(),x0=x0,x1=x1,y=(y0+y1)/2))
     names={}
-    # Full team-name spans immediately follow the A/B circles in the upper identity block.
+    # Accented letters can be separate font spans. Join the original PDF line,
+    # and bound the two name boxes independently so a short name cannot select
+    # the other team's name or the printed "A ou B" legend.
     for letter in ('A','B'):
-        labels=[w for w in ws if w['text']==letter and .045*page.rect.height<w['y']<.11*page.rect.height and w['x']>.45*page.rect.width]
-        labels=sorted(labels,key=lambda w:w['bbox'][3]-w['bbox'][1],reverse=True)
-        for label in labels:
-            candidates=[s for s in header_spans if s['x']>label['x'] and s['x']-label['x']<.21*page.rect.width and abs(s['y']-label['y'])<7 and len(s['text'])>5 and s['text'].upper() not in ('EQUIPES','VOLLEYSTATION')]
-            if candidates:
-                names[letter]=min(candidates,key=lambda s:s['x'])['text'];break
+        labels=[w for w in ws if w['text']==letter and .045*page.rect.height<w['y']<.11*page.rect.height
+                and w['x']>.45*page.rect.width and w['bbox'][3]-w['bbox'][1]>.015*page.rect.height]
+        if len(labels)!=1:continue
+        label=labels[0]
+        right=.595*page.rect.width if label['x']<.6*page.rect.width else .80*page.rect.width
+        candidates=[line for line in header_lines if label['x']+12<line['x0']<right and line['x1']<right
+            and abs(line['y']-label['y'])<3 and line['text'].upper() not in ('EQUIPES','VS','A','B')]
+        if len(candidates)==1:names[letter]=candidates[0]['text']
     return dict(match_id=int(match_id),parser_version=PARSER_VERSION,sets=panels,team_names=names,
         coverage=dict(initial_lineup=True,service_order=all(t['grid_complete'] for p in panels for t in p['teams']),
                       substitutions=not any(e['kind']=='UNRESOLVED_SUBSTITUTION' for p in panels for t in p['teams'] for e in t['substitutions']),

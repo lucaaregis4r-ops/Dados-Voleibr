@@ -83,3 +83,8 @@ def test_structured_feed_rejects_unknown_schema_duplicate_and_server_change():
     with pytest.raises(ReconstructionError):parse_play_by_play(doc,2)
     doc['events'].append(dict(doc['events'][0]))
     with pytest.raises(ReconstructionError):parse_play_by_play(doc,1)
+
+
+def test_short_and_split_font_accented_team_names_are_not_cross_matched():
+    sheet=parse_scoresheet('tests/fixtures/scoresheet_2590824.pdf',2590824)
+    assert sheet['team_names']=={'B':'SÃO PAULO','A':'AMAPÁ'}

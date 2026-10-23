@@ -6,7 +6,7 @@ from cbv.parser.scoresheet import parse_scoresheet,parse_libero_report,parse_set
 from cbv.reconstruction.rallies import rebuild_from_scoresheet,reconcile
 from cbv.reconstruction.lineups import apply_positions
 
-VERSION='atlas-reconstruction-1.0'
+VERSION='atlas-reconstruction-1.2'
 
 
 def initialize(conn):
@@ -31,22 +31,70 @@ def reconstruct_match(conn,raw_root,match):
     sheet_path=store.cached('scoresheet');report_path=store.cached('match_report')
     if not sheet_path or not report_path:
         return dict(status='PARTIAL',reason='Súmula ou Match Report indisponível')
+    from cbv.parser.scoresheet import PARSER_VERSION
+    import hashlib
+    signature=hashlib.sha256(json.dumps(dict(sources={k:v.get('sha256') for k,v in store.manifest['sources'].items()},parser=PARSER_VERSION,reconstruction=VERSION),sort_keys=True).encode()).hexdigest()
+    previous=conn.execute('SELECT report FROM validation_reports WHERE match_id=?',[mid]).fetchone()
+    if previous:
+        cached=json.loads(previous[0])
+        count=conn.execute('SELECT count(*) FROM rallies WHERE match_id=?',[mid]).fetchone()[0]
+        if cached.get('input_signature')==signature and count==cached.get('rally_count'):
+            return dict(status=cached['status'],rallies=count,cached=True,lineup_warnings=cached.get('lineup_warnings',[]))
     from cbv.parser.match_report import normalize_team_name
+    import unicodedata
+    def identity(name):
+        return ''.join(c for c in unicodedata.normalize('NFD',normalize_team_name(name)) if unicodedata.category(c)!='Mn').upper()
     sheet=parse_scoresheet(sheet_path,mid)
-    target={normalize_team_name(match['home_team']):'home',normalize_team_name(match['away_team']):'away'}
-    mapping={letter:target.get(normalize_team_name(name)) for letter,name in sheet['team_names'].items()}
+    target={identity(match['home_team']):'home',identity(match['away_team']):'away'}
+    mapping={letter:target.get(identity(name)) for letter,name in sheet['team_names'].items()}
     if set(mapping.values())!={'home','away'}:raise ValueError('Equipes da súmula divergem do Match Report')
     sets=[dict(zip(('set_number','home_points','away_points'),r)) for r in conn.execute('SELECT set_number,home_points,away_points FROM sets WHERE match_id=? ORDER BY set_number',[mid]).fetchall()]
+    from cbv.parser.game_metadata import parse_game_metadata
+    page_path=store.cached('game_page')
+    metadata=parse_game_metadata(page_path.read_text(),mid) if page_path else None
+    if metadata:
+        if identity(metadata['home_team'])!=identity(match['home_team']) or identity(metadata['away_team'])!=identity(match['away_team']):
+            raise ValueError('Identidades da página e do banco divergem')
+        if sets and metadata['sets'] and sets!=metadata['sets']:
+            raise ValueError('Placar por set da página diverge do relatório')
+        if not sets and metadata['sets']:
+            sets=metadata['sets'] # Independent observed source, not a fit to service-turn outcomes.
+    if not sets:return dict(status='PARTIAL',reason='Sem placar por set independente para conciliar a súmula')
     rallies,events=rebuild_from_scoresheet(sheet,mapping,sets)
+    pbp_path=store.cached('play_by_play');pbp_status='UNAVAILABLE';pbp_warning=None
+    if pbp_path and pbp_path.suffix=='.json':
+        from cbv.parser.play_by_play import parse_play_by_play
+        try:observed=parse_play_by_play(json.loads(pbp_path.read_text()),mid)
+        except ValueError as exc:
+            pbp_status='UNSUPPORTED_SCHEMA';pbp_warning=str(exc)
+        else:
+            compared=['set_number','rally_number','score_home_before','score_away_before','score_home_after','score_away_after','serving_side','winner_side']
+            if len(observed)!=len(rallies) or any(any(a[k]!=b[k] for k in compared) for a,b in zip(observed,rallies)):
+                raise ValueError('Ponto a ponto e súmula divergem: não escolher silenciosamente uma fonte')
+            for row,event in zip(rallies,observed):
+                row.update(timestamp=event['timestamp'],observed_event=event['raw_event'],score_source='OBSERVED_STRUCTURED_PLAY_BY_PLAY')
+            pbp_status='RECONCILED_OBSERVED'
     markers=parse_setter_markers(report_path,match['home_team'],match['away_team'])
     libero_path=store.cached('libero_report');libero=parse_libero_report(libero_path,mid) if libero_path else None
     segments,warnings=apply_positions(rallies,sheet,events,mapping,{'home':markers.get(match['home_team'],{}),'away':markers.get(match['away_team'],{})},libero)
+    roster={}
+    for team,jersey,name in conn.execute('SELECT team,player_number,player_name FROM player_match_stats WHERE match_id=?',[mid]).fetchall():
+        roster.setdefault((team,jersey),set()).add(name)
+    for row in rallies:
+        for side in ('home','away'):
+            identities=[roster.get((match[side+'_team'],jersey),set()) for jersey in row.get(side+'_lineup',[])]
+            row[side+'_lineup_names']=[next(iter(names)) for names in identities] if len(identities)==6 and all(len(names)==1 for names in identities) else None
     validation=reconcile(rallies,sets)
-    validation.update(source_hashes={k:v.get('sha256') for k,v in store.manifest['sources'].items()},events=events,coverage=sheet['coverage'],lineup_warnings=warnings)
-    if warnings:validation['status']='VALID_WITH_WARNINGS'
+    validation.update(input_signature=signature,rally_count=len(rallies),source_hashes={k:v.get('sha256') for k,v in store.manifest['sources'].items()},events=events,coverage=sheet['coverage'],lineup_warnings=warnings,set_reference='OBSERVED_GAME_PAGE_FLIGHT' if metadata else 'MATCH_REPORT',game_metadata=metadata)
+    validation['play_by_play_status']=pbp_status
+    if pbp_warning:validation['warnings'].append(pbp_warning)
+    if warnings or pbp_warning:validation['status']='VALID_WITH_WARNINGS'
     if validation['status']=='FAILED':return validation
     conn.begin()
     try:
+        if metadata and metadata['sets']:
+            for score in sets:
+                conn.execute('INSERT OR IGNORE INTO sets(match_id,set_number,home_points,away_points) VALUES (?,?,?,?)',[mid,score['set_number'],score['home_points'],score['away_points']])
         conn.execute('DELETE FROM rallies WHERE match_id=?',[mid]);conn.execute('DELETE FROM lineup_segments WHERE match_id=?',[mid])
         names=['rally_id','match_id','set_number','rally_number','serving_team','receiving_team','winner_team','rotation_home','rotation_away',
             'score_home_before','score_away_before','score_home_after','score_away_after','home_rotation','away_rotation',
@@ -56,9 +104,15 @@ def reconstruct_match(conn,raw_root,match):
             r.update(serving_team=match[r['serving_side']+'_team'],receiving_team=match[r['receiving_side']+'_team'],winner_team=match[r['winner_side']+'_team'],
                 rotation_home=r['home_rotation'],rotation_away=r['away_rotation'],payload=json.dumps(r,ensure_ascii=False,allow_nan=False),data_version=VERSION)
             values.append([r.get(k) for k in names])
-        conn.executemany('INSERT INTO rallies ('+','.join(names)+') VALUES ('+','.join('?' for _ in names)+')',values)
+        import pandas as pd
+        frame=pd.DataFrame(values,columns=names)
+        conn.register('atlas_rally_batch',frame)
+        conn.execute('INSERT INTO rallies ('+','.join(names)+') SELECT '+','.join(names)+' FROM atlas_rally_batch')
+        conn.unregister('atlas_rally_batch')
         if segments:conn.executemany('INSERT INTO lineup_segments VALUES (?,?,?)',[[mid,i,json.dumps(s,ensure_ascii=False)] for i,s in enumerate(segments)])
         conn.execute('INSERT OR REPLACE INTO validation_reports VALUES (?,?,?,?)',[mid,validation['status'],json.dumps(validation,ensure_ascii=False),utcnow()])
+        store.manifest['sources']['scoresheet']['parser_version']=sheet['parser_version']
+        store._save()
         conn.commit()
     except Exception:
         conn.rollback();raise

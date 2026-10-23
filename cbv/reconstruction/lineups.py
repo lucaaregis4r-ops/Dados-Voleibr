@@ -12,9 +12,10 @@ def apply_positions(rallies,sheet,events,team_map,setters,libero=None):
         starts={(r['score_home_before'],r['score_away_before']):i for i,r in enumerate(rows)}
         if rows:
             starts[(rows[-1]['score_home_after'],rows[-1]['score_away_after'])]=len(rows)
-        setter_positions={};registered={};substitutions={};libero_intervals={}
+        setter_positions={};registered={};substitutions={};libero_intervals={};presence_reliable={}
         for side in ('home','away'):
             group=groups[side];registered[side]=list(group['initial'])
+            presence_reliable[side]=bool(libero and libero.get('complete')) and not any(e['kind']=='UNRESOLVED_SUBSTITUTION' for e in group['substitutions'])
             marker=setters.get(side,{}).get(number)
             if marker and marker['player'] in group['initial'] and group['initial'].index(marker['player'])+1==marker['position']:
                 setter_positions[side]=marker['position']
@@ -27,7 +28,7 @@ def apply_positions(rallies,sheet,events,team_map,setters,libero=None):
                 if event['kind']=='SUBSTITUTION':
                     index=starts.get((event['score_home'],event['score_away']))
                     if index is None:
-                        warnings.append('Substituição com placar não encontrado');continue
+                        warnings.append('Substituição com placar não encontrado');presence_reliable[side]=False;continue
                     substitutions[side].setdefault(index,[]).append(event)
             libero_intervals[side]=[]
             if libero:
@@ -39,7 +40,7 @@ def apply_positions(rallies,sheet,events,team_map,setters,libero=None):
                         return starts.get((home,away))
                     start,end=index_of(interval['start_score']),index_of(interval['end_score'])
                     if start is None or end is None or end<start:
-                        warnings.append('Troca de líbero com placar não reconciliado');continue
+                        warnings.append('Troca de líbero com placar não reconciliado');presence_reliable[side]=False;continue
                     libero_intervals[side].append(dict(interval,start=start,end=end))
         last_lineup={side:None for side in ('home','away')}
         for i,row in enumerate(rows):
@@ -54,10 +55,12 @@ def apply_positions(rallies,sheet,events,team_map,setters,libero=None):
                 relative=row[side+'_relative_rotation']
                 rotation=setter_positions[side]
                 actual=((rotation+relative-2)%6)+1 if rotation is not None else None
-                row[side+'_rotation']=actual;row[side+'_setter_position']=actual
+                row[side+'_rotation']=actual
+                initial_setter=groups[side]['initial'][rotation-1] if rotation is not None else None
+                row[side+'_setter_position']=actual if initial_setter in registered[side] else None
                 row[side+'_rotation_source']='RECONSTRUCTED_FROM_OBSERVED_SETTER' if actual else 'UNKNOWN'
                 row[side+'_rotation_confidence']='RECONSTRUCTED_HIGH' if actual else 'UNKNOWN'
-                active=list(registered[side]);complete=bool(libero and libero.get('complete'))
+                active=list(registered[side]);complete=presence_reliable[side]
                 for interval in libero_intervals[side]:
                     if interval['start']<=i<interval['end']:
                         if interval['player_out'] in active:
@@ -77,7 +80,7 @@ def apply_positions(rallies,sheet,events,team_map,setters,libero=None):
                 row[side+'_lineup_id']=key
                 if last_lineup[side] is None or last_lineup[side]['lineup_id']!=key:
                     segment=dict(lineup_id=key,team_side=side,set_number=number,start_rally=row['rally_number'],end_rally=row['rally_number'],
-                        players=zones,setter=groups[side]['initial'][setter_positions[side]-1] if setter_positions[side] else None,
+                        players=zones,setter=initial_setter if initial_setter in active else None,
                         rotation=actual,confidence=row[side+'_lineup_confidence'],source='SCORESHEET+LIBERO_REPORT' if complete else 'SCORESHEET_REGISTERED')
                     segments.append(segment);last_lineup[side]=segment
                 else:

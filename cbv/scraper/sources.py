@@ -89,6 +89,8 @@ class SourceCollector:
                     return store.manifest
         links=discover_source_links(page.read_text(encoding='utf-8'),match_id)
         metadata=dict(match_id=int(match_id),source_url=url,links=links)
+        from cbv.parser.game_metadata import parse_game_metadata
+        metadata['match']=parse_game_metadata(page.read_text(encoding='utf-8'),match_id)
         (store.root/'game_page.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2))
         for kind in ('match_report','scoresheet','libero_report','play_by_play'):
             if kind=='play_by_play' and not collect_widget:
