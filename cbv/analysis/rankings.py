@@ -15,9 +15,10 @@ console = Console()
 
 
 def get_aggregated_player_stats() -> List[Dict[str, Any]]:
-    """Fetches sum of player stats across all recorded matches in DuckDB."""
+    """One player/team aggregate per competition, category, gender and edition."""
     query = """
     SELECT 
+        m.competition,m.category,m.gender,m.season,
         player_name,
         team,
         count(distinct match_id) as matches_played,
@@ -32,8 +33,9 @@ def get_aggregated_player_stats() -> List[Dict[str, Any]]:
         sum(coalesce(attack_blocked, 0)) as total_attack_blocked,
         sum(coalesce(attack_points, 0)) as total_attack_points,
         sum(coalesce(block_points, 0)) as total_blocks
-    FROM player_match_stats
-    GROUP BY player_name, team
+    FROM player_match_stats p JOIN matches m USING(match_id)
+    WHERE m.validation_status='VALID'
+    GROUP BY m.competition,m.category,m.gender,m.season,player_name,team
     """
     with default_repo.get_connection() as conn:
         df = conn.execute(query).fetchdf()

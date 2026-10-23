@@ -70,14 +70,8 @@ class DatabaseRepository:
 
                 # 2. Insert match
                 m = data.match
-                season_val = m.season
-                if not season_val:
-                    if m.competition == "CBS":
-                        season_val = "2026"
-                    elif m.date and str(m.date) >= "2025-08-01":
-                        season_val = "2025-2026"
-                    else:
-                        season_val = "2024-2025"
+                from cbv.seasons import default_match_season
+                season_val = m.season or default_match_season(m.competition,m.date)
 
                 conn.execute(
                     """

@@ -1,6 +1,5 @@
 """Tactical analysis and match intelligence reporting engine."""
 
-import math
 from typing import Optional, Dict, Any, List
 from functools import lru_cache
 import pandas as pd
@@ -200,11 +199,12 @@ def display_match_tactics(match_id: int) -> None:
 
 
 def get_competition_tactical_summary() -> Dict[str, pd.DataFrame]:
-    """Generates complete aggregated tactical intelligence across all competition matches."""
+    """Generates complete aggregated tactical intelligence within each competition/category/gender/edition."""
     with default_repo.get_connection() as conn:
         # 1. SO and BP
         so_bp_df = conn.execute("""
             SELECT 
+                m.competition,m.category,m.gender,m.season,
                 team,
                 COUNT(*) as matches,
                 CAST(SUM(sideout_points) AS INT) as so_points,
@@ -215,14 +215,16 @@ def get_competition_tactical_summary() -> Dict[str, pd.DataFrame]:
                 CAST(SUM(breakpoint_serves) AS INT) as bp_serves,
                 ROUND(SUM(breakpoint_points) * 100.0 / NULLIF(SUM(breakpoint_serves), 0), 1) as bp_pct,
                 ROUND(SUM(breakpoint_serves) * 1.0 / NULLIF(SUM(breakpoint_points), 0), 2) as bp_rate
-            FROM team_tactical_stats
-            GROUP BY team
+            FROM team_tactical_stats t JOIN matches m USING(match_id)
+            WHERE m.validation_status='VALID'
+            GROUP BY m.competition,m.category,m.gender,m.season,team
             ORDER BY so_pct DESC
         """).fetchdf()
 
         # 2. Phase Attacks
         phase_df = conn.execute("""
             SELECT 
+                m.competition,m.category,m.gender,m.season,
                 team,
                 CAST(SUM(pos_rec_att_attempts) AS INT) as k1_pos_att,
                 ROUND(SUM(pos_rec_att_points) * 100.0 / NULLIF(SUM(pos_rec_att_attempts), 0), 1) as k1_pos_kill_pct,
@@ -233,14 +235,16 @@ def get_competition_tactical_summary() -> Dict[str, pd.DataFrame]:
                 CAST(SUM(trans_att_attempts) AS INT) as k2_att,
                 ROUND(SUM(trans_att_points) * 100.0 / NULLIF(SUM(trans_att_attempts), 0), 1) as k2_kill_pct,
                 ROUND((SUM(trans_att_points) - SUM(trans_att_errors) - SUM(trans_att_blocked)) * 100.0 / NULLIF(SUM(trans_att_attempts), 0), 1) as k2_eff_pct
-            FROM team_tactical_stats
-            GROUP BY team
+            FROM team_tactical_stats t JOIN matches m USING(match_id)
+            WHERE m.validation_status='VALID'
+            GROUP BY m.competition,m.category,m.gender,m.season,team
             ORDER BY k1_pos_eff_pct DESC
         """).fetchdf()
 
         # 3. Rotations Matrix
         rot_df = conn.execute("""
             SELECT 
+                m.competition,m.category,m.gender,m.season,
                 team,
                 CAST(SUM(p1_diff) AS INT) as p1,
                 CAST(SUM(p2_diff) AS INT) as p2,
@@ -249,14 +253,16 @@ def get_competition_tactical_summary() -> Dict[str, pd.DataFrame]:
                 CAST(SUM(p5_diff) AS INT) as p5,
                 CAST(SUM(p6_diff) AS INT) as p6,
                 CAST((SUM(p1_diff) + SUM(p2_diff) + SUM(p3_diff) + SUM(p4_diff) + SUM(p5_diff) + SUM(p6_diff)) AS INT) as total_diff
-            FROM team_tactical_stats
-            GROUP BY team
+            FROM team_tactical_stats t JOIN matches m USING(match_id)
+            WHERE m.validation_status='VALID'
+            GROUP BY m.competition,m.category,m.gender,m.season,team
             ORDER BY total_diff DESC
         """).fetchdf()
 
         # 4. Reception Targets (Alvos de Saque)
         targets_df = conn.execute("""
             SELECT 
+                m.competition,m.category,m.gender,m.season,
                 p.player_name,
                 p.team,
                 p.is_libero,
@@ -266,8 +272,9 @@ def get_competition_tactical_summary() -> Dict[str, pd.DataFrame]:
                 ROUND(SUM(p.reception_errors) * 100.0 / NULLIF(SUM(p.reception_attempts), 0), 1) as err_pct,
                 ROUND(AVG(p.reception_positive_pct), 1) as avg_pos_pct,
                 ROUND(AVG(p.reception_excellent_pct), 1) as avg_exc_pct
-            FROM player_match_stats p
-            GROUP BY p.player_name, p.team, p.is_libero
+            FROM player_match_stats p JOIN matches m USING(match_id)
+            WHERE m.validation_status='VALID'
+            GROUP BY m.competition,m.category,m.gender,m.season,p.player_name,p.team,p.is_libero
             HAVING SUM(p.reception_attempts) >= 30
             ORDER BY rec_attempts DESC
             LIMIT 15
@@ -276,11 +283,13 @@ def get_competition_tactical_summary() -> Dict[str, pd.DataFrame]:
         # 5. Usage Leaders (Concentração de Carga de Ataque)
         usage_df = conn.execute("""
             WITH team_totals AS (
-                SELECT team, SUM(attack_attempts) as team_att_total
-                FROM player_match_stats
-                GROUP BY team
+                SELECT m.competition,m.category,m.gender,m.season,team,SUM(attack_attempts) as team_att_total
+                FROM player_match_stats p JOIN matches m USING(match_id)
+                WHERE m.validation_status='VALID'
+                GROUP BY m.competition,m.category,m.gender,m.season,team
             )
             SELECT 
+                m.competition,m.category,m.gender,m.season,
                 p.player_name,
                 p.team,
                 COUNT(DISTINCT p.match_id) as matches,
@@ -290,9 +299,12 @@ def get_competition_tactical_summary() -> Dict[str, pd.DataFrame]:
                 CAST(SUM(p.attack_points) AS INT) as atk_pts,
                 ROUND(SUM(p.attack_points) * 100.0 / NULLIF(SUM(p.attack_attempts), 0), 1) as kill_pct,
                 ROUND((SUM(p.attack_points) - SUM(p.attack_errors) - SUM(p.attack_blocked)) * 100.0 / NULLIF(SUM(p.attack_attempts), 0), 1) as eff_pct
-            FROM player_match_stats p
-            JOIN team_totals tt ON p.team = tt.team
-            GROUP BY p.player_name, p.team, tt.team_att_total
+            FROM player_match_stats p JOIN matches m USING(match_id)
+            JOIN team_totals tt ON p.team=tt.team AND m.competition IS NOT DISTINCT FROM tt.competition
+                AND m.category IS NOT DISTINCT FROM tt.category AND m.gender IS NOT DISTINCT FROM tt.gender
+                AND m.season IS NOT DISTINCT FROM tt.season
+            WHERE m.validation_status='VALID'
+            GROUP BY m.competition,m.category,m.gender,m.season,p.player_name,p.team,tt.team_att_total
             HAVING SUM(p.attack_attempts) >= 40
             ORDER BY usage_pct DESC
             LIMIT 15
@@ -444,9 +456,8 @@ def get_team_tactical_dossier(team_query: str, season: Optional[str] = None) -> 
     """
     Fetches in-depth tactical scouting intelligence for a specific team.
     
-    Implements Empirical Bayes Shrinkage to prioritize the active season
-    ('a temporada que manda') while using prior seasons as a calibration baseline
-    when the current season sample size is small early in the competition.
+    Uses only the selected edition. Older editions remain separate references;
+    requesting an edition without games never silently falls back to its predecessor.
     """
     with default_repo.get_connection() as conn:
         # Match team name
@@ -459,41 +470,15 @@ def get_team_tactical_dossier(team_query: str, season: Optional[str] = None) -> 
             return None
         team_name = teams[0][0]
 
-        # Determine target active season
         target_season = season
-        if not target_season or target_season.lower() == "auto":
-            rec_season = conn.execute("""
-                SELECT m.season 
-                FROM matches m 
-                WHERE m.home_team = ? OR m.away_team = ?
-                ORDER BY CASE 
-                    WHEN m.season = '2025-2026' THEN 3
-                    WHEN m.season = '2026' THEN 2
-                    ELSE 1 
-                END DESC
-                LIMIT 1
-            """, [team_name, team_name]).fetchone()
-            target_season = rec_season[0] if rec_season else "2025-2026"
-        else:
-            # Check if team exists in requested season; if not, check if team is CBS / only in another season
-            team_in_season = conn.execute("""
-                SELECT COUNT(*) FROM matches 
-                WHERE (home_team = ? OR away_team = ?) AND season = ?
-            """, [team_name, team_name, target_season]).fetchone()[0]
-            if team_in_season == 0:
-                alt_season = conn.execute("""
-                    SELECT m.season 
-                    FROM matches m 
-                    WHERE m.home_team = ? OR m.away_team = ?
-                    ORDER BY CASE 
-                        WHEN m.season = '2025-2026' THEN 3
-                        WHEN m.season = '2026' THEN 2
-                        ELSE 1 
-                    END DESC
-                    LIMIT 1
-                """, [team_name, team_name]).fetchone()
-                if alt_season:
-                    target_season = alt_season[0]
+        if not target_season or target_season.lower() == 'auto':
+            recent=conn.execute("""SELECT season FROM (
+                SELECT season FROM matches WHERE home_team=? OR away_team=?
+                UNION ALL SELECT season FROM upcoming_matches WHERE home_team=? OR away_team=?
+                ) WHERE season IS NOT NULL ORDER BY season DESC LIMIT 1""",[team_name]*4).fetchone()
+            target_season=recent[0] if recent else None
+        if not target_season:return None
+        if not conn.execute('SELECT count(*) FROM matches WHERE (home_team=? OR away_team=?) AND season=?',[team_name,team_name,target_season]).fetchone()[0]:return None
 
         # 1. Record & Sets: Current Season vs Prior Seasons
         curr_rec = conn.execute("""
@@ -515,7 +500,7 @@ def get_team_tactical_dossier(team_query: str, season: Optional[str] = None) -> 
                 COALESCE(SUM(CASE WHEN home_team = ? THEN home_sets ELSE away_sets END), 0) as sets_won,
                 COALESCE(SUM(CASE WHEN home_team = ? THEN away_sets ELSE home_sets END), 0) as sets_lost
             FROM matches
-            WHERE (home_team = ? OR away_team = ?) AND season != ?
+            WHERE (home_team = ? OR away_team = ?) AND season < ?
         """, [team_name] * 8 + [target_season]).fetchone()
 
         # 2. Tactical Stats: Current Season vs Prior Season
@@ -564,7 +549,7 @@ def get_team_tactical_dossier(team_query: str, season: Optional[str] = None) -> 
                 CAST(COALESCE(SUM(tts.trans_att_errors), 0) AS INT) as k2_err, CAST(COALESCE(SUM(tts.trans_att_blocked), 0) AS INT) as k2_blo
             FROM team_tactical_stats tts
             JOIN matches m ON tts.match_id = m.match_id
-            WHERE tts.team = ? AND m.season != ?
+            WHERE tts.team = ? AND m.season < ?
         """, [team_name, target_season]).fetchdf()
 
         c_dict = curr_tac_df.to_dict(orient="records")[0] if not curr_tac_df.empty else {}
@@ -573,79 +558,18 @@ def get_team_tactical_dossier(team_query: str, season: Optional[str] = None) -> 
         n_curr = int(c_dict.get("games", 0) or 0)
         n_prior = int(p_dict.get("games", 0) or 0)
 
-        # Empirical Bayes Shrinkage Constant K
-        # K = 2.0: after 2 matches current season has 50% weight; after 6 matches it has 75%; after 14 matches >87%
-        K = 2.0
-        if n_curr > 0 and n_prior > 0:
-            w_curr = n_curr / (n_curr + K)
-            w_prior = 1.0 - w_curr
-        elif n_curr > 0 and n_prior == 0:
-            w_curr = 1.0
-            w_prior = 0.0
-        elif n_curr == 0 and n_prior > 0:
-            w_curr = 0.0
-            w_prior = 1.0
-        else:
-            w_curr = 0.5
-            w_prior = 0.5
-
-        def blend_rate(cv, pv, default_val=50.0):
-            has_c = cv is not None and not (isinstance(cv, float) and math.isnan(cv))
-            has_p = pv is not None and not (isinstance(pv, float) and math.isnan(pv))
-            if has_c and has_p:
-                return round(w_curr * float(cv) + w_prior * float(pv), 1)
-            elif has_c:
-                return round(float(cv), 1)
-            elif has_p:
-                return round(float(pv), 1)
-            return default_val
-
-        blended_so_pct = blend_rate(c_dict.get("so_pct"), p_dict.get("so_pct"), 50.0)
-        blended_bp_pct = blend_rate(c_dict.get("bp_pct"), p_dict.get("bp_pct"), 25.0)
-
-        # Rotations: compute per-game differential, blend, and scale
-        blended_rotations = {}
-        for p in range(1, 7):
-            rate_c = (c_dict.get(f"p{p}", 0) / n_curr) if n_curr > 0 else 0.0
-            rate_p = (p_dict.get(f"p{p}", 0) / n_prior) if n_prior > 0 else 0.0
-            blended_rate = w_curr * rate_c + w_prior * rate_p
-            eff_games = max(n_curr, min(6, n_curr + n_prior))
-            blended_rotations[f"p{p}"] = int(round(blended_rate * eff_games))
-
-        # Base dict using blended rates, prioritized totals
-        primary_dict = c_dict if n_curr > 0 else p_dict
-        t_dict = {
-            "so_pts": int(c_dict.get("so_pts") or p_dict.get("so_pts") or 0),
-            "rec_tot": int(c_dict.get("rec_tot") or p_dict.get("rec_tot") or 0),
-            "so_pct": blended_so_pct,
-            "so_rate": round(100.0 / blended_so_pct, 2) if blended_so_pct > 0 else 2.0,
-            "bp_pts": int(c_dict.get("bp_pts") or p_dict.get("bp_pts") or 0),
-            "srv_tot": int(c_dict.get("srv_tot") or p_dict.get("srv_tot") or 0),
-            "bp_pct": blended_bp_pct,
-            "bp_rate": round(100.0 / blended_bp_pct, 2) if blended_bp_pct > 0 else 4.0,
-            **blended_rotations,
-            "k1_pos_att": int(primary_dict.get("k1_pos_att") or 0),
-            "k1_pos_pts": int(primary_dict.get("k1_pos_pts") or 0),
-            "k1_pos_err": int(primary_dict.get("k1_pos_err") or 0),
-            "k1_pos_blo": int(primary_dict.get("k1_pos_blo") or 0),
-            "k1_neg_att": int(primary_dict.get("k1_neg_att") or 0),
-            "k1_neg_pts": int(primary_dict.get("k1_neg_pts") or 0),
-            "k1_neg_err": int(primary_dict.get("k1_neg_err") or 0),
-            "k1_neg_blo": int(primary_dict.get("k1_neg_blo") or 0),
-            "k2_att": int(primary_dict.get("k2_att") or 0),
-            "k2_pts": int(primary_dict.get("k2_pts") or 0),
-            "k2_err": int(primary_dict.get("k2_err") or 0),
-            "k2_blo": int(primary_dict.get("k2_blo") or 0),
-        }
-        # Additional kill % and efficiency rates
-        t_dict["pos_rec_att_points_pct"] = round((t_dict["k1_pos_pts"] * 100.0 / t_dict["k1_pos_att"]), 1) if t_dict["k1_pos_att"] > 0 else 48.0
-        t_dict["neg_rec_att_points_pct"] = round((t_dict["k1_neg_pts"] * 100.0 / t_dict["k1_neg_att"]), 1) if t_dict["k1_neg_att"] > 0 else 36.0
-        t_dict["trans_att_points_pct"] = round((t_dict["k2_pts"] * 100.0 / t_dict["k2_att"]), 1) if t_dict["k2_att"] > 0 else 40.0
-        t_dict["trans_att_efficiency_pct"] = round(((t_dict["k2_pts"] - t_dict["k2_err"] - t_dict["k2_blo"]) * 100.0 / t_dict["k2_att"]), 1) if t_dict["k2_att"] > 0 else 22.0
+        if not n_curr:return None
+        w_curr,w_prior=1.0,0.0
+        t_dict={key:value for key,value in c_dict.items() if key!='games'}
+        for phase,prefix in [('pos_rec','k1_pos'),('neg_rec','k1_neg'),('trans','k2')]:
+            n=t_dict[prefix+'_att']
+            t_dict[phase+'_att_points_pct']=round(100*t_dict[prefix+'_pts']/n,1) if n else None
+        n=t_dict['k2_att']
+        t_dict['trans_att_efficiency_pct']=round(100*(t_dict['k2_pts']-t_dict['k2_err']-t_dict['k2_blo'])/n,1) if n else None
 
         # 3. Top Attackers (Current season active roster takes priority)
         team_att_tot = t_dict["k1_pos_att"] + t_dict["k1_neg_att"] + t_dict["k2_att"]
-        player_filter = "m.season = ?" if n_curr > 0 else "m.season != ?"
+        player_filter = "m.season = ?"
         player_param = target_season
 
         attackers = conn.execute(f"""
@@ -701,15 +625,8 @@ def get_team_tactical_dossier(team_query: str, season: Optional[str] = None) -> 
             ORDER BY s.set_number
         """, [team_name, player_param]).fetchdf()
 
-        # Status definition
-        if n_curr >= 6:
-            sample_status = "Temporada Atual Consolidada"
-        elif n_curr > 0:
-            sample_status = f"Início de Temporada ({n_curr}J - Ponderado com Histórico)"
-        else:
-            sample_status = "Sem Jogos na Temporada Atual (Calibrado pelo Histórico)"
-
-        rec_to_use = curr_rec if n_curr > 0 else prior_rec
+        sample_status=f'Edição {target_season} · {n_curr} jogos; sem mistura com outras temporadas'
+        rec_to_use = curr_rec
         record = {
             "games": rec_to_use[0],
             "wins": rec_to_use[1],

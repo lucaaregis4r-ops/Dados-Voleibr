@@ -25,6 +25,9 @@ def quality_gate(path,minimum_matches=0):
         duplicates=conn.execute('SELECT count(*)-count(DISTINCT match_id) FROM matches').fetchone()[0]
         if duplicates:raise RuntimeError('Identidades duplicadas')
         tables={r[0] for r in conn.execute('SHOW TABLES').fetchall()}
+        if 'season_assignments' in tables:
+            mismatch=conn.execute('SELECT count(*) FROM season_assignments s JOIN matches m USING(match_id) WHERE s.season IS DISTINCT FROM m.season').fetchone()[0]
+            if mismatch:raise RuntimeError('Identidade da temporada diverge da fonte oficial')
         if 'validation_reports' in tables:
             invalid=conn.execute('''SELECT count(*) FROM rallies r JOIN validation_reports v USING(match_id)
                 WHERE v.status='FAILED' OR (r.home_rotation IS NOT NULL AND r.home_rotation NOT BETWEEN 1 AND 6)

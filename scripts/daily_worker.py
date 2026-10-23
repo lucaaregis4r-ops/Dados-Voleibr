@@ -64,7 +64,7 @@ def run_full_daily_pipeline() -> bool:
     console.print("\n[yellow]2/4. Verificando súmulas e relatórios técnicos das edições ativas...[/yellow]")
     try:
         scrape_all_superliga_editions(
-            editions=["2025-2026_masculina", "2025-2026_feminina"],
+            editions=["atual_masculina", "atual_feminina"],
             force=False,
             workers=4
         )

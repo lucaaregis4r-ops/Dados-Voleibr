@@ -54,10 +54,11 @@ def enrich_record(row):
     return row
 
 
-def aggregate_cohort(matches, rows, players):
+def aggregate_cohort(matches, rows, players, registered_teams=()):
     by_team = defaultdict(list)
     for r in rows:
         by_team[r['team']].append(enrich_record(dict(r)))
+    for name in registered_teams:by_team[name]
     teams = []
     for name, records in sorted(by_team.items()):
         games = [m for m in matches if name in (m['home_team'], m['away_team']) and m['validation_status']=='VALID']

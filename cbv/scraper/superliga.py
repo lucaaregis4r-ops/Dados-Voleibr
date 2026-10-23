@@ -53,12 +53,21 @@ SUPERLIGA_EDITIONS: Dict[str, Dict[str, str]] = {
         "competition": "SUPERLIGA",
         "url": f"{BASE_URL}/volei-de-quadra/2024-2025/superliga-a-feminina/sumulas",
     },
+    "atual_masculina": {
+        "season": None,
+        "gender": "masculino",
+        "category": "A",
+        "competition": "SUPERLIGA",
+        "url": f"{BASE_URL}/volei-de-quadra/superliga-a-masculina/sumulas",
+        "edition_url": f"{BASE_URL}/volei-de-quadra/superliga-a-masculina",
+    },
     "atual_feminina": {
-        "season": "2026-2027",
+        "season": None,
         "gender": "feminino",
         "category": "A",
         "competition": "SUPERLIGA",
         "url": f"{BASE_URL}/volei-de-quadra/superliga-a-feminina/sumulas",
+        "edition_url": f"{BASE_URL}/volei-de-quadra/superliga-a-feminina",
     },
 }
 
@@ -166,6 +175,9 @@ def process_superliga_match(
     if not mid:
         return {"match_id": None, "status": "skipped", "reason": "No match ID"}
 
+    if max(match_info.get('home_sets') or 0,match_info.get('away_sets') or 0)<3:
+        return {'match_id':mid,'status':'skipped','reason':'Partida sem resultado concluído na Superliga'}
+
     # Check if already processed
     if not force and default_repo.match_exists(mid):
         return {"match_id": mid, "status": "cached", "reason": "Already in DB"}
@@ -191,6 +203,7 @@ def process_superliga_match(
                     category=category,
                     gender=gender,
                 )
+                data.match.season = metadata["season"]
                 # Ensure canonical teams and score from official table if needed
                 if match_info.get("home_team"):
                     data.match.home_team = match_info["home_team"]
@@ -231,6 +244,7 @@ def process_superliga_match(
             competition=competition,
             category=category,
             gender=gender,
+            season=metadata["season"],
             home_team=match_info["home_team"],
             away_team=match_info["away_team"],
             home_sets=match_info["home_sets"],
@@ -276,12 +290,33 @@ def scrape_all_superliga_editions(
     console.print(f"[bold cyan]🏐 Iniciando Coleta Massiva da Superliga ({len(target_editions)} edições)...[/]")
 
     for ed_key in target_editions:
-        meta = SUPERLIGA_EDITIONS.get(ed_key)
+        meta = dict(SUPERLIGA_EDITIONS.get(ed_key) or {})
         if not meta:
             continue
 
         console.print(f"\n[bold yellow]🔍 Coletando tabela: {ed_key} ({meta['url']})[/]")
+        if meta.get('edition_url'):
+            from cbv.seasons import source_season,register_edition
+            from cbv.storage.raw import atomic_write,digest
+            from cbv.config import RAW_DIR
+            req=urllib.request.Request(meta['edition_url'],headers={'User-Agent':'Mozilla/5.0'})
+            with urllib.request.urlopen(req,timeout=30) as response:edition_html=response.read()
+            meta['season']=source_season(edition_html)
+            archive=RAW_DIR/'competitions'/meta['season']/meta['gender'];archive.mkdir(parents=True,exist_ok=True)
+            atomic_write(archive/(digest(edition_html)+'.html'),edition_html)
+            with default_repo.get_connection() as conn:register_edition(conn,meta['competition'],meta['category'],meta['gender'],meta['season'],meta['edition_url'],digest(edition_html))
         matches = fetch_sumulas_table(meta["url"])
+        if meta.get('edition_url'):
+            from cbv.scraper.fixtures import extract_schedule_from_html
+            from cbv.seasons import assign_source_matches
+            observed={f['match_id'] for f in extract_schedule_from_html(edition_html.decode())}
+            matches=[m for m in matches if m['match_id'] in observed]
+            with default_repo.get_connection() as conn:
+                conn.begin()
+                try:
+                    assign_source_matches(conn,[m['match_id'] for m in matches],meta,meta['edition_url'],digest(edition_html))
+                    conn.commit()
+                except Exception:conn.rollback();raise
         if limit:
             matches = matches[:limit]
 

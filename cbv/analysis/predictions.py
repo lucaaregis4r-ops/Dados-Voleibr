@@ -26,7 +26,14 @@ def evaluate_prediction_model() -> Dict[str, Any]:
 
 def predict_matchup(team_a_query, team_b_query, include_evaluation=True, season=None):
     """Current-cohort L2 logistic forecast, validated with identical temporal features."""
-    for c in _cohorts():
+    cohorts=_cohorts()
+    if not season:
+        latest={}
+        for c in cohorts:
+            key=(c['competition'],c['category'],c['gender'])
+            latest[key]=max(latest.get(key,''),c['season'] or '')
+        cohorts=[c for c in cohorts if c['season']==latest[(c['competition'],c['category'],c['gender'])]]
+    for c in cohorts:
         if season and c['season'] != season:
             continue
         names = [t['team'] for t in c['teams']]

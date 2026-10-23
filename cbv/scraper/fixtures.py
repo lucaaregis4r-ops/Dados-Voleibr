@@ -19,14 +19,12 @@ FIXTURE_URLS = [
         "competition": "SUPERLIGA",
         "category": "A",
         "gender": "masculino",
-        "season": "2025-2026",
     },
     {
         "url": "https://cbv.com.br/volei-de-quadra/superliga-a-feminina",
         "competition": "SUPERLIGA",
         "category": "A",
         "gender": "feminino",
-        "season": "2025-2026",
     },
 ]
 
@@ -85,7 +83,7 @@ def scrape_upcoming_fixtures() -> List[Dict[str, Any]]:
         comp = cfg["competition"]
         cat = cfg["category"]
         gen = cfg["gender"]
-        season = cfg["season"]
+
 
         try:
             req = urllib.request.Request(
@@ -98,7 +96,20 @@ def scrape_upcoming_fixtures() -> List[Dict[str, Any]]:
             logger.error(f"Failed to fetch schedule from {url}: {e}")
             continue
 
+        from cbv.seasons import source_season,register_edition,assign_source_matches
+        from cbv.storage.raw import atomic_write,digest
+        from cbv.config import RAW_DIR
+        season=source_season(html)
+        archive=RAW_DIR/'competitions'/season/gen
+        atomic_write(archive/(digest(html.encode())+'.html'),html.encode())
+        with default_repo.get_connection() as conn:register_edition(conn,comp,cat,gen,season,url,digest(html.encode()))
         fixtures = extract_schedule_from_html(html)
+        with default_repo.get_connection() as conn:
+            conn.begin()
+            try:
+                assign_source_matches(conn,[f['match_id'] for f in fixtures if f.get('match_id')],dict(competition=comp,category=cat,gender=gen,season=season),url,digest(html.encode()))
+                conn.commit()
+            except Exception:conn.rollback();raise
         logger.info(f"Extracted {len(fixtures)} total matches from schedule for {comp} {gen}")
 
         for f in fixtures:
