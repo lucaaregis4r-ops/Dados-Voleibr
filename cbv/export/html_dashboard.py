@@ -7,7 +7,7 @@ import json
 import base64
 from cbv.config import BASE_DIR
 from cbv.database.repository import default_repo
-from cbv.analysis.scouting import aggregate_cohort, METRICS, VERSION
+from cbv.analysis.scouting import aggregate_cohort, metric_values, enrich_record, METRICS, VERSION
 from cbv.analysis.temporal import walk_forward, evaluation
 
 EXPORTS_DIR = BASE_DIR/'exports'
@@ -19,6 +19,33 @@ def records(conn, sql):
     return json.loads(frame.to_json(orient='records', date_format='iso'))
 
 
+def build_match_details(ids, team_rows, player_rows, set_rows):
+    """Presentation payload of existing observations, using the same metric functions."""
+    def brief(metrics):
+        return {k:{f:m[f] for f in ('value','n','numerator','ci')} for k,m in metrics.items()}
+    details={str(mid):dict(teams={},players=[],sets=[]) for mid in ids}
+    for row in team_rows:
+        if row['match_id'] not in ids:
+            continue
+        details[str(row['match_id'])]['teams'][row['team']] = dict(
+            metrics=brief(metric_values([enrich_record(dict(row))])),
+            aces=row.get('serve_points'), serve_errors=row.get('serve_errors'),
+            blocks=row.get('block_points'),
+            rotations=[row.get(f'p{i}_diff') for i in range(1,7)])
+    for row in player_rows:
+        if row['match_id'] not in ids:
+            continue
+        metrics=metric_values([enrich_record(dict(row))])
+        details[str(row['match_id'])]['players'].append(dict(
+            name=row['player_name'],team=row['team'],games=1,
+            points=row.get('points_total'),receptions=row.get('reception_attempts'),
+            metrics=brief({k:metrics[k] for k in ('kill','eff','positive','rec_error')})))
+    for row in set_rows:
+        if row['match_id'] in ids:
+            details[str(row['match_id'])]['sets'].append(row)
+    return details
+
+
 def generate_dashboard_data(competition=None):
     with default_repo.get_connection() as conn:
         matches = records(conn, 'SELECT * FROM matches ORDER BY date, match_id')
@@ -26,6 +53,10 @@ def generate_dashboard_data(competition=None):
             JOIN matches m USING(match_id) LEFT JOIN team_tactical_stats s USING(match_id, team)
             WHERE m.validation_status = 'VALID' ''')
         players = records(conn, "SELECT p.* FROM player_match_stats p JOIN matches m USING(match_id) WHERE m.validation_status = 'VALID'")
+        # Expose existing match records for the match screen; ingestion/schema stay unchanged.
+        match_rows = records(conn, "SELECT t.*, s.* EXCLUDE(match_id, team) FROM team_match_stats t LEFT JOIN team_tactical_stats s USING(match_id, team)")
+        match_players = records(conn, "SELECT * FROM player_match_stats")
+        set_rows = records(conn, "SELECT * FROM sets ORDER BY match_id, set_number")
         upcoming = records(conn, 'SELECT * FROM upcoming_matches ORDER BY match_date, match_time')
         definitions = records(conn, 'SELECT * FROM metric_definitions ORDER BY metric_key')
         provenance = records(conn, 'SELECT * FROM match_provenance')
@@ -40,6 +71,7 @@ def generate_dashboard_data(competition=None):
         ids={m['match_id'] for m in mm}; rr=[r for r in rows if r['match_id'] in ids]
         pp=[p for p in players if p['match_id'] in ids]
         c=aggregate_cohort(mm,rr,pp)
+        c['match_details']=build_match_details(ids,match_rows,match_players,set_rows)
         predictions,history,weights,ntrain=walk_forward(mm,rr)
         c.update(dict(id='|'.join(str(x or '') for x in key),competition=key[0],category=key[1],gender=key[2],season=key[3],evaluation=evaluation(predictions),model_weights=weights.tolist() if weights is not None else None,training_matches=ntrain))
         from cbv.analysis.temporal import feature_vector, probability
