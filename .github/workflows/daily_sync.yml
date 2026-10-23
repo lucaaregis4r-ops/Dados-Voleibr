@@ -6,12 +6,20 @@ on:
     - cron: '0 6 * * *'
   workflow_dispatch:
 
+env:
+  OPENBLAS_NUM_THREADS: 1
+  OMP_NUM_THREADS: 1
 permissions:
   contents: write
+
+concurrency:
+  group: cbv-daily-publication
+  cancel-in-progress: false
 
 jobs:
   sync-and-update:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
 
     steps:
       - name: Checkout Repository
@@ -35,15 +43,32 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Restore source archive
+        uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: cbv-raw-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: cbv-raw-${{ runner.os }}-
+
       - name: Run Daily Synchronization Pipeline
         run: |
           python scripts/daily_update.py
+
+      - name: Preserve raw snapshots and validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cbv-source-archive-${{ github.run_id }}
+          path: |
+            data/raw/matches/
+            logs/
+          retention-days: 30
 
       - name: Commit and Push Changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/cbv.duckdb exports/ cbv/ index.html docs/
+          git add data/cbv.duckdb exports/ index.html docs/index.html docs/CADERNO_METODOLOGICO.md
           if git diff --staged --quiet; then
             echo "Nenhuma alteração detectada. Repositório já está atualizado."
           else

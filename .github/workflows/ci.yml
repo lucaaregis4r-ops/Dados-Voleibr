@@ -1,0 +1,33 @@
+name: Code and methodology checks
+on:
+  push:
+    paths-ignore: ['data/**', 'exports/**', 'index.html', 'docs/index.html']
+  pull_request:
+env:
+  OPENBLAS_NUM_THREADS: 1
+  OMP_NUM_THREADS: 1
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt playwright ruff
+      - name: Syntax and undefined names
+        run: ruff check cbv scripts --select E9,F63,F7,F82
+      - name: Parser, reconstruction, model leakage, registry and application tests
+        run: pytest -q
+      - name: Registry documentation is current
+        run: |
+          python -m cbv.metrics.methodology
+          git diff --exit-code -- docs/CADERNO_METODOLOGICO.md
+      - name: Browser dependencies
+        run: python -m playwright install --with-deps chromium
+      - name: Static Atlas browser smoke
+        run: python scripts/check_atlas_ui.py

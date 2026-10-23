@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 import pymupdf
 
-PARSER_VERSION='scoresheet-1.1'
+PARSER_VERSION='scoresheet-1.2'
 ROMAN=('I','II','III','IV','V','VI')
 
 
@@ -115,8 +115,9 @@ def parse_scoresheet(path,match_id):
         label=labels[0]
         right=.595*page.rect.width if label['x']<.6*page.rect.width else .80*page.rect.width
         candidates=[line for line in header_lines if label['x']+12<line['x0']<right and line['x1']<right
-            and abs(line['y']-label['y'])<3 and line['text'].upper() not in ('EQUIPES','VS','A','B')]
-        if len(candidates)==1:names[letter]=candidates[0]['text']
+            and abs(line['y']-label['y'])<6 and line['text'].upper() not in ('EQUIPES','VS','A','B')]
+        if candidates:
+            names[letter]=' '.join(line['text'] for line in sorted(candidates,key=lambda line:line['y']))
     return dict(match_id=int(match_id),parser_version=PARSER_VERSION,sets=panels,team_names=names,
         coverage=dict(initial_lineup=True,service_order=all(t['grid_complete'] for p in panels for t in p['teams']),
                       substitutions=not any(e['kind']=='UNRESOLVED_SUBSTITUTION' for p in panels for t in p['teams'] for e in t['substitutions']),

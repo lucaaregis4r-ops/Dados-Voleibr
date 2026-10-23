@@ -42,6 +42,7 @@ def staged_update(root,worker):
             stage=Path(directory);stage_data=stage/'data';stage_data.mkdir();shutil.copy2(production,stage_data/'cbv.duckdb')
             (stage_data/'raw').symlink_to((data/'raw').resolve(),target_is_directory=True)
             worker(stage_data,stage)
+            compact_database(stage_data/'cbv.duckdb')
             quality_gate(stage_data/'cbv.duckdb',old_count)
             artifacts=[stage/'index.html',stage/'docs/index.html',stage/'exports/dashboard.html',stage/'docs/CADERNO_METODOLOGICO.md']
             if any(not p.exists() or not p.stat().st_size for p in artifacts):raise RuntimeError('Build incompleto: produção preservada')
@@ -65,3 +66,17 @@ def staged_update(root,worker):
                     if prior.exists():os.replace(prior,target)
                     else:target.unlink(missing_ok=True)
                 raise
+
+
+def compact_database(path):
+    """Copy live rows into a fresh DuckDB file; reclaim old reconstruction versions."""
+    path=Path(path);temporary=path.with_name(path.stem+'.compact.duckdb');temporary.unlink(missing_ok=True)
+    with duckdb.connect(str(path)) as conn:
+        original=conn.execute('SELECT current_database()').fetchone()[0]
+        literal="'"+str(temporary).replace("'","''")+"'"
+        conn.execute(f'ATTACH {literal} AS atlas_compact')
+        quoted='"'+original.replace('"','""')+'"'
+        conn.execute(f'COPY FROM DATABASE {quoted} TO atlas_compact')
+        conn.execute('DETACH atlas_compact');conn.execute('CHECKPOINT')
+    quality_gate(temporary)
+    os.replace(temporary,path)

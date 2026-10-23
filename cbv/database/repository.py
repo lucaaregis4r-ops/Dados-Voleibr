@@ -51,6 +51,12 @@ class DatabaseRepository:
 
         with self._lock:
             conn = self.get_connection()
+            conn.execute("CREATE TABLE IF NOT EXISTS match_ingest_attempts(match_id BIGINT PRIMARY KEY,status VARCHAR,attempted_at TIMESTAMP,payload JSON)")
+            previous=conn.execute("SELECT validation_status FROM matches WHERE match_id=?",[match_id]).fetchone()
+            if previous and previous[0]=='VALID' and data.validation_status!='VALID':
+                conn.execute("INSERT OR REPLACE INTO match_ingest_attempts VALUES (?,?,current_timestamp,?)",[match_id,data.validation_status,data.model_dump_json()])
+                logger.warning(f"game={match_id} refresh rejected ({data.validation_status}); retaining last valid Match Report")
+                return
             conn.begin()
             try:
                 # 1. Clean existing records for this match

@@ -16,6 +16,7 @@ def test_rebuild_is_idempotent_and_bad_refresh_preserves_valid_match(tmp_path):
     for _ in range(2):
         result=rebuild_all(conn,raw)
         assert result=={'VALID':1}
+        assert json.loads(conn.execute("SELECT metadata FROM source_snapshots WHERE source_type='scoresheet'").fetchone()[0])['parser_version']=='scoresheet-1.2'
         assert conn.execute('SELECT count(*) FROM rallies').fetchone()[0]==116
     store.put('scoresheet',b'%PDF-not-a-valid-document','https://example.org/scoresheet.pdf','scoresheet.pdf','application/pdf')
     result=rebuild_all(conn,raw)
@@ -23,6 +24,8 @@ def test_rebuild_is_idempotent_and_bad_refresh_preserves_valid_match(tmp_path):
     assert conn.execute('SELECT count(*) FROM rallies').fetchone()[0]==116
     assert conn.execute('SELECT status FROM validation_reports').fetchone()[0]=='VALID'
     assert conn.execute('SELECT status FROM reconstruction_attempts').fetchone()[0]=='FAILED'
+    from cbv.analysis.atlas import load_atlas
+    assert not load_atlas(conn)['rows']  # Preserve stored history, exclude failed refresh from models.
     conn.close()
 
 

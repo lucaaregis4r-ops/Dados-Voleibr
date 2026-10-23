@@ -88,3 +88,8 @@ def test_structured_feed_rejects_unknown_schema_duplicate_and_server_change():
 def test_short_and_split_font_accented_team_names_are_not_cross_matched():
     sheet=parse_scoresheet('tests/fixtures/scoresheet_2590824.pdf',2590824)
     assert sheet['team_names']=={'B':'SÃO PAULO','A':'AMAPÁ'}
+
+
+def test_wrapped_team_names_are_joined_inside_each_identity_box():
+    sheet=parse_scoresheet('tests/fixtures/scoresheet_2408654.pdf',2408654)
+    assert sheet['team_names']=={'A':'PRAIA CLUBE UBERLÂNDIA VOLEI','B':'VOLEI GUARULHOS BATEUBET'}

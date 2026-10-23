@@ -17,3 +17,5 @@ temp_inspect/
 *.egg-info/
 dist/
 build/
+data/*.last-valid.duckdb
+data/.atlas-*/

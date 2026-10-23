@@ -80,3 +80,13 @@ def test_ingestion_invalidates_cached_missing_team(test_repo, sample_match_data,
     finally:
         tactics.get_team_tactical_dossier.cache_clear()
         infer_team_tactical_roles.cache_clear()
+
+
+def test_invalid_refresh_cannot_replace_last_valid_report(test_repo,sample_match_data):
+    test_repo.save_match_data(sample_match_data)
+    bad=sample_match_data.model_copy(deep=True);bad.validation_status='FAILED';bad.match.home_sets=0
+    test_repo.save_match_data(bad)
+    with test_repo.get_connection() as conn:
+        assert conn.execute('SELECT home_sets,validation_status FROM matches WHERE match_id=2590834').fetchone()==(1,'VALID')
+        assert conn.execute('SELECT status FROM match_ingest_attempts WHERE match_id=2590834').fetchone()[0]=='FAILED'
+        assert conn.execute('SELECT count(*) FROM player_match_stats WHERE match_id=2590834').fetchone()[0]==20
