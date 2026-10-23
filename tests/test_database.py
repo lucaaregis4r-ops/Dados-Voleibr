@@ -60,3 +60,23 @@ def test_idempotent_save(test_repo, sample_match_data):
     with test_repo.get_connection() as conn:
         players_count = conn.execute("SELECT count(*) FROM player_match_stats WHERE match_id = 2590834").fetchone()[0]
         assert players_count == 20
+
+
+def test_ingestion_invalidates_cached_missing_team(test_repo, sample_match_data, monkeypatch):
+    """A team first looked up before collection must appear without restarting the app."""
+    import cbv.analysis.tactics as tactics
+    from cbv.analysis.setter_distribution import infer_team_tactical_roles
+    monkeypatch.setattr(tactics, 'default_repo', test_repo)
+    tactics.get_team_tactical_dossier.cache_clear()
+    infer_team_tactical_roles.cache_clear()
+    try:
+        assert tactics.get_team_tactical_dossier('MINAS GERAIS', season=None) is None
+        assert infer_team_tactical_roles('MINAS GERAIS', season=None) is None
+        test_repo.save_match_data(sample_match_data)
+        dossier = tactics.get_team_tactical_dossier('MINAS GERAIS', season=None)
+        assert dossier is not None
+        assert dossier['record']['games'] == 1
+        assert infer_team_tactical_roles('MINAS GERAIS', season=None) is not None
+    finally:
+        tactics.get_team_tactical_dossier.cache_clear()
+        infer_team_tactical_roles.cache_clear()

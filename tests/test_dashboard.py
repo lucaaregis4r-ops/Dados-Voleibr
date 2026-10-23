@@ -23,6 +23,8 @@ def test_build_and_export_dashboard_html(tmp_path):
 
     content = res_path.read_text(encoding="utf-8")
     assert "<!DOCTYPE html>" in content
-    assert "CBS Sub-18 Masculino Especial 2026" in content
+    assert "Vôlei BR" in content
     assert "SÃO PAULO" in content
-    assert "P1 (Pos 1)" in content
+    assert "Visão geral" in content
+    assert "Qualidade dos dados" in content
+    assert "Referências científicas" not in content

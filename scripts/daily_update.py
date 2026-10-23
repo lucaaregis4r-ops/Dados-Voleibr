@@ -2,7 +2,7 @@
 
 Runs daily at 03:00 to:
 1. Fetch and ingest latest finished match reports from CBV (Superliga & CBS).
-2. Fetch upcoming match schedule and compute Monte Carlo pre-match projections.
+2. Fetch upcoming match schedule without synthesizing missing forecasts.
 3. Normalize canonical team names and verify DuckDB integrity.
 4. Re-export HTML dashboard, CSVs, and JSON files.
 5. Create summary log for Git commit.
@@ -52,10 +52,10 @@ def run_full_daily_pipeline() -> bool:
     console.print(f"[bold cyan]🏐 CBV VOLLEY DATA — PIPELINE DIÁRIO AUTOMATIZADO [{now_str}][/bold cyan]")
 
     # 1. Update upcoming fixtures
-    console.print("\n[yellow]1/4. Atualizando calendário oficial e previsões Monte Carlo...[/yellow]")
+    console.print("\n[yellow]1/4. Atualizando calendário público da CBV...[/yellow]")
     try:
         fixtures = scrape_upcoming_fixtures()
-        console.print(f"[green]✓ {len(fixtures)} partidas do calendário oficial sincronizadas com projeções.[/green]")
+        console.print(f"[green]✓ {len(fixtures)} partidas do calendário público sincronizadas.[/green]")
     except Exception as e:
         logger.error(f"Erro ao sincronizar calendário: {e}")
         console.print(f"[red]Aviso: Falha ao atualizar calendário: {e}[/red]")

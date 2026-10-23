@@ -54,6 +54,8 @@ def test_compute_setter_distribution_pass_conditioning():
 
     # Precision metrics present
     for item in dist_pos["distribution"]:
-        assert item["margin_error_pct"] > 0.0
-        assert item["ci_95"][0] <= item["probability_pct"] <= item["ci_95"][1]
+        assert item["margin_error_pct"] is None
+        assert item["ci_95"] is None
+        assert dist_pos["metric_class"] == "MODELO"
+        assert "Não corresponde" in dist_pos["limitation"]
         assert item["expected_kill_pct"] >= 0.0

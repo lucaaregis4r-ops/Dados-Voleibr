@@ -22,8 +22,8 @@ from cbv.export.json_export import export_all_to_json
 from cbv.export.html_dashboard import export_dashboard_html
 
 app = FastAPI(
-    title="CBV Volley Data — Tactical Intelligence & Scouting",
-    description="Plataforma de inteligência tática, predição e scouting da CBV",
+    title="Vôlei BR — Dados & scouting",
+    description="Projeto independente • dados públicos disponibilizados pela CBV",
     version="2.0.0",
 )
 
@@ -110,37 +110,22 @@ def api_predict(team_a: str = Query(...), team_b: str = Query(...)):
 
 @app.get("/api/simulated-fixtures")
 def api_simulated_fixtures(competition: Optional[str] = None):
-    """Computes and returns precomputed Monte Carlo match simulations for marquee fixtures."""
-    try:
-        fixtures = [
-            {"team_a": "SADA CRUZEIRO VÔLEI", "team_b": "VÔLEI RENATA", "competition": "SUPERLIGA_MASCULINO", "label": "Superliga Masc // Sada Cruzeiro × Renata"},
-            {"team_a": "DENTIL PRAIA CLUBE", "team_b": "GERDAU MINAS", "competition": "SUPERLIGA_FEMININO", "label": "Superliga Fem // Praia Clube × Gerdau Minas"},
-            {"team_a": "SESI VÔLEI BAURU", "team_b": "ITAMBÉ MINAS", "competition": "SUPERLIGA_MASCULINO", "label": "Superliga Masc // Sesi Bauru × Itambé Minas"},
-            {"team_a": "OSASCO SÃO CRISTÓVÃO SAÚDE", "team_b": "FLUMINENSE", "competition": "SUPERLIGA_FEMININO", "label": "Superliga Fem // Osasco × Fluminense"},
-            {"team_a": "SUZANO VÔLEI", "team_b": "JOINVILLE VÔLEI", "competition": "SUPERLIGA_MASCULINO", "label": "Superliga Masc // Suzano × Joinville"},
-            {"team_a": "MINAS GERAIS", "team_b": "SÃO PAULO", "competition": "CBS_MASCULINO", "label": "CBS Sub-18 // Minas Gerais × São Paulo"},
-            {"team_a": "RIO DE JANEIRO", "team_b": "PARANÁ", "competition": "CBS_MASCULINO", "label": "CBS Sub-18 // Rio de Janeiro × Paraná"},
-        ]
+    """Forecast actual stored fixtures, using only their exact cohort model."""
+    data = generate_dashboard_data(competition=competition)
+    simulations = []
+    for cohort in data['cohorts']:
+        for fixture in cohort['upcoming']:
+            a, b = fixture['home_team'], fixture['away_team']
+            matchup = next((m for m in cohort['model_matchups'] if {m['team_a'],m['team_b']} == {a,b}), None)
+            if matchup:
+                p = matchup['probability_a'] if matchup['team_a'] == a else 1-matchup['probability_a']
+                simulations.append(dict(fixture=fixture, prediction=dict(metric_class='MODELO', probabilities={a:round(100*p,1),b:round(100*(1-p),1)}, validation=cohort['evaluation'])))
+    return dict(total_fixtures=len(simulations), simulations=simulations)
 
-        if competition and competition != "ALL":
-            fixtures = [f for f in fixtures if f["competition"] == competition]
 
-        simulations = []
-        for fix in fixtures:
-            pred = predict_matchup(fix["team_a"], fix["team_b"], include_evaluation=True)
-            if pred:
-                simulations.append({
-                    "fixture": fix,
-                    "prediction": pred,
-                })
-
-        return {
-            "total_fixtures": len(simulations),
-            "simulations": simulations,
-        }
-    except Exception as e:
-        logger.error(f"Error computing simulated fixtures: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+@app.get("/experimental", response_class=HTMLResponse)
+def experimental():
+    return """<!DOCTYPE html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vôlei BR · Experimental</title><body style="background:#F2EFE7;color:#171717;font:16px/1.5 Arial;max-width:800px;margin:48px auto;padding:18px"><a href="/">Voltar ao scouting</a><p>MODELO · EXPERIMENTAL</p><h1>Modelo heurístico de disponibilidade ofensiva</h1><p>Não corresponde à frequência real de levantamentos observados.</p><p>Combina volume de ataques agregado e multiplicadores por passe e rotação. Não há sequência de levantamentos para validar frequências, entropia observada ou intervalos.</p><p>Para inspeção técnica, consulte <a href="/docs#/default/api_setter_distribution_api_setter_distribution_get">a API experimental</a>.</p></body></html>"""
 
 
 @app.get("/api/setter-distribution")

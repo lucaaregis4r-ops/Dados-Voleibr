@@ -1,4 +1,4 @@
-"""Upcoming fixtures scraper and Monte Carlo schedule evaluator for CBV Superliga."""
+"""Upcoming public fixtures scraper for CBV Superliga."""
 
 import urllib.request
 import json
@@ -75,8 +75,8 @@ def extract_schedule_from_html(html: str) -> List[Dict[str, Any]]:
 
 def scrape_upcoming_fixtures() -> List[Dict[str, Any]]:
     """
-    Scrapes the official upcoming Superliga schedule, computes Monte Carlo projections,
-    and stores them into DuckDB upcoming_matches table.
+    Scrapes the public upcoming Superliga schedule and stores source metadata.
+    Forecasts are computed separately, only when the cohort has a fitted model.
     """
     all_upcoming = []
 
@@ -117,22 +117,13 @@ def scrape_upcoming_fixtures() -> List[Dict[str, Any]]:
             match_date = dt_raw.split("T")[0] if "T" in dt_raw else dt_raw
             match_time = dt_raw.split("T")[1][:5] if "T" in dt_raw else ""
 
-            # Compute match prediction if teams are known
-            pred = predict_matchup(home_norm, away_norm, include_evaluation=False, season=season)
-
-            pred_winner = home_norm
-            prob_home = 50.0
-            prob_away = 50.0
-            proj_score = "3 × 1"
-            confidence = "Média"
-
-            if pred:
-                pred_winner = pred.get("favorite", home_norm)
-                probs = pred.get("probabilities", {})
-                prob_home = probs.get(home_norm, 50.0)
-                prob_away = probs.get(away_norm, 50.0)
-                proj_score = pred.get("projected_scores", {}).get("best_of_5", "3 × 1")
-                confidence = pred.get("confidence", "Média")
+            # Forecasts belong to Confronto → Modelo and require a fitted cohort.
+            # Missing forecasts must stay missing rather than becoming synthetic 50/50s.
+            pred_winner = None
+            prob_home = None
+            prob_away = None
+            proj_score = None
+            confidence = None
 
             record = {
                 "match_id": f["match_id"],

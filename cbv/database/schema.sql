@@ -156,3 +156,26 @@ CREATE TABLE IF NOT EXISTS set_tactical_stats (
     PRIMARY KEY (match_id, team, set_number)
 );
 
+
+CREATE TABLE IF NOT EXISTS metric_definitions (
+    metric_key VARCHAR PRIMARY KEY, display_name VARCHAR, description VARCHAR,
+    formula VARCHAR, metric_class VARCHAR, source_level VARCHAR,
+    minimum_sample INTEGER, version VARCHAR
+);
+CREATE TABLE IF NOT EXISTS match_provenance (
+    match_id BIGINT PRIMARY KEY, source_url VARCHAR, source_document_id VARCHAR,
+    fetched_at TIMESTAMP, parser_version VARCHAR, data_version VARCHAR
+);
+-- Empty until a verified event source is available; aggregate reports cannot fill these.
+CREATE TABLE IF NOT EXISTS rallies (
+    rally_id VARCHAR PRIMARY KEY, match_id BIGINT, set_number INTEGER,
+    rally_number INTEGER, serving_team VARCHAR, receiving_team VARCHAR,
+    winner_team VARCHAR, rotation_home INTEGER, rotation_away INTEGER,
+    score_home_before INTEGER, score_away_before INTEGER
+);
+CREATE TABLE IF NOT EXISTS contacts (
+    rally_id VARCHAR, sequence_index INTEGER, team VARCHAR, player_id VARCHAR,
+    skill VARCHAR, evaluation VARCHAR, zone_start VARCHAR, zone_end VARCHAR,
+    phase VARCHAR, setter_position INTEGER, attack_tempo VARCHAR,
+    PRIMARY KEY(rally_id, sequence_index)
+);

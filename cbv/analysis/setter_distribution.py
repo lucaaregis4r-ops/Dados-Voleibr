@@ -276,7 +276,8 @@ def compute_setter_distribution(
     setter rotation and pass quality, along with statistical precision metrics.
     """
     if roles is None:
-        roles = infer_team_tactical_roles(team_query)
+        console.print("MODELO: Modelo heurístico de disponibilidade ofensiva. Não corresponde à frequência real de levantamentos observados.")
+    roles = infer_team_tactical_roles(team_query)
     if not roles:
         return None
 
@@ -439,8 +440,8 @@ def compute_setter_distribution(
             "zone": c["zone"],
             "is_front": c["is_front"],
             "probability_pct": prob_pct,
-            "margin_error_pct": margin,
-            "ci_95": (ci_low, ci_high),
+            "margin_error_pct": None,
+            "ci_95": None,
             "expected_kill_pct": exp_kill,
             "historical_attacks": c["player_raw"]["att"],
         })
@@ -486,6 +487,9 @@ def compute_setter_distribution(
             )
 
     return {
+        "metric_class": "MODELO",
+        "model_name": "Modelo heurístico de disponibilidade ofensiva",
+        "limitation": "Não corresponde à frequência real de levantamentos observados.",
         "team": team,
         "rotation": rot,
         "pass_quality": pass_q,
@@ -493,14 +497,14 @@ def compute_setter_distribution(
         "setter_name": roles["setter"]["player_name"] if roles["setter"] else "Desconhecida",
         "sample_size_attacks": total_attacks,
         "predictability_pct": predictability_pct,
-        "predictability_label": pred_label,
+        "predictability_label": "Concentração dos pesos heurísticos; não mede previsibilidade observada",
         "predictability_style": pred_style,
         "shannon_entropy": round(shannon_entropy, 3),
         "shannon_entropy_norm": round(shannon_entropy / max_entropy, 3) if max_entropy > 0 else 0.0,
         "max_entropy": round(max_entropy, 3),
-        "literature_reference": "Paulo et al. (2016) / Afonso et al. (2012) — Entropia de Shannon na Análise Tática da Levantadora",
+        "literature_reference": None,
         "distribution": probabilities,
-        "ct_advice": ct_advice,
+        "ct_advice": ["Hipótese experimental: não usar como distribuição observada ou recomendação validada."],
     }
 
 
@@ -516,6 +520,7 @@ def display_setter_distribution(
     rot_list = [rotation.upper()] if rotation else ["P1", "P2", "P3", "P4", "P5", "P6"]
     pass_list = [pass_quality.lower()] if pass_quality else ["positive", "negative", "transition"]
 
+    console.print("MODELO: Modelo heurístico de disponibilidade ofensiva. Não corresponde à frequência real de levantamentos observados.")
     roles = infer_team_tactical_roles(team_query)
     if not roles:
         console.print(f"[red]Equipe '{team_query}' não encontrada no banco de dados.[/red]")
@@ -557,7 +562,7 @@ def display_setter_distribution(
                 elif item["probability_pct"] >= 25.0:
                     prob_str = f"[bold green]{item['probability_pct']}%[/bold green]"
 
-                ci_str = f"±{item['margin_error_pct']}% [{item['ci_95'][0]}% - {item['ci_95'][1]}%]"
+                ci_str = "Indisponível: pesos heurísticos não fornecem IC"
                 kill_str = f"{item['expected_kill_pct']}%"
 
                 tbl.add_row(

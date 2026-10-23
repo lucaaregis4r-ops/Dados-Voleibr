@@ -29,6 +29,10 @@ class DatabaseRepository:
         with self._lock:
             cur = self.get_connection()
             cur.execute(schema_sql)
+            from cbv.metric_definitions import METRICS, VERSION
+            for key, name, columns, denominator, cls, formula in METRICS:
+                cur.execute("INSERT OR REPLACE INTO metric_definitions VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                            [key, name, name, formula, cls, 'match report agregado', 20, VERSION])
         logger.debug(f"DuckDB initialized at {self.db_path}")
 
     def match_exists(self, match_id: int) -> bool:
@@ -284,7 +288,14 @@ class DatabaseRepository:
                                 ],
                             )
 
+                conn.execute("INSERT OR REPLACE INTO match_provenance VALUES (?, ?, ?, NULL, ?, ?)",
+                             [match_id, f"https://cbv.com.br/jogo/{match_id}", None, 'cbv-parser-0.1.0', 'scouting-1.0'])
                 conn.commit()
+                # In-process dossiers and role estimates must not survive an ingestion.
+                from cbv.analysis.tactics import get_team_tactical_dossier
+                from cbv.analysis.setter_distribution import infer_team_tactical_roles
+                get_team_tactical_dossier.cache_clear()
+                infer_team_tactical_roles.cache_clear()
                 logger.info(f"game={match_id} saved to DuckDB ({len(data.players)} players, tactical={'yes' if data.tactical else 'no'})")
             except Exception as e:
                 try:

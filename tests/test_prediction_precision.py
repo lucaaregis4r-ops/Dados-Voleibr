@@ -1,67 +1,51 @@
-"""Unit tests for match prediction and empirical precision metrics."""
-
+"""Forecast validation tests assert correctness, never a desired accuracy target."""
 import pytest
 from cbv.analysis.predictions import predict_matchup, evaluate_prediction_model
+from cbv.analysis.temporal import walk_forward, evaluation
 
 
-def test_predict_matchup_precision_metrics():
-    pred = predict_matchup("SÃO PAULO", "PARANÁ")
+def test_prediction_is_model_with_measured_validation():
+    pred=predict_matchup('SADA CRUZEIRO VÔLEI','ITAMBÉ MINAS',season='2025-2026')
     assert pred is not None
-    assert "probabilities" in pred
-    assert "precision" in pred
-
-    prec = pred["precision"]
-    assert "margin_of_error_pct" in prec
-    assert prec["margin_of_error_pct"] > 0.0
-    assert "ci_90" in prec
-    assert "empirical_accuracy_pct" in prec
-    assert prec["empirical_accuracy_pct"] >= 70.0
-    assert "brier_score" in prec
-    assert 0.0 <= prec["brier_score"] <= 0.25
-
-    # Check that probabilities sum to 100
-    p_a = pred["probabilities"]["SÃO PAULO"]
-    p_b = pred["probabilities"]["PARANÁ"]
-    assert abs(p_a + p_b - 100.0) < 0.2
+    assert pred['metric_class']=='MODELO'
+    assert sum(pred['probabilities'].values())==pytest.approx(100)
+    precision=pred['precision']
+    assert precision['ci_90'] is None
+    assert precision['margin_of_error_pct'] is None
+    ev=precision['validation']
+    assert precision['brier_score']==ev['brier_score']
+    assert precision['empirical_accuracy_pct']==ev['accuracy_pct']
+    assert ev['total_matches']>0
+    assert 0<=ev['brier_score']<=1
+    assert ev['log_loss']>=0
 
 
-def test_evaluate_prediction_model():
-    eval_res = evaluate_prediction_model()
-    assert eval_res["total_matches"] > 0
-    assert eval_res["accuracy_pct"] >= 70.0
-    assert eval_res["brier_score"] > 0.0
-    assert "calibration" in eval_res
-    assert "50-60%" in eval_res["calibration"]
+def test_evaluation_has_strict_temporal_boundaries():
+    ev=evaluate_prediction_model()
+    assert ev['total_matches']==len(ev['predictions'])>0
+    assert all(p['trained_through']<p['date'] for p in ev['predictions'])
+    assert all(p['training_matches']>=20 for p in ev['predictions'])
+    assert 0<=ev['calibration_error']<=1
 
 
-def test_current_season_bayesian_shrinkage():
-    """Validates that predictions prioritize the active season with empirical Bayes shrinkage."""
-    from cbv.analysis.tactics import get_team_tactical_dossier
+def test_future_results_cannot_change_past_predictions():
+    from cbv.export.html_dashboard import generate_dashboard_data
+    from cbv.database.repository import default_repo
+    from cbv.export.html_dashboard import records
+    data=generate_dashboard_data()
+    c=next(c for c in data['cohorts'] if c['evaluation']['total_matches']>10)
+    with default_repo.get_connection() as conn:
+        rr=records(conn,'SELECT t.*, s.* EXCLUDE(match_id, team), m.date FROM team_match_stats t JOIN matches m USING(match_id) LEFT JOIN team_tactical_stats s USING(match_id, team)')
+    ids={m['match_id'] for m in c['matches']};rr=[r for r in rr if r['match_id'] in ids]
+    baseline,_,_,_=walk_forward(c['matches'],rr)
+    cutoff=baseline[len(baseline)//2]['date']
+    changed=[dict(m,home_sets=m['away_sets'],away_sets=m['home_sets']) if m['date']>cutoff else dict(m) for m in c['matches']]
+    after,_,_,_=walk_forward(changed,rr)
+    assert [p for p in baseline if p['date']<=cutoff]==[p for p in after if p['date']<=cutoff]
 
-    # Active season team with games
-    d_sada = get_team_tactical_dossier("SADA CRUZEIRO VÔLEI", season="2025-2026")
-    assert d_sada is not None
-    rec_sada = d_sada["record"]
-    assert rec_sada["target_season"] == "2025-2026"
-    assert rec_sada["current_season_games"] >= 15
-    assert rec_sada["current_season_weight_pct"] >= 85.0
-    assert rec_sada["is_current_season_driven"] is True
 
-    # Active season team without games in 2025-2026 (calibrated from prior)
-    d_pin = get_team_tactical_dossier("E.C. PINHEIROS", season="2025-2026")
-    assert d_pin is not None
-    rec_pin = d_pin["record"]
-    assert rec_pin["current_season_games"] == 0
-    assert rec_pin["current_season_weight_pct"] == 0.0
-    assert rec_pin["prior_weight_pct"] == 100.0
-    assert rec_pin["is_current_season_driven"] is False
-
-    # Match prediction calibration payload
-    pred = predict_matchup("SADA CRUZEIRO VÔLEI", "ITAMBÉ MINAS", season="2025-2026", include_evaluation=False)
-    assert pred is not None
-    prec = pred["precision"]
-    assert "season_calibration" in prec
-    calib = prec["season_calibration"]
-    assert calib["target_season"] == "2025-2026"
-    assert "SADA CRUZEIRO VÔLEI" in calib
-    assert calib["SADA CRUZEIRO VÔLEI"]["current_weight_pct"] >= 85.0
+def test_empty_validation_is_unavailable():
+    ev=evaluation([])
+    assert ev['total_matches']==0
+    assert ev['brier_score'] is None
+    assert ev['accuracy_pct'] is None
