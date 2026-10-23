@@ -7,7 +7,7 @@ from cbv.analysis.temporal import walk_forward, evaluation
 def test_prediction_is_model_with_measured_validation():
     pred=predict_matchup('SADA CRUZEIRO VÔLEI','ITAMBÉ MINAS',season='2025-2026')
     assert pred is not None
-    assert pred['metric_class']=='MODELO'
+    assert pred['metric_class']=='MODELADO'
     assert sum(pred['probabilities'].values())==pytest.approx(100)
     precision=pred['precision']
     assert precision['ci_90'] is None

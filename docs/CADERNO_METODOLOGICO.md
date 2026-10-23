@@ -85,7 +85,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** SO/BP do relatório excluem pontos creditados a erro adversário; não equivalem à sequência completa de placar.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -139,7 +139,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** SO/BP do relatório excluem pontos creditados a erro adversário; não equivalem à sequência completa de placar.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -193,7 +193,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Agregado sem sequência de contatos.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -247,7 +247,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Agregado sem sequência de contatos.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -301,7 +301,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -355,7 +355,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -409,7 +409,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Agregado sem sequência de contatos.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -463,7 +463,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Agregado sem sequência de contatos.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -517,7 +517,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Agregado sem sequência de contatos.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -571,7 +571,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -625,7 +625,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -679,7 +679,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -733,7 +733,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -787,7 +787,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -841,7 +841,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -895,7 +895,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -949,7 +949,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1003,7 +1003,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1057,7 +1057,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1111,7 +1111,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1165,7 +1165,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Percentuais arredondados; contagem reconstruída aproximada.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1327,7 +1327,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Cobertura parcial; associação descritiva sujeita a adversário e escalação.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1597,7 +1597,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Cobertura parcial; associação descritiva sujeita a adversário e escalação.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1651,7 +1651,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Cobertura parcial; associação descritiva sujeita a adversário e escalação.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 10 pontos ganhos e 8 perdidos na passagem: saldo +2.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1705,7 +1705,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Rotações absolutas exigem marcador de levantadora observado; lineup e on/off exigem presença de líbero reconciliada. Passagens finais são censuradas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1759,7 +1759,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Rotações absolutas exigem marcador de levantadora observado; lineup e on/off exigem presença de líbero reconciliada. Passagens finais são censuradas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1813,7 +1813,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Rotações absolutas exigem marcador de levantadora observado; lineup e on/off exigem presença de líbero reconciliada. Passagens finais são censuradas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1867,7 +1867,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Rotações absolutas exigem marcador de levantadora observado; lineup e on/off exigem presença de líbero reconciliada. Passagens finais são censuradas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1921,7 +1921,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Rotações absolutas exigem marcador de levantadora observado; lineup e on/off exigem presença de líbero reconciliada. Passagens finais são censuradas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -1975,7 +1975,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Rotações absolutas exigem marcador de levantadora observado; lineup e on/off exigem presença de líbero reconciliada. Passagens finais são censuradas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** Após recuperar o saque, equipe ganha 3 BP e perde o próximo: passagem de 3 pontos; 4 saques.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2029,7 +2029,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Rotações absolutas exigem marcador de levantadora observado; lineup e on/off exigem presença de líbero reconciliada. Passagens finais são censuradas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2083,7 +2083,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Rotações absolutas exigem marcador de levantadora observado; lineup e on/off exigem presença de líbero reconciliada. Passagens finais são censuradas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2137,7 +2137,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Rotações absolutas exigem marcador de levantadora observado; lineup e on/off exigem presença de líbero reconciliada. Passagens finais são censuradas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2191,7 +2191,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Rotações absolutas exigem marcador de levantadora observado; lineup e on/off exigem presença de líbero reconciliada. Passagens finais são censuradas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** Com atleta 6/10=60%; sem atleta 5/10=50%: diferença bruta +10 pp; sem causalidade.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2245,13 +2245,13 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Prior descritivo da coorte completa; não usar em previsão temporal retrospectiva. Aproximações de percentuais não são contagens binomiais exatas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 sucessos em 10: 60%; Wilson 95% aproximadamente 31,3%–83,2%.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
 **Como não interpretar:** Não demonstra causalidade ou qualidade individual.
 
-**Referência:** Definição operacional do projeto; não reivindica padronização externa.
+**Referência:** Wilson (1927), https://doi.org/10.1080/01621459.1927.10502953
 
 **Notas da fonte:** Sem eventos individuais, não atribuir ponto a atacante ou levantadora.
 
@@ -2267,11 +2267,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Classe:** DERIVADO
 
-**Fórmula:** 100 × quantidade de valores inferiores / número de equipes cobertas
+**Fórmula:** 100 × (quantidade de valores inferiores + 0,5 × quantidade de empates) / equipes cobertas
 
-**Numerador:** 100 × quantidade de valores inferiores 
+**Numerador:** 100 × (quantidade de valores inferiores + 0,5 × quantidade de empates) 
 
-**Denominador:**  número de equipes cobertas
+**Denominador:**  equipes cobertas
 
 **Unidade:** pp, % ou intervalo
 
@@ -2299,7 +2299,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Prior descritivo da coorte completa; não usar em previsão temporal retrospectiva. Aproximações de percentuais não são contagens binomiais exatas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** Taxas 40, 50, 50, 60: valor 50 tem (1+0,5×2)/4=50º percentil.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2353,7 +2353,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Prior descritivo da coorte completa; não usar em previsão temporal retrospectiva. Aproximações de percentuais não são contagens binomiais exatas.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** Equipe=60%; referência=55%: +5 pontos percentuais.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2373,7 +2373,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Definição:** Empirical Bayes
 
-**Classe:** DERIVADO
+**Classe:** MODELADO
 
 **Fórmula:** 100 × (k+α)/(n+α+β); prior beta por momentos da coorte
 
@@ -2397,11 +2397,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Ajuste de amostra:** Nenhum na medida bruta.
 
-**Modelo:** Não se aplica
+**Modelo:** beta-binomial empirical Bayes
 
-**Versão do modelo:** Não se aplica
+**Versão do modelo:** eb-moments-v1
 
-**Validação:** Fixtures e invariantes; modelos exigem avaliação temporal em datas anteriores.
+**Validação:** Prior por momentos, mínimo 3 equipes com contagens binomiais exatas; ajuste descritivo da coorte completa, não feature temporal.
 
 **Interpretação:** Comparar somente definições e fontes equivalentes.
 
@@ -2429,9 +2429,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Classe:** DERIVADO
 
-**Fórmula:** Métrica em blocos cronológicos de partidas
+**Fórmula:** Razão das somas dos últimos cinco jogos com data, incluindo o jogo do ponto da série
 
-**Numerador:** Métrica em blocos cronológicos de partidas
+**Numerador:** Razão das somas dos últimos cinco jogos com data, incluindo o jogo do ponto da série
 
 **Denominador:** Não se aplica
 
@@ -2507,7 +2507,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** xSO
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** atlas-rally-beta-v2
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -2515,7 +2515,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2561,7 +2561,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** xBP
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** atlas-rally-beta-v2
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -2569,7 +2569,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2615,7 +2615,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** SO acima do esperado
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** atlas-rally-beta-v2
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -2623,7 +2623,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** SO=64%; xSO=60% na mesma amostra: +4 pp.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2669,7 +2669,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** BP acima do esperado
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** atlas-rally-beta-v2
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -2677,7 +2677,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** BP=36%; xBP=32% na mesma amostra: +4 pp.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2723,7 +2723,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** xPoints/100
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** atlas-rally-beta-v2
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -2731,7 +2731,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** Probabilidades 0,6 e 0,4 em dois rallies: xPoints/100=50.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2777,7 +2777,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** Rotation Above Expected
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** atlas-rally-beta-v2
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -2785,7 +2785,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2831,7 +2831,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** xAttack
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** phase-prior-v1
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -2839,7 +2839,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 10 ataques × expectativa histórica de 40%: 4 kills esperados.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2885,7 +2885,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** Attack Above Expected
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** phase-prior-v1
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -2893,7 +2893,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 kills e 4 esperados: +2 kills, sujeitos a arredondamento da fonte.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2939,7 +2939,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** Probabilidade de vitória durante o jogo
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** atlas-rally-beta-v2
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -2947,7 +2947,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -2993,7 +2993,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** Win Probability Added
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** atlas-rally-beta-v2
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -3001,7 +3001,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** WP antes=0,45; depois=0,52: WPA=+0,07 (+7 pp).
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -3047,7 +3047,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** Sensibilidade do rally
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** atlas-rally-beta-v2
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -3055,7 +3055,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** WP se ganhar=0,60; se perder=0,42: sensibilidade=0,18 (18 pp).
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -3077,11 +3077,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Classe:** EXPERIMENTAL
 
-**Fórmula:** Taxas por rotação e faixas de leverage estimadas em histórico anterior
+**Fórmula:** Taxas por rotação; faixas LOW/MEDIUM/HIGH/VERY_HIGH nos P50/P75/P90 do leverage de dias anteriores; alta pressão = acima de P75
 
-**Numerador:** Taxas por rotação e faixas de leverage estimadas em histórico anterior
+**Numerador:** Taxas por rotação; faixas LOW
 
-**Denominador:** Não se aplica
+**Denominador:** MEDIUM/HIGH/VERY_HIGH nos P50/P75/P90 do leverage de dias anteriores; alta pressão = acima de P75
 
 **Unidade:** %
 
@@ -3101,7 +3101,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** Mapa de pressão
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** atlas-rally-beta-v2
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -3109,7 +3109,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -3155,7 +3155,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** Efeito contextual estimado
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** Não se aplica
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -3163,7 +3163,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -3175,7 +3175,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Introduzida em:** atlas-metrics-1.0
 
-**Disponibilidade:** CONDITIONAL
+**Disponibilidade:** UNAVAILABLE_NOT_VALIDATED
 
 ## Força ajustada por adversário — `opponent_rating`
 
@@ -3209,7 +3209,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** Força ajustada por adversário
 
-**Versão do modelo:** atlas-context-v1
+**Versão do modelo:** opponent-logistic-l2-v1
 
 **Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
 
@@ -3217,7 +3217,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -3487,13 +3487,13 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Definições SO/BP legadas preservadas; sem inferência causal. Acurácia é secundária à calibração.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** p=0,7, y=1: (0,7−1)²=0,09.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
 **Como não interpretar:** Não demonstra causalidade ou qualidade individual.
 
-**Referência:** Definição operacional do projeto; não reivindica padronização externa.
+**Referência:** Brier (1950), https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2
 
 **Notas da fonte:** Sem eventos individuais, não atribuir ponto a atacante ou levantadora.
 
@@ -3541,7 +3541,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Definições SO/BP legadas preservadas; sem inferência causal. Acurácia é secundária à calibração.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** p=0,7, y=1: −ln(0,7)≈0,357.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -3749,7 +3749,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** setter-heuristic
 
-**Versão do modelo:** legacy-experimental
+**Versão do modelo:** setter-heuristic-legacy-v1
 
 **Validação:** Fixtures e invariantes; modelos exigem avaliação temporal em datas anteriores.
 
@@ -3757,7 +3757,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Sem encadeamento recepção→levantamento→ataque observado. Pesos heurísticos não validados; entropia alta não significa melhor.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
@@ -3803,7 +3803,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** setter-heuristic
 
-**Versão do modelo:** legacy-experimental
+**Versão do modelo:** setter-heuristic-legacy-v1
 
 **Validação:** Fixtures e invariantes; modelos exigem avaliação temporal em datas anteriores.
 
@@ -3811,13 +3811,13 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Sem encadeamento recepção→levantamento→ataque observado. Pesos heurísticos não validados; entropia alta não significa melhor.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** Duas opções equiprováveis: −2×0,5×log₂(0,5)=1 bit.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 
 **Como não interpretar:** Não demonstra causalidade ou qualidade individual.
 
-**Referência:** Definição operacional do projeto; não reivindica padronização externa.
+**Referência:** Shannon (1948), https://doi.org/10.1002/j.1538-7305.1948.tb01338.x
 
 **Notas da fonte:** Sem eventos individuais, não atribuir ponto a atacante ou levantadora.
 
@@ -3857,7 +3857,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** setter-heuristic
 
-**Versão do modelo:** legacy-experimental
+**Versão do modelo:** setter-heuristic-legacy-v1
 
 **Validação:** Fixtures e invariantes; modelos exigem avaliação temporal em datas anteriores.
 
@@ -3865,7 +3865,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Limitações:** Sem encadeamento recepção→levantamento→ataque observado. Pesos heurísticos não validados; entropia alta não significa melhor.
 
-**Exemplo numérico ou caso limite:** Ausência de denominador → NULL, nunca 0%.
+**Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
 **Interface:** Detalhe contextual e Dados → caderno.
 

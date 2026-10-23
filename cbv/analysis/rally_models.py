@@ -9,7 +9,8 @@ from functools import lru_cache
 import math
 import numpy as np
 
-VERSION='atlas-rally-beta-v1'
+from cbv.metrics.registry import REGISTRY
+VERSION=REGISTRY['wp'].model_version
 PRIOR_STRENGTH=30
 
 
@@ -64,19 +65,26 @@ class ScoreModel:
 def enrich_temporal(matches,rows):
     by_match=defaultdict(list)
     for r in rows:by_match[r['match_id']].append(r)
-    global_counts={False:[0,0],True:[0,0]};team_counts=defaultdict(lambda:[0,0]);history=[];evaluated=[];baseline=[];runs=[]
+    global_counts={False:[0,0],True:[0,0]};team_counts=defaultdict(lambda:[0,0]);history=[];evaluated=[];baseline=[];runs=[];prior_leverages=[]
     dated=sorted([m for m in matches if m.get('date') and m['match_id'] in by_match],key=lambda m:(str(m['date'])[:10],m['match_id']))
     for day,batch in groupby(dated,key=lambda m:str(m['date'])[:10]):
         batch=list(batch);pending=[]
+        thresholds=[float(v) for v in np.quantile(prior_leverages,[.5,.75,.9])] if prior_leverages else None
         for m in batch:
             rr=by_match[m['match_id']];h,a=m['home_team'],m['away_team'];prior_dates=[d for d in history if d<day]
             def expected(team,serving):
                 gk,gn=global_counts[serving];k,n=team_counts[(team,serving)]
                 if not gn:return None
                 return (k+PRIOR_STRENGTH*(gk+.5)/(gn+1))/(n+PRIOR_STRENGTH)
-            hs,hr=expected(h,True),expected(h,False)
+            hserve,hreceive=expected(h,True),expected(h,False)
+            areceive,aserve=expected(a,False),expected(a,True)
+            def combine(own,opponent):
+                if own is None or opponent is None:return None
+                z=(math.log(own/(1-own))+math.log((1-opponent)/opponent))/2
+                return 1/(1+math.exp(-z))
+            hs,hr=combine(hserve,areceive),combine(hreceive,aserve)
             model=ScoreModel(hs,hr,2 if m['competition']=='CBS' else 3) if hs is not None and hr is not None else None
-            sets_h=sets_a=0;previous_set=None
+            sets_h=sets_a=0;previous_set=None;previous=None
             for r in rr:
                 if previous_set is not None and r['set_number']!=previous_set:
                     if previous['score_home_after']>previous['score_away_after']:sets_h+=1
@@ -86,22 +94,25 @@ def enrich_temporal(matches,rows):
                 sh,sa=r['score_home_before'],r['score_away_before'];ah,aa=r['score_home_after'],r['score_away_after']
                 r.update(wp_before=None,wp_after=None,wpa=None,leverage=None,expected_home=None,
                     crunch=min(sh,sa)>=target-5 and abs(sh-sa)<=2,super_crunch=min(sh,sa)>=target-2 and abs(sh-sa)<=1,
-                    model_version=VERSION,model_class='EXPERIMENTAL',trained_through=max(prior_dates) if prior_dates else None)
-                p=expected(h,server=='home')
+                    pressure_band=None,pressure_thresholds=thresholds,model_version=VERSION,model_class='EXPERIMENTAL',trained_through=max(prior_dates) if prior_dates else None)
+                p=hs if server=='home' else hr
                 if model:
                     before=model.match_probability(sets_h,sets_a,sh,sa,server)
                     win=model.match_probability(sets_h,sets_a,sh+1,sa,'home');lose=model.match_probability(sets_h,sets_a,sh,sa+1,'away')
                     after=model.match_probability(sets_h,sets_a,ah,aa,r['winner_side'])
                     r.update(wp_before=before,wp_after=after,wpa=after-before,leverage=win-lose,expected_home=p)
+                    if thresholds:
+                        r['pressure_band']=['LOW','MEDIUM','HIGH','VERY_HIGH'][sum(win-lose>cut for cut in thresholds)]
                     evaluated.append((p,int(r['winner_side']=='home')))
                     gk,gn=global_counts[server=='home'];baseline.append(((gk+.5)/(gn+1),int(r['winner_side']=='home')))
                 pending.append(r)
             if model:
                 model.set_probability.cache_clear();model.match_probability.cache_clear()
             runs.append(dict(match_id=m['match_id'],training_window=[min(prior_dates),max(prior_dates)] if prior_dates else None,
-                training_matches=len(history),features=['team','serve_receive','prior_scoreboard_points'],parameters=dict(prior_strength=PRIOR_STRENGTH,home_serve=hs,home_receive=hr),
+                training_matches=len(history),features=['team','serve_receive','prior_scoreboard_points'],parameters=dict(prior_strength=PRIOR_STRENGTH,home_serve=hs,home_receive=hr,components=dict(home_serve=hserve,home_receive=hreceive,away_receive=areceive,away_serve=aserve),combination='mean of own/opponent-complement logits'),
                 model_version=VERSION,model_class='EXPERIMENTAL',format_source='CBS best-of-three; Superliga best-of-five; validate competition rules before extending'))
         for r in pending:
+            if r.get('leverage') is not None:prior_leverages.append(r['leverage'])
             for side in ('home','away'):
                 serving=r['serving_side']==side;won=int(r['winner_side']==side);team=r[side+'_team']
                 global_counts[serving][0]+=won;global_counts[serving][1]+=1

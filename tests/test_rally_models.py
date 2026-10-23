@@ -30,3 +30,21 @@ def test_expected_attack_never_uses_same_day_or_its_own_kills():
     assert result[0]['expected_kills'] is None and result[1]['expected_kills'] is None
     assert result[2]['expected_kills']==5
     assert result[2]['above_expected']==5
+
+
+def test_intercept_challenger_preserves_baseline_and_common_sample():
+    from cbv.analysis.challengers import evaluate_intercept
+    result=evaluate_intercept([],[])
+    assert result['active_model']=='logistic-l2-v1'
+    assert result['baseline']['total_matches']==result['candidate']['total_matches']==0
+    assert not result['improved']
+
+
+def test_opponent_effects_are_regularized_and_empty_validation_never_promotes():
+    from cbv.analysis.opponent_ratings import fit_effects,predict,evaluate_ratings
+    history=[dict(team='A',opponent='B',k=6,n=10),dict(team='B',opponent='A',k=4,n=10)]
+    fitted=fit_effects(history)
+    assert .5<predict(fitted,'A','B')<.6
+    assert .4<predict(fitted,'B','A')<.5
+    result=evaluate_ratings([],[])
+    assert all(not r['improved'] and not r['ratings'] for r in result.values())

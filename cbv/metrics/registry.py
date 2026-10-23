@@ -1,5 +1,5 @@
 """Canonical, machine-readable definitions shared by code, UI and methodology."""
-from dataclasses import dataclass,asdict
+from dataclasses import dataclass,asdict,replace
 from enum import Enum
 from cbv.metrics.legacy import METRICS as LEGACY_BINDINGS
 
@@ -85,8 +85,8 @@ for key,name,formula in [
         limitations='Rotações absolutas exigem marcador de levantadora observado; lineup e on/off exigem presença de líbero reconciliada. Passagens finais são censuradas.')
 for key,name,formula in [
  ('wilson','Intervalo de Wilson','Centro=(p+z²/2n)/(1+z²/n); meia largura=z√(p(1-p)/n+z²/4n²)/(1+z²/n), z=1,95996'),
- ('percentile','Percentil','100 × quantidade de valores inferiores / número de equipes cobertas'),('delta','Delta','Valor da equipe − referência da coorte'),
- ('shrinkage','Empirical Bayes','100 × (k+α)/(n+α+β); prior beta por momentos da coorte'),('trend','Tendência','Métrica em blocos cronológicos de partidas')]:
+ ('percentile','Percentil','100 × (quantidade de valores inferiores + 0,5 × quantidade de empates) / equipes cobertas'),('delta','Delta','Valor da equipe − referência da coorte'),
+ ('shrinkage','Empirical Bayes','100 × (k+α)/(n+α+β); prior beta por momentos da coorte'),('trend','Tendência','Razão das somas dos últimos cinco jogos com data, incluindo o jogo do ponto da série')]:
     register(key,name,formula,unit='pp, % ou intervalo',limitations='Prior descritivo da coorte completa; não usar em previsão temporal retrospectiva. Aproximações de percentuais não são contagens binomiais exatas.')
 for key,name,formula in [
  ('xso','xSO','E[P(ganhar recebendo) | histórico anterior à data]'),('xbp','xBP','E[P(ganhar sacando) | histórico anterior à data]'),
@@ -95,7 +95,7 @@ for key,name,formula in [
  ('xattack','xAttack','Tentativas atuais × kill% histórico anterior na mesma fase K1+/K1−/K2'),('attack_ae','Attack Above Expected','Kills publicados/reconstruídos − kills esperados'),
  ('wp','Probabilidade de vitória durante o jogo','Recorrência de placar e saque com probabilidade de rally fixada antes do jogo'),('wpa','Win Probability Added','WP_after − WP_before'),
  ('leverage','Sensibilidade do rally','WP(se ganhar o próximo ponto) − WP(se perder o próximo ponto)'),
- ('pressure_map','Mapa de pressão','Taxas por rotação e faixas de leverage estimadas em histórico anterior'),
+ ('pressure_map','Mapa de pressão','Taxas por rotação; faixas LOW/MEDIUM/HIGH/VERY_HIGH nos P50/P75/P90 do leverage de dias anteriores; alta pressão = acima de P75'),
  ('contextual_effect','Efeito contextual estimado','Contraste regularizado com/sem atleta condicionado a adversário, rotação e companheiras'),
  ('opponent_rating','Força ajustada por adversário','Efeito regularizado de equipe e oponente sobre resultado da fase')]:
     register(key,name,formula,'EXPERIMENTAL',sources=('Histórico de fontes reconciliadas',),level='rally/rotação/equipe/modelo',model_name=name,model_version='atlas-context-v1',
@@ -118,6 +118,41 @@ for key,name,formula in [('setter_distribution','Distribuição estimada — exp
  ('entropy','Entropia do modelo','−Σ p_i log₂(p_i) da distribuição estimada'),('predictability_efficiency','Diversidade × eficiência','Associação entre entropia do modelo e eficiência ofensiva agregada')]:
     register(key,name,formula,'EXPERIMENTAL',sources=('Volume ofensivo agregado','Funções estimadas'),level='equipe/rotação/condição de passe',
         model_name='setter-heuristic',model_version='legacy-experimental',limitations='Sem encadeamento recepção→levantamento→ataque observado. Pesos heurísticos não validados; entropia alta não significa melhor.',implementation_status='LEGACY_EXPERIMENTAL')
+
+
+REFERENCES={
+ 'wilson':'Wilson (1927), https://doi.org/10.1080/01621459.1927.10502953',
+ 'brier':'Brier (1950), https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2',
+ 'entropy':'Shannon (1948), https://doi.org/10.1002/j.1538-7305.1948.tb01338.x',
+}
+EXAMPLES={'wilson':'6 sucessos em 10: 60%; Wilson 95% aproximadamente 31,3%–83,2%.',
+ 'brier':'p=0,7, y=1: (0,7−1)²=0,09.', 'log_loss':'p=0,7, y=1: −ln(0,7)≈0,357.',
+ 'entropy':'Duas opções equiprováveis: −2×0,5×log₂(0,5)=1 bit.',
+ 'wpa':'WP antes=0,45; depois=0,52: WPA=+0,07 (+7 pp).',
+ 'leverage':'WP se ganhar=0,60; se perder=0,42: sensibilidade=0,18 (18 pp).',
+ 'xpoints':'Probabilidades 0,6 e 0,4 em dois rallies: xPoints/100=50.',
+ 'soae':'SO=64%; xSO=60% na mesma amostra: +4 pp.',
+ 'bpae':'BP=36%; xBP=32% na mesma amostra: +4 pp.',
+ 'xattack':'10 ataques × expectativa histórica de 40%: 4 kills esperados.',
+ 'attack_ae':'6 kills e 4 esperados: +2 kills, sujeitos a arredondamento da fonte.',
+ 'percentile':'Taxas 40, 50, 50, 60: valor 50 tem (1+0,5×2)/4=50º percentil.',
+ 'delta':'Equipe=60%; referência=55%: +5 pontos percentuais.',
+ 'rotation_balance':'10 pontos ganhos e 8 perdidos na passagem: saldo +2.',
+ 'serve_run':'Após recuperar o saque, equipe ganha 3 BP e perde o próximo: passagem de 3 pontos; 4 saques.',
+ 'on_off':'Com atleta 6/10=60%; sem atleta 5/10=50%: diferença bruta +10 pp; sem causalidade.',
+}
+MODEL_VERSIONS={**{key:'atlas-rally-beta-v2' for key in ('xso','xbp','soae','bpae','xpoints','rotation_ae','wp','wpa','leverage','pressure_map')},
+    **{key:'phase-prior-v1' for key in ('xattack','attack_ae')},'opponent_rating':'opponent-logistic-l2-v1',
+    **{key:'setter-heuristic-legacy-v1' for key in ('setter_distribution','entropy','predictability_efficiency')}}
+for key,metric in list(REGISTRY.items()):
+    updates={}
+    if key in MODEL_VERSIONS:updates['model_version']=MODEL_VERSIONS[key]
+    if key=='shrinkage':updates.update(metric_class='MODELADO',model_name='beta-binomial empirical Bayes',model_version='eb-moments-v1',validation_method='Prior por momentos, mínimo 3 equipes com contagens binomiais exatas; ajuste descritivo da coorte completa, não feature temporal.')
+    if key=='contextual_effect':updates.update(model_version=None,implementation_status='UNAVAILABLE_NOT_VALIDATED')
+    if key in REFERENCES:updates['literature_basis']=REFERENCES[key]
+    if key in EXAMPLES:updates['example']=EXAMPLES[key]
+    elif metric.unit=='%':updates['example']='6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.'
+    REGISTRY[key]=replace(metric,**updates)
 
 
 def catalog():return [asdict(m) for m in REGISTRY.values()]

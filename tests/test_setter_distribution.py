@@ -56,6 +56,6 @@ def test_compute_setter_distribution_pass_conditioning():
     for item in dist_pos["distribution"]:
         assert item["margin_error_pct"] is None
         assert item["ci_95"] is None
-        assert dist_pos["metric_class"] == "MODELO"
+        assert dist_pos["metric_class"] == "EXPERIMENTAL"
         assert "Não corresponde" in dist_pos["limitation"]
         assert item["expected_kill_pct"] >= 0.0

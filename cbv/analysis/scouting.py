@@ -41,7 +41,7 @@ def metric_values(rows):
         approximate = key in ('positive', 'excellent') or key.startswith(('pos_rec', 'neg_rec', 'trans'))
         result[key] = dict(label=label, value=100*k/n if n else None, numerator=k if n else None, n=n,
                            ci=wilson(k, n) if not approximate and key != 'eff' else None,
-                           metric_class=cls, formula=formula, approximate=approximate, sample=sample_label(n),
+                           metric_class=cls, source_type='MATCH_REPORT',source_match_count=len(valid),sample_size=n,data_version=VERSION,model_version=None, formula=formula, approximate=approximate, sample=sample_label(n),
                            covered_matches=len(valid), total_matches=len(rows), adjusted=None)
     return result
 
@@ -87,4 +87,7 @@ def aggregate_cohort(matches, rows, players):
             if prior and m['n']:
                 a,b = prior
                 m['adjusted'] = 100*(m['numerator']+a)/(m['n']+a+b)
+                m['adjusted_metric_class']='MODELADO'
+                m['adjusted_model_version']='eb-moments-v1'
+                m['adjusted_prior']=dict(alpha=a,beta=b,scope='coorte completa; apenas descritivo')
     return dict(teams=teams, metrics=overall, matches=matches)

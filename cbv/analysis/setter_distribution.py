@@ -277,7 +277,7 @@ def compute_setter_distribution(
     """
     if roles is None:
         console.print("MODELO: Modelo heurístico de disponibilidade ofensiva. Não corresponde à frequência real de levantamentos observados.")
-    roles = infer_team_tactical_roles(team_query)
+        roles = infer_team_tactical_roles(team_query)
     if not roles:
         return None
 
@@ -487,8 +487,11 @@ def compute_setter_distribution(
             )
 
     return {
-        "metric_class": "MODELO",
-        "model_name": "Modelo heurístico de disponibilidade ofensiva",
+        "metric_class": "EXPERIMENTAL",
+        "model_name": "Distribuição estimada — experimental",
+        "model_version": "setter-heuristic-legacy-v1",
+        "source_type": "AGGREGATED_ATTACK_VOLUME_AND_HEURISTICS",
+        "sample_size": total_attacks,
         "limitation": "Não corresponde à frequência real de levantamentos observados.",
         "team": team,
         "rotation": rot,

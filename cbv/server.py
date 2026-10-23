@@ -119,7 +119,7 @@ def api_simulated_fixtures(competition: Optional[str] = None):
             matchup = next((m for m in cohort['model_matchups'] if {m['team_a'],m['team_b']} == {a,b}), None)
             if matchup:
                 p = matchup['probability_a'] if matchup['team_a'] == a else 1-matchup['probability_a']
-                simulations.append(dict(fixture=fixture, prediction=dict(metric_class='MODELO', probabilities={a:round(100*p,1),b:round(100*(1-p),1)}, validation=cohort['evaluation'])))
+                simulations.append(dict(fixture=fixture, prediction=dict(metric_class='MODELADO', probabilities={a:round(100*p,1),b:round(100*(1-p),1)}, validation=cohort['evaluation'])))
     return dict(total_fixtures=len(simulations), simulations=simulations)
 
 

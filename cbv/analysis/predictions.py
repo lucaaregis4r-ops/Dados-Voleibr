@@ -9,97 +9,13 @@ from rich.panel import Panel
 from cbv.database.repository import default_repo
 from cbv.analysis.tactics import get_team_tactical_dossier
 
-import random
-from collections import Counter
 
 console = Console()
 
 
-def sigmoid(x: float) -> float:
-    """Standard sigmoid function for probability scaling."""
-    return 1.0 / (1.0 + math.exp(-x))
-
-
-def simulate_monte_carlo_match(
-    so_a_pct: float,
-    bp_a_pct: float,
-    so_b_pct: float,
-    bp_b_pct: float,
-    n_simulations: int = 5000,
-    best_of_five: bool = True,
-) -> Dict[str, Any]:
-    """
-    Rally-by-rally stochastic Monte Carlo simulation engine.
-    Models volleyball as an alternating Markov transition process.
-    """
-    p_so_a = max(0.20, min(0.90, so_a_pct / 100.0))
-    p_so_b = max(0.20, min(0.90, so_b_pct / 100.0))
-
-    target_sets = 3 if best_of_five else 2
-    score_counts = Counter()
-    total_pts_list = []
-    wins_a = 0
-
-    for _ in range(n_simulations):
-        sets_a = 0
-        sets_b = 0
-        match_pts = 0
-
-        while sets_a < target_sets and sets_b < target_sets:
-            is_tiebreak = (sets_a == target_sets - 1 and sets_b == target_sets - 1)
-            target_pts = 15 if is_tiebreak else 25
-
-            pa, pb = 0, 0
-            server_is_a = random.random() < 0.5
-
-            while True:
-                if server_is_a:
-                    if random.random() < p_so_b:
-                        pb += 1
-                        server_is_a = False
-                    else:
-                        pa += 1
-                else:
-                    if random.random() < p_so_a:
-                        pa += 1
-                        server_is_a = True
-                    else:
-                        pb += 1
-
-                if (pa >= target_pts or pb >= target_pts) and abs(pa - pb) >= 2:
-                    match_pts += pa + pb
-                    if pa > pb:
-                        sets_a += 1
-                    else:
-                        sets_b += 1
-                    break
-
-        score_counts[f"{sets_a}x{sets_b}"] += 1
-        total_pts_list.append(match_pts)
-        if sets_a == target_sets:
-            wins_a += 1
-
-    prob_scores = {k: round(v / n_simulations * 100, 1) for k, v in sorted(score_counts.items())}
-    avg_pts = round(sum(total_pts_list) / n_simulations, 1)
-
-    ou_line = round(avg_pts)
-    over_count = sum(1 for p in total_pts_list if p > ou_line)
-
-    return {
-        "n_simulations": n_simulations,
-        "win_probability_a": round(wins_a / n_simulations * 100, 1),
-        "win_probability_b": round((n_simulations - wins_a) / n_simulations * 100, 1),
-        "score_distribution": prob_scores,
-        "expected_total_points": avg_pts,
-        "over_under_line": ou_line,
-        "over_probability": round(over_count / n_simulations * 100, 1),
-        "under_probability": round((n_simulations - over_count) / n_simulations * 100, 1),
-    }
-
-
 def _cohorts():
     from cbv.export.html_dashboard import generate_dashboard_data
-    return generate_dashboard_data()['cohorts']
+    return generate_dashboard_data(include_atlas=False)['cohorts']
 
 
 def evaluate_prediction_model() -> Dict[str, Any]:
@@ -127,7 +43,7 @@ def predict_matchup(team_a_query, team_b_query, include_evaluation=True, season=
             continue
         p = matchup['probability_a'] if matchup['team_a']==a else 1-matchup['probability_a']
         ev=c['evaluation']
-        return dict(team_a=a,team_b=b,metric_class='MODELO',model_version=ev['model_version'],
+        return dict(team_a=a,team_b=b,metric_class='MODELADO',model_version=ev['model_version'],
                     probabilities={a:round(100*p,1),b:round(100*(1-p),1)},
                     favorite=a if p>=.5 else b,confidence='Não quantificada',
                     projected_scores={'best_of_3':'Indisponível','best_of_5':'Indisponível'},
