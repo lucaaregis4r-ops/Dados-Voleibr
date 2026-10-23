@@ -70,7 +70,9 @@ def build_dashboard_html(data):
     payload=json.dumps(data,ensure_ascii=False,allow_nan=False).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
     fonts = []
     for font in sorted((Path(__file__).parent/'templates'/'fonts').glob('*.ttf')):
-        family = 'Archivo' if font.name.startswith('archivo') else 'IBM Plex Mono'
+        if not font.name.startswith(('inter-', 'roboto-mono-')):
+            continue
+        family = 'Inter' if font.name.startswith('inter-') else 'Roboto Mono'
         weight = font.stem.rsplit('-', 1)[1]
         encoded = base64.b64encode(font.read_bytes()).decode('ascii')
         fonts.append(f"@font-face{{font-family:'{family}';font-style:normal;font-weight:{weight};font-display:swap;src:url(data:font/ttf;base64,{encoded}) format('truetype')}}")
