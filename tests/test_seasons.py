@@ -77,3 +77,16 @@ def test_legacy_rankings_and_tactical_exports_keep_editions_separate(monkeypatch
     assert dict(zip(summary['sideout_breakpoint'].season,summary['sideout_breakpoint'].so_pct))=={'2025-2026':90,'2026-2027':4}
     assert summary['offensive_usage'].usage_pct.tolist()==[100,100]
     repo._conn.close()
+
+
+def test_refresh_without_edition_preserves_verified_season(tmp_path):
+    from cbv.database.repository import DatabaseRepository
+    from cbv.models.match import Match
+    from cbv.models.stats import MatchData
+    repo=DatabaseRepository(tmp_path/'refresh.duckdb')
+    data=MatchData(match=Match(match_id=1,competition='SUPERLIGA',season='2026-2027',date=date(2026,10,17),home_team='A',away_team='B'),validation_status='VALID')
+    repo.save_match_data(data)
+    data.match.season=None
+    repo.save_match_data(data)
+    with repo.get_connection() as c:assert c.execute('SELECT season FROM matches').fetchone()[0]=='2026-2027'
+    repo._conn.close()

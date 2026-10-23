@@ -52,7 +52,7 @@ class DatabaseRepository:
         with self._lock:
             conn = self.get_connection()
             conn.execute("CREATE TABLE IF NOT EXISTS match_ingest_attempts(match_id BIGINT PRIMARY KEY,status VARCHAR,attempted_at TIMESTAMP,payload JSON)")
-            previous=conn.execute("SELECT validation_status FROM matches WHERE match_id=?",[match_id]).fetchone()
+            previous=conn.execute("SELECT validation_status,season FROM matches WHERE match_id=?",[match_id]).fetchone()
             if previous and previous[0]=='VALID' and data.validation_status!='VALID':
                 conn.execute("INSERT OR REPLACE INTO match_ingest_attempts VALUES (?,?,current_timestamp,?)",[match_id,data.validation_status,data.model_dump_json()])
                 logger.warning(f"game={match_id} refresh rejected ({data.validation_status}); retaining last valid Match Report")
@@ -71,7 +71,7 @@ class DatabaseRepository:
                 # 2. Insert match
                 m = data.match
                 from cbv.seasons import default_match_season
-                season_val = m.season or default_match_season(m.competition,m.date)
+                season_val = m.season or (previous[1] if previous else None) or default_match_season(m.competition,m.date)
 
                 conn.execute(
                     """
