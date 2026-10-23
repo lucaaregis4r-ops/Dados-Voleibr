@@ -43,17 +43,17 @@ Shannon (1948), entropia; regressão logística penalizada e validação tempora
 walk-forward. Fórmulas específicas e convenções locais estão registradas abaixo;
 nenhuma sigla implica identidade com modelo externo ou validação publicada.
 
-Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
+Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 74.
 
 ## Side-Out — `so`
 
 **Pergunta:** Qual o valor de Side-Out neste contexto?
 
-**Definição:** Side-Out
+**Definição:** Pontos creditados em recepção no relatório / recepções do relatório
 
 **Classe:** DERIVADO
 
-**Fórmula:** Pontos creditados em recepção no relatório / recepções do relatório
+**Fórmula:** 100 × (sideout_points) / sideout_receptions
 
 **Numerador:** sideout_points
 
@@ -103,11 +103,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de Break Point neste contexto?
 
-**Definição:** Break Point
+**Definição:** Pontos creditados em saque no relatório / saques do relatório
 
 **Classe:** DERIVADO
 
-**Fórmula:** Pontos creditados em saque no relatório / saques do relatório
+**Fórmula:** 100 × (breakpoint_points) / breakpoint_serves
 
 **Numerador:** breakpoint_points
 
@@ -157,11 +157,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de Attack Kill% neste contexto?
 
-**Definição:** Attack Kill%
+**Definição:** Kills / tentativas de ataque
 
 **Classe:** DERIVADO
 
-**Fórmula:** Kills / tentativas de ataque
+**Fórmula:** 100 × (attack_points) / attack_attempts
 
 **Numerador:** attack_points
 
@@ -211,11 +211,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de Eficiência de ataque neste contexto?
 
-**Definição:** Eficiência de ataque
+**Definição:** (kills − erros − bloqueios sofridos) / tentativas
 
 **Classe:** DERIVADO
 
-**Fórmula:** (kills − erros − bloqueios sofridos) / tentativas
+**Fórmula:** 100 × (attack_points − attack_errors − attack_blocked) / attack_attempts
 
 **Numerador:** attack_points + -attack_errors + -attack_blocked
 
@@ -265,11 +265,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de Passe positivo neste contexto?
 
-**Definição:** Passe positivo
+**Definição:** Média dos percentuais publicados ponderada por recepções; contagem aproximada
 
 **Classe:** DERIVADO
 
-**Fórmula:** Média dos percentuais publicados ponderada por recepções; contagem aproximada
+**Fórmula:** 100 × (reception_positive_count) / positive_receptions
 
 **Numerador:** reception_positive_count
 
@@ -319,11 +319,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de Passe excelente neste contexto?
 
-**Definição:** Passe excelente
+**Definição:** Média dos percentuais publicados ponderada por recepções; contagem aproximada
 
 **Classe:** DERIVADO
 
-**Fórmula:** Média dos percentuais publicados ponderada por recepções; contagem aproximada
+**Fórmula:** 100 × (reception_excellent_count) / excellent_receptions
 
 **Numerador:** reception_excellent_count
 
@@ -373,11 +373,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de Erro de saque neste contexto?
 
-**Definição:** Erro de saque
+**Definição:** Erros de saque / saques; não representa erros por rally
 
 **Classe:** DERIVADO
 
-**Fórmula:** Erros de saque / saques; não representa erros por rally
+**Fórmula:** 100 × (serve_errors) / serve_attempts
 
 **Numerador:** serve_errors
 
@@ -427,11 +427,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de Erro de recepção neste contexto?
 
-**Definição:** Erro de recepção
+**Definição:** Erros de recepção / recepções
 
 **Classe:** DERIVADO
 
-**Fórmula:** Erros de recepção / recepções
+**Fórmula:** 100 × (reception_errors) / reception_attempts
 
 **Numerador:** reception_errors
 
@@ -481,11 +481,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de Erro de ataque neste contexto?
 
-**Definição:** Erro de ataque
+**Definição:** Erros de ataque / tentativas
 
 **Classe:** DERIVADO
 
-**Fórmula:** Erros de ataque / tentativas
+**Fórmula:** 100 × (attack_errors) / attack_attempts
 
 **Numerador:** attack_errors
 
@@ -535,11 +535,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K1 / passe + · Kill% neste contexto?
 
-**Definição:** K1 / passe + · Kill%
+**Definição:** Kills reconstruídos do percentual arredondado do relatório / tentativas
 
 **Classe:** DERIVADO
 
-**Fórmula:** Kills reconstruídos do percentual arredondado do relatório / tentativas
+**Fórmula:** 100 × (pos_rec_att_points) / pos_rec_att_attempts
 
 **Numerador:** pos_rec_att_points
 
@@ -589,11 +589,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K1 / passe + · eficiência neste contexto?
 
-**Definição:** K1 / passe + · eficiência
+**Definição:** (kills reconstruídos − erros − bloqueados) / tentativas
 
 **Classe:** DERIVADO
 
-**Fórmula:** (kills reconstruídos − erros − bloqueados) / tentativas
+**Fórmula:** 100 × (pos_rec_att_points − pos_rec_att_errors − pos_rec_att_blocked) / pos_rec_att_attempts
 
 **Numerador:** pos_rec_att_points + -pos_rec_att_errors + -pos_rec_att_blocked
 
@@ -643,11 +643,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K1 / passe + · erro neste contexto?
 
-**Definição:** K1 / passe + · erro
+**Definição:** Erros / tentativas na fase
 
 **Classe:** DERIVADO
 
-**Fórmula:** Erros / tentativas na fase
+**Fórmula:** 100 × (pos_rec_att_errors) / pos_rec_att_attempts
 
 **Numerador:** pos_rec_att_errors
 
@@ -697,11 +697,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K1 / passe + · bloqueado neste contexto?
 
-**Definição:** K1 / passe + · bloqueado
+**Definição:** Bloqueados / tentativas na fase
 
 **Classe:** DERIVADO
 
-**Fórmula:** Bloqueados / tentativas na fase
+**Fórmula:** 100 × (pos_rec_att_blocked) / pos_rec_att_attempts
 
 **Numerador:** pos_rec_att_blocked
 
@@ -751,11 +751,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K1 / passe − · Kill% neste contexto?
 
-**Definição:** K1 / passe − · Kill%
+**Definição:** Kills reconstruídos do percentual arredondado do relatório / tentativas
 
 **Classe:** DERIVADO
 
-**Fórmula:** Kills reconstruídos do percentual arredondado do relatório / tentativas
+**Fórmula:** 100 × (neg_rec_att_points) / neg_rec_att_attempts
 
 **Numerador:** neg_rec_att_points
 
@@ -805,11 +805,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K1 / passe − · eficiência neste contexto?
 
-**Definição:** K1 / passe − · eficiência
+**Definição:** (kills reconstruídos − erros − bloqueados) / tentativas
 
 **Classe:** DERIVADO
 
-**Fórmula:** (kills reconstruídos − erros − bloqueados) / tentativas
+**Fórmula:** 100 × (neg_rec_att_points − neg_rec_att_errors − neg_rec_att_blocked) / neg_rec_att_attempts
 
 **Numerador:** neg_rec_att_points + -neg_rec_att_errors + -neg_rec_att_blocked
 
@@ -859,11 +859,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K1 / passe − · erro neste contexto?
 
-**Definição:** K1 / passe − · erro
+**Definição:** Erros / tentativas na fase
 
 **Classe:** DERIVADO
 
-**Fórmula:** Erros / tentativas na fase
+**Fórmula:** 100 × (neg_rec_att_errors) / neg_rec_att_attempts
 
 **Numerador:** neg_rec_att_errors
 
@@ -913,11 +913,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K1 / passe − · bloqueado neste contexto?
 
-**Definição:** K1 / passe − · bloqueado
+**Definição:** Bloqueados / tentativas na fase
 
 **Classe:** DERIVADO
 
-**Fórmula:** Bloqueados / tentativas na fase
+**Fórmula:** 100 × (neg_rec_att_blocked) / neg_rec_att_attempts
 
 **Numerador:** neg_rec_att_blocked
 
@@ -967,11 +967,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K2 / transição · Kill% neste contexto?
 
-**Definição:** K2 / transição · Kill%
+**Definição:** Kills reconstruídos do percentual arredondado do relatório / tentativas
 
 **Classe:** DERIVADO
 
-**Fórmula:** Kills reconstruídos do percentual arredondado do relatório / tentativas
+**Fórmula:** 100 × (trans_att_points) / trans_att_attempts
 
 **Numerador:** trans_att_points
 
@@ -1021,11 +1021,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K2 / transição · eficiência neste contexto?
 
-**Definição:** K2 / transição · eficiência
+**Definição:** (kills reconstruídos − erros − bloqueados) / tentativas
 
 **Classe:** DERIVADO
 
-**Fórmula:** (kills reconstruídos − erros − bloqueados) / tentativas
+**Fórmula:** 100 × (trans_att_points − trans_att_errors − trans_att_blocked) / trans_att_attempts
 
 **Numerador:** trans_att_points + -trans_att_errors + -trans_att_blocked
 
@@ -1075,11 +1075,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K2 / transição · erro neste contexto?
 
-**Definição:** K2 / transição · erro
+**Definição:** Erros / tentativas na fase
 
 **Classe:** DERIVADO
 
-**Fórmula:** Erros / tentativas na fase
+**Fórmula:** 100 × (trans_att_errors) / trans_att_attempts
 
 **Numerador:** trans_att_errors
 
@@ -1129,11 +1129,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Pergunta:** Qual o valor de K2 / transição · bloqueado neste contexto?
 
-**Definição:** K2 / transição · bloqueado
+**Definição:** Bloqueados / tentativas na fase
 
 **Classe:** DERIVADO
 
-**Fórmula:** Bloqueados / tentativas na fase
+**Fórmula:** 100 × (trans_att_blocked) / trans_att_attempts
 
 **Numerador:** trans_att_blocked
 
@@ -1295,13 +1295,13 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Classe:** DERIVADO
 
-**Fórmula:** Vitórias / jogos
+**Fórmula:** Contagens de jogos, vitórias e derrotas; campanha apresentada como vitórias–derrotas
 
-**Numerador:** Vitórias 
+**Numerador:** Vitórias
 
-**Denominador:**  jogos
+**Denominador:** jogos
 
-**Unidade:** %
+**Unidade:** jogos, vitórias e derrotas
 
 **Fontes:** Match Report
 
@@ -1567,9 +1567,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** Ataques bloqueados / tentativas
 
-**Numerador:** Ataques bloqueados 
+**Numerador:** Ataques bloqueados
 
-**Denominador:**  tentativas
+**Denominador:** tentativas
 
 **Unidade:** %
 
@@ -1675,9 +1675,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** Pontos ganhos recebendo / pontos disputados recebendo
 
-**Numerador:** Pontos ganhos recebendo 
+**Numerador:** Pontos ganhos recebendo
 
-**Denominador:**  pontos disputados recebendo
+**Denominador:** pontos disputados recebendo
 
 **Unidade:** %
 
@@ -1729,9 +1729,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** Pontos ganhos sacando / pontos disputados sacando
 
-**Numerador:** Pontos ganhos sacando 
+**Numerador:** Pontos ganhos sacando
 
-**Denominador:**  pontos disputados sacando
+**Denominador:** pontos disputados sacando
 
 **Unidade:** %
 
@@ -1783,9 +1783,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** Pontos ganhos recebendo em P / pontos recebendo em P
 
-**Numerador:** Pontos ganhos recebendo em P 
+**Numerador:** Pontos ganhos recebendo em P
 
-**Denominador:**  pontos recebendo em P
+**Denominador:** pontos recebendo em P
 
 **Unidade:** %
 
@@ -1837,9 +1837,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** Pontos ganhos sacando em P / pontos sacando em P
 
-**Numerador:** Pontos ganhos sacando em P 
+**Numerador:** Pontos ganhos sacando em P
 
-**Denominador:**  pontos sacando em P
+**Denominador:** pontos sacando em P
 
 **Unidade:** %
 
@@ -1891,9 +1891,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** Pontos ganhos em P própria × P adversária / pontos nesse par
 
-**Numerador:** Pontos ganhos em P própria × P adversária 
+**Numerador:** Pontos ganhos em P própria × P adversária
 
-**Denominador:**  pontos nesse par
+**Denominador:** pontos nesse par
 
 **Unidade:** %
 
@@ -1949,7 +1949,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** %
+**Unidade:** pontos ganhos por passagem
 
 **Fontes:** Scoresheet, Match Report, Libero Report quando exigido
 
@@ -1999,11 +1999,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** Passagens completas com pelo menos k pontos / passagens completas
 
-**Numerador:** Passagens completas com pelo menos k pontos 
+**Numerador:** Passagens completas com pelo menos k pontos
 
-**Denominador:**  passagens completas
+**Denominador:** passagens completas
 
-**Unidade:** %
+**Unidade:** probabilidade 0–1; interface em %
 
 **Fontes:** Scoresheet, Match Report, Libero Report quando exigido
 
@@ -2057,7 +2057,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** %
+**Unidade:** pontos consecutivos
 
 **Fontes:** Scoresheet, Match Report, Libero Report quando exigido
 
@@ -2107,9 +2107,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** Pontos ganhos com seis atletas reconciliados / rallies com essa formação
 
-**Numerador:** Pontos ganhos com seis atletas reconciliados 
+**Numerador:** Pontos ganhos com seis atletas reconciliados
 
-**Denominador:**  rallies com essa formação
+**Denominador:** rallies com essa formação
 
 **Unidade:** %
 
@@ -2219,7 +2219,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** 2n)/(1+z²/n); meia largura=z√(p(1-p)/n+z²/4n²)/(1+z²/n), z=1,95996
 
-**Unidade:** pp, % ou intervalo
+**Unidade:** intervalo em %
 
 **Fontes:** Match Report
 
@@ -2269,11 +2269,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** 100 × (quantidade de valores inferiores + 0,5 × quantidade de empates) / equipes cobertas
 
-**Numerador:** 100 × (quantidade de valores inferiores + 0,5 × quantidade de empates) 
+**Numerador:** 100 × (quantidade de valores inferiores + 0,5 × quantidade de empates)
 
-**Denominador:**  equipes cobertas
+**Denominador:** equipes cobertas
 
-**Unidade:** pp, % ou intervalo
+**Unidade:** percentil 0–100
 
 **Fontes:** Match Report
 
@@ -2327,7 +2327,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** pp, % ou intervalo
+**Unidade:** pp
 
 **Fontes:** Match Report
 
@@ -2381,7 +2381,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** (n+α+β); prior beta por momentos da coorte
 
-**Unidade:** pp, % ou intervalo
+**Unidade:** %
 
 **Fontes:** Match Report
 
@@ -2435,7 +2435,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** pp, % ou intervalo
+**Unidade:** %
 
 **Fontes:** Match Report
 
@@ -2597,7 +2597,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** %
+**Unidade:** pp
 
 **Fontes:** Histórico de fontes reconciliadas
 
@@ -2651,7 +2651,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** %
+**Unidade:** pp
 
 **Fontes:** Histórico de fontes reconciliadas
 
@@ -2701,11 +2701,11 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** 100 × soma de probabilidades históricas de vitória dos rallies / rallies
 
-**Numerador:** 100 × soma de probabilidades históricas de vitória dos rallies 
+**Numerador:** 100 × soma de probabilidades históricas de vitória dos rallies
 
-**Denominador:**  rallies
+**Denominador:** rallies
 
-**Unidade:** %
+**Unidade:** pontos por 100 rallies
 
 **Fontes:** Histórico de fontes reconciliadas
 
@@ -2759,7 +2759,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** 100
 
-**Unidade:** %
+**Unidade:** pp
 
 **Fontes:** Histórico de fontes reconciliadas
 
@@ -2813,9 +2813,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** K1−/K2
 
-**Unidade:** %
+**Unidade:** kills esperados; kill% esperado em %
 
-**Fontes:** Histórico de fontes reconciliadas
+**Fontes:** Match Report validado, Identidade e data da partida
 
 **Granularidade:** rally/rotação/equipe/modelo
 
@@ -2867,9 +2867,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** reconstruídos − kills esperados
 
-**Unidade:** %
+**Unidade:** kills
 
-**Fontes:** Histórico de fontes reconciliadas
+**Fontes:** Match Report validado, Identidade e data da partida
 
 **Granularidade:** rally/rotação/equipe/modelo
 
@@ -2921,7 +2921,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** %
+**Unidade:** probabilidade 0–1
 
 **Fontes:** Histórico de fontes reconciliadas
 
@@ -2975,7 +2975,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** %
+**Unidade:** diferença de probabilidade; interface ×100 em pp
 
 **Fontes:** Histórico de fontes reconciliadas
 
@@ -3029,7 +3029,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** %
+**Unidade:** sensibilidade 0–1; interface ×100 em pp
 
 **Fontes:** Histórico de fontes reconciliadas
 
@@ -3083,7 +3083,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** MEDIUM/HIGH/VERY_HIGH nos P50/P75/P90 do leverage de dias anteriores; alta pressão = acima de P75
 
-**Unidade:** %
+**Unidade:** % e pp por faixa de leverage
 
 **Fontes:** Histórico de fontes reconciliadas
 
@@ -3131,19 +3131,19 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Classe:** EXPERIMENTAL
 
-**Fórmula:** Contraste regularizado com/sem atleta condicionado a adversário, rotação e companheiras
+**Fórmula:** Coeficiente de presença em regressão logística L2=100, com adversário, rotação, saque, placar/set e seis companheiras; unidade log-odds
 
 **Numerador:** Contraste regularizado com
 
 **Denominador:** sem atleta condicionado a adversário, rotação e companheiras
 
-**Unidade:** %
+**Unidade:** log-odds
 
 **Fontes:** Histórico de fontes reconciliadas
 
 **Granularidade:** rally/rotação/equipe/modelo
 
-**Dados mínimos:** Histórico estritamente anterior no mesmo recorte; indisponível sem dados elegíveis.
+**Dados mínimos:** Presença HIGH com seis nomes; ≥3 jogos anteriores; ≥5 jogos de avaliação; ≥20 pontos com/sem atleta.
 
 **Amostra:** Somente registros cobertos pelas fontes, na mesma competição, categoria, gênero e temporada.
 
@@ -3155,13 +3155,13 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Modelo:** Efeito contextual estimado
 
-**Versão do modelo:** Não se aplica
+**Versão do modelo:** lineup-context-l2-v1
 
-**Validação:** Walk-forward em blocos de dia; comparar Brier e log loss na mesma amostra; não substituir baseline sem ganho.
+**Validação:** Blocos de dia; Brier e log loss médios por jogo menores e ECE não maior na mesma amostra contra contexto sem atletas; manter NULL sem ganho.
 
 **Interpretação:** Comparar somente definições e fontes equivalentes.
 
-**Limitações:** Só recebe classe MODELADO após validação registrada. Não atribuir WPA individual sem contato observado.
+**Limitações:** Associação, não causalidade; colinearidade de seis atletas identificada pela convenção L2; sem intervalo validado.
 
 **Exemplo numérico ou caso limite:** 6 eventos favoráveis em 10 oportunidades elegíveis: 100×6/10=60%. Fórmula com termos negativos subtrai esses termos antes da divisão.
 
@@ -3175,7 +3175,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Introduzida em:** atlas-metrics-1.0
 
-**Disponibilidade:** UNAVAILABLE_NOT_VALIDATED
+**Disponibilidade:** CONDITIONAL
 
 ## Força ajustada por adversário — `opponent_rating`
 
@@ -3191,9 +3191,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** %
+**Unidade:** força em %; coeficientes em log-odds
 
-**Fontes:** Histórico de fontes reconciliadas
+**Fontes:** Match Report validado, Identidade e data da partida
 
 **Granularidade:** rally/rotação/equipe/modelo
 
@@ -3619,9 +3619,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** Soma de n_faixa × |frequência−p médio| / n
 
-**Numerador:** Soma de n_faixa × |frequência−p médio| 
+**Numerador:** Soma de n_faixa × |frequência−p médio|
 
-**Denominador:**  n
+**Denominador:** n
 
 **Unidade:** probabilidade ou escore
 
@@ -3673,9 +3673,9 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Fórmula:** Previsões com favorito correto / previsões
 
-**Numerador:** Previsões com favorito correto 
+**Numerador:** Previsões com favorito correto
 
-**Denominador:**  previsões
+**Denominador:** previsões
 
 **Unidade:** probabilidade ou escore
 
@@ -3785,7 +3785,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** %
+**Unidade:** bits; versão normalizada 0–1
 
 **Fontes:** Volume ofensivo agregado, Funções estimadas
 
@@ -3839,7 +3839,7 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 
 **Denominador:** Não se aplica
 
-**Unidade:** %
+**Unidade:** bits × eficiência em %
 
 **Fontes:** Volume ofensivo agregado, Funções estimadas
 
@@ -3878,3 +3878,165 @@ Versão do catálogo: `atlas-metrics-1.0`. Métricas registradas: 71.
 **Introduzida em:** atlas-metrics-1.0
 
 **Disponibilidade:** LEGACY_EXPERIMENTAL
+
+## Distribuição estimada por volume — `lineup_volume_distribution`
+
+**Pergunta:** Qual o valor de Distribuição estimada por volume neste contexto?
+
+**Definição:** Distribuição estimada por volume
+
+**Classe:** EXPERIMENTAL
+
+**Fórmula:** Ataques da atleta na coorte / soma de ataques das atletas não líbero na formação modal reconciliada de P
+
+**Numerador:** Ataques da atleta na coorte
+
+**Denominador:** soma de ataques das atletas não líbero na formação modal reconciliada de P
+
+**Unidade:** peso 0–1; interface em %
+
+**Fontes:** Volume de ataque do Match Report na coorte, Formação reconciliada da súmula e líbero
+
+**Granularidade:** equipe/rotação/coorte
+
+**Dados mínimos:** Seis nomes reconciliados, rotação conhecida e volume positivo entre atacantes da formação modal.
+
+**Amostra:** Somente registros cobertos pelas fontes, na mesma competição, categoria, gênero e temporada.
+
+**Amostra pequena:** Exibir n; amostra pequena não sustenta ranking conclusivo.
+
+**Intervalo:** Não aplicável sem hipótese probabilística válida.
+
+**Ajuste de amostra:** Nenhum na medida bruta.
+
+**Modelo:** lineup volume prior
+
+**Versão do modelo:** lineup-volume-prior-v1
+
+**Validação:** Normalização e escopo por fixtures; modelo descritivo não validado preditivamente. Não usar como feature temporal.
+
+**Interpretação:** Comparar somente definições e fontes equivalentes.
+
+**Limitações:** Sem sequência recepção→levantamento→ataque. Passe filtra eficiência, mas NÃO altera pesos de distribuição. Amostras de disponibilidade e eficiência podem diferir. Entropia alta não implica qualidade; não há causalidade.
+
+**Exemplo numérico ou caso limite:** Dois atacantes com pesos 0,5: entropia do modelo=1 bit; isso não informa quantos levantamentos receberam.
+
+**Interface:** Detalhe contextual e Dados → caderno.
+
+**Como não interpretar:** Não demonstra causalidade ou qualidade individual.
+
+**Referência:** Definição operacional do projeto; não reivindica padronização externa.
+
+**Notas da fonte:** Sem eventos individuais, não atribuir ponto a atacante ou levantadora.
+
+**Introduzida em:** atlas-metrics-1.0
+
+**Disponibilidade:** CONDITIONAL
+
+## Entropia do prior de volume — `lineup_volume_entropy`
+
+**Pergunta:** Qual o valor de Entropia do prior de volume neste contexto?
+
+**Definição:** Entropia do prior de volume
+
+**Classe:** EXPERIMENTAL
+
+**Fórmula:** −Σ peso_i log₂(peso_i), sobre a distribuição estimada por volume
+
+**Numerador:** −Σ peso_i log₂(peso_i), sobre a distribuição estimada por volume
+
+**Denominador:** Não se aplica
+
+**Unidade:** bits
+
+**Fontes:** Volume de ataque do Match Report na coorte, Formação reconciliada da súmula e líbero
+
+**Granularidade:** equipe/rotação/coorte
+
+**Dados mínimos:** Seis nomes reconciliados, rotação conhecida e volume positivo entre atacantes da formação modal.
+
+**Amostra:** Somente registros cobertos pelas fontes, na mesma competição, categoria, gênero e temporada.
+
+**Amostra pequena:** Exibir n; amostra pequena não sustenta ranking conclusivo.
+
+**Intervalo:** Não aplicável sem hipótese probabilística válida.
+
+**Ajuste de amostra:** Nenhum na medida bruta.
+
+**Modelo:** lineup volume prior
+
+**Versão do modelo:** lineup-volume-prior-v1
+
+**Validação:** Normalização e escopo por fixtures; modelo descritivo não validado preditivamente. Não usar como feature temporal.
+
+**Interpretação:** Comparar somente definições e fontes equivalentes.
+
+**Limitações:** Sem sequência recepção→levantamento→ataque. Passe filtra eficiência, mas NÃO altera pesos de distribuição. Amostras de disponibilidade e eficiência podem diferir. Entropia alta não implica qualidade; não há causalidade.
+
+**Exemplo numérico ou caso limite:** Dois atacantes com pesos 0,5: entropia do modelo=1 bit; isso não informa quantos levantamentos receberam.
+
+**Interface:** Detalhe contextual e Dados → caderno.
+
+**Como não interpretar:** Não demonstra causalidade ou qualidade individual.
+
+**Referência:** Definição operacional do projeto; não reivindica padronização externa.
+
+**Notas da fonte:** Sem eventos individuais, não atribuir ponto a atacante ou levantadora.
+
+**Introduzida em:** atlas-metrics-1.0
+
+**Disponibilidade:** CONDITIONAL
+
+## Diversidade do modelo × eficiência — `volume_diversity_efficiency`
+
+**Pergunta:** Qual o valor de Diversidade do modelo × eficiência neste contexto?
+
+**Definição:** Diversidade do modelo × eficiência
+
+**Classe:** EXPERIMENTAL
+
+**Fórmula:** Entropia do prior de volume em P × eficiência agregada da equipe em K1+/K1−/K2
+
+**Numerador:** Entropia do prior de volume em P × eficiência agregada da equipe em K1+
+
+**Denominador:** K1−/K2
+
+**Unidade:** bits × eficiência em %
+
+**Fontes:** Volume de ataque do Match Report na coorte, Formação reconciliada da súmula e líbero
+
+**Granularidade:** equipe/rotação/coorte
+
+**Dados mínimos:** Seis nomes reconciliados, rotação conhecida e volume positivo entre atacantes da formação modal.
+
+**Amostra:** Somente registros cobertos pelas fontes, na mesma competição, categoria, gênero e temporada.
+
+**Amostra pequena:** Exibir n; amostra pequena não sustenta ranking conclusivo.
+
+**Intervalo:** Não aplicável sem hipótese probabilística válida.
+
+**Ajuste de amostra:** Nenhum na medida bruta.
+
+**Modelo:** lineup volume prior
+
+**Versão do modelo:** lineup-volume-prior-v1
+
+**Validação:** Normalização e escopo por fixtures; modelo descritivo não validado preditivamente. Não usar como feature temporal.
+
+**Interpretação:** Comparar somente definições e fontes equivalentes.
+
+**Limitações:** Sem sequência recepção→levantamento→ataque. Passe filtra eficiência, mas NÃO altera pesos de distribuição. Amostras de disponibilidade e eficiência podem diferir. Entropia alta não implica qualidade; não há causalidade.
+
+**Exemplo numérico ou caso limite:** Dois atacantes com pesos 0,5: entropia do modelo=1 bit; isso não informa quantos levantamentos receberam.
+
+**Interface:** Detalhe contextual e Dados → caderno.
+
+**Como não interpretar:** Não demonstra causalidade ou qualidade individual.
+
+**Referência:** Definição operacional do projeto; não reivindica padronização externa.
+
+**Notas da fonte:** Sem eventos individuais, não atribuir ponto a atacante ou levantadora.
+
+**Introduzida em:** atlas-metrics-1.0
+
+**Disponibilidade:** CONDITIONAL

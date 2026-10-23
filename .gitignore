@@ -19,3 +19,5 @@ dist/
 build/
 data/*.last-valid.duckdb
 data/.atlas-*/
+data/.atlas-sync.lock
+*.atlas-publish
