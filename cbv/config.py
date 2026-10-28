@@ -25,7 +25,11 @@ MAX_RETRIES = int(os.getenv("CBV_MAX_RETRIES", "3"))
 
 # Ensure essential directories exist
 for path in [DATA_DIR, RAW_DIR, RAW_PAGES_DIR, RAW_REPORTS_DIR, PROCESSED_DIR, LOG_DIR]:
-    path.mkdir(parents=True, exist_ok=True)
+    try:
+        path.mkdir(parents=True, exist_ok=True)
+    except FileExistsError:
+        if not path.is_dir():
+            raise
 
 
 def setup_logger(name: str = "cbv", level: int = logging.INFO) -> logging.Logger:

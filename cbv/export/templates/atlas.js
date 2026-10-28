@@ -1,6 +1,6 @@
 // Shared court, rotation matrix and replay. No external runtime or fabricated events.
-Object.assign(state,{layer:'so',rotation:1,matrixMetric:'points',matrixCell:null,rallyIndex:0,athlete:null});
-const atlasTeam=name=>C().atlas_teams?.[name];
+Object.assign(state,{layer:'so',rotation:1,matrixMetric:'points',matrixCell:null,rallyIndex:0,athlete:null,overviewRotMetric:'so',overviewRotIndex:1});
+const atlasTeam=name=>C()?.atlas_teams?.[name];
 const rallyCache=new Map();
 function matchRallies(id){const key=C().id+':'+id;if(!rallyCache.has(key)){const fields=C().rally_fields||[];rallyCache.set(key,(C().rallies?.[String(id)]||[]).map(row=>Object.fromEntries(fields.map((k,i)=>[k,row[i]]))))}return rallyCache.get(key)}
 function fillFor(value,baseline=50){if(value==null)return '#DEDAD0';const d=value-baseline;return d>=0?`rgba(20,121,111,${Math.min(.8,.16+Math.abs(d)/45)})`:`rgba(200,77,65,${Math.min(.8,.16+Math.abs(d)/45)})`}
@@ -13,7 +13,7 @@ function VolleyballCourt({variant='half',rotations=[],layer='so',players=null,aw
    const label=roster?(roster[position-1]==null?'—':'#'+roster[position-1]):'P'+position;
    const detail=roster?(overlay?.[position-1]!=null?'peso '+pct(overlay[position-1]*100):'Z'+position):value==null?'sem sequência':pct(value);
    const n=layer==='expected'?m?.n:m?.n;
-   return `<g class="court-zone" ${!roster?`data-rotation="${position}" role="button" tabindex="0" aria-label="P${position}: ${esc(detail)}, n=${n||0}"`:''}><rect x="${x-43}" y="${y-39}" width="86" height="78" rx="1" fill="${roster?'#FBFAF6':fillFor(value,baseline)}" stroke="${selected===position?'#153C55':'none'}" stroke-width="3"/><text class="court-name" x="${x}" y="${y-15}" text-anchor="middle">${esc(label)}</text><text class="${roster?'court-label':'court-value'}" x="${x}" y="${y+9}" text-anchor="middle">${esc(detail)}</text>${!roster?`<text class="court-label" x="${x}" y="${y+28}" text-anchor="middle">n=${num(n||0)}</text>`:''}</g>`;
+   return `<g class="court-zone" ${!roster?`data-rotation="${position}" role="button" tabindex="0" aria-label="P${position}: ${esc(detail)}, n=${n||0}"`:''}><rect x="${x-43}" y="${y-39}" width="86" height="78" rx="1" fill="${roster?'#FBFAF6':fillFor(value,baseline)}" stroke="${selected===position?'#071A2F':'none'}" stroke-width="3"/><text class="court-name" x="${x}" y="${y-15}" text-anchor="middle">${esc(label)}</text><text class="${roster?'court-label':'court-value'}" x="${x}" y="${y+9}" text-anchor="middle">${esc(detail)}</text>${!roster?`<text class="court-label" x="${x}" y="${y+28}" text-anchor="middle">n=${num(n||0)}</text>`:''}</g>`;
  };
  return `<figure style="margin:0"><svg class="court-svg ${variant}" viewBox="0 0 360 ${height}" role="img" aria-label="${full?'Quadra completa e formações por zona':'Mapa de passagens: posição de referência da levantadora inicial'}"><rect x="16" y="16" width="328" height="${height-32}" fill="var(--court)"/><rect x="24" y="24" width="312" height="${height-48}" fill="none" stroke="var(--court-line)" stroke-width="2"/><path d="M24,${full?270:42} H336 M24,${full?365:145} H336 ${full?'M24,175 H336':''}" fill="none" stroke="var(--court-line)" stroke-width="2"/><path d="M12,${full?270:42} H348" stroke="var(--navy)" stroke-width="4"/>${positions.map(([p,x,y])=>zone(p,x,y,players)).join('')}${full?positions.map(([p,x,y])=>zone(p,360-x,540-y,awayPlayers||[] ,true)).join(''):''}<text x="180" y="${full?529:310}" text-anchor="middle" class="court-label">${esc(homeLabel)}</text>${full?`<text x="180" y="12" text-anchor="middle" class="court-label">${esc(awayLabel)}</text>`:''}</svg><figcaption class="court-caption">${players?'Zonas esquemáticas; # = camisa. Formação parcial exige conferência na fonte.':'P = posição de referência da levantadora inicial na passagem. Selecione para ver saque e recepção.'}</figcaption></figure>`;
 }
@@ -31,8 +31,394 @@ function matrixSection(data,title='Contra qual rotação adversária?'){
 }
 function runSection(data){const runs=data?.serve_runs;if(!runs?.n)return '';const max=Math.max(...runs.distribution.map(d=>d.n),1);return `<section class="atlas-sheet"><div class="atlas-heading"><h2>Quanto dura uma passagem de saque?</h2><span class="source-tag">${num(runs.n)} COMPLETAS · ${runs.censored} CENSURADAS</span></div><div class="atlas-courts"><svg class="run-chart" viewBox="0 0 480 230" role="img" aria-label="Histograma de pontos por passagem completa">${runs.distribution.map((d,i)=>{const w=400/runs.distribution.length,x=45+i*w,h=d.n/max*155;return `<rect x="${x}" y="${185-h}" width="${Math.max(2,w-8)}" height="${h}" fill="var(--breakpoint)"/><text x="${x+w/2}" y="207" text-anchor="middle">${d.points}</text><text x="${x+w/2}" y="${178-h}" text-anchor="middle">${d.n}</text>`}).join('')}<text x="245" y="228" text-anchor="middle">Pontos ganhos sacando</text></svg><div>${table(['Medida','Valor'],[row(['Média',fmt(runs.mean)]),row(['Mediana',fmt(runs.median)]),row(['Máximo observado',num(runs.maximum)]),...[2,3,4].map(k=>row([`P(${k}+ pontos)`,pct(100*(runs.survival.find(s=>s.points===k)?.value??0))]))])}</div></div><details><summary>Passagens por rotação, sobrevivência e definição</summary>${table(['Rotação','Completas','Média','Censuradas'],(runs.by_rotation||[]).map(r=>row(['P'+r.position,r.n,fmt(r.mean),r.censored])))}${table(['Pontos ≥ k','Frequência'],runs.survival.map(s=>row([s.points,pct(s.value==null?null:s.value*100)])))}<p class="note">${esc(runs.definition)} O ponto que recupera o saque não entra na sequência de BP.</p></details></section>`}
 function lineupSection(data){if(!data)return '';return `<details class="details-panel"><summary>Quem estava em quadra? · formações e on/off</summary><p class="note">${num(data.coverage.reliable_presence_rallies)} pontos com presença reconciliada. Somente seis atletas e controle de líbero coerentes entram aqui.</p>${table(['Atletas / camisas','n','Pontos/100','SO','BP','Ajustado¹'],data.lineups.slice(0,30).map(l=>row([esc(l.identities?.map(teamName).join(' · ')||l.players.map(p=>'#'+p).join(' ')),num(l.points.n),pct(l.points.value),pct(l.so.value),pct(l.bp.value),pct(l.adjusted)])))}<p class="note">¹ Shrinkage descritivo para média da equipe, força fixa de 100 pontos. Não mede efeito individual.</p>${table(['Atleta','Com · n','Sem · n','Diferença bruta','Ajustado β¹'],data.on_off.map(a=>row([esc(teamName(a.player)),pct(a.on.value)+' · '+num(a.on.n),pct(a.off.value)+' · '+num(a.off.n),signed(a.difference)+' pp',fmt(a.adjusted_contextual_effect?.value,3)])))}<p class="note">¹ Efeito contextual em log-odds, experimental; só exibido após ganho temporal sobre contexto sem atletas, ≥5 jogos de avaliação e ≥20 pontos com/sem. Controles: adversário, rotação, saque, placar/set e seis companheiras. Não é efeito causal; ausência de ganho ou cobertura mantém —.</p></details>`}
-const oldOverview=overview;
-overview=function(){const c=C(),sources=c.source_snapshots||[],reconstructed=Object.keys(c.rallies||{}).length;return oldOverview().replace('Side-Out e Break Point</h2>','Mapa da competição · Match Report</h2>').replace('Linhas tracejadas: média da competição. Selecione uma equipe no gráfico.','SO/BP creditados no relatório, sem erros do adversário. Linhas: média da competição. Selecione uma equipe.').replace('<div class="kpis',`<div class="coverage-line"><span><strong>${c.matches.length}</strong> partidas</span><span><strong>${reconstructed}</strong> reconstruídas</span><span><strong>${sources.filter(s=>s.source_type==='scoresheet'&&s.status==='AVAILABLE').length}</strong> súmulas</span><span>Ponto a ponto original: bloqueado</span></div><div class="kpis`)+`<section class="atlas-sheet"><h2>Leituras da competição</h2><ul class="atlas-readings">${Object.values(c.atlas_teams||{}).filter(t=>t.readings.length).slice(0,4).map(t=>`<li>${teamLink(t.team)} · ${esc(t.readings[0].text)}</li>`).join('')||'<li>Sem amostra por rotação suficiente para uma leitura.</li>'}</ul></section>`};
+
+// Placar 2026 Native Overview (Hierarchy Suggestions 1 & 2)
+overview = function(){
+  const c = C();
+  if(!c) return '<p class="empty">Nenhuma coorte selecionada.</p>';
+  const matches = c.matches || [];
+  const completed = matches.filter(m => m.home_sets != null && m.away_sets != null);
+  
+  let teamA = null, teamB = null, featMatch = null;
+  if(completed.length){
+    const sorted = [...completed].sort((a,b) => String(b.date||'').localeCompare(String(a.date||'')) || b.match_id - a.match_id);
+    featMatch = sorted[0];
+    teamA = c.teams.find(t => t.team === featMatch.home_team) || c.teams[0];
+    teamB = c.teams.find(t => t.team === featMatch.away_team) || (c.teams.find(t => t.team !== teamA?.team) || c.teams[0]);
+  } else if(c.teams.length >= 2){
+    teamA = c.teams[0];
+    teamB = c.teams[1];
+  } else if(c.teams.length === 1){
+    teamA = c.teams[0];
+    teamB = c.teams[0];
+  }
+
+  // 1. Editorial Lead
+  let leadHtml = '';
+  if(teamA && teamB && matches.length > 0){
+    const soA = teamA.metrics.so.value, soB = teamB.metrics.so.value;
+    const bpB = teamB.metrics.bp.value;
+    const diffSo = (soA != null && soB != null) ? (soA - soB) : null;
+    let deckText = '';
+    if(diffSo != null && Math.abs(diffSo) >= 0.8){
+      deckText = `${teamName(teamA.team)} chega com side-out de ${pct(soA)}${teamA.metrics.so.delta != null ? ' (' + signed(teamA.metrics.so.delta) + ' pp vs média da liga)' : ''}. ${teamName(teamB.team)} sustenta ${pct(soB)} de side-out e ${pct(bpB)} de break point. A leitura abaixo destaca o que diferencia as equipes e abre a camada estatística completa no modo Dados.`;
+    } else {
+      deckText = `${teamName(teamA.team)} e ${teamName(teamB.team)} apresentam números equilibrados na temporada: ${pct(soA)} e ${pct(soB)} de side-out, respectivamente. A análise por rotação revela os pontos de vulnerabilidade e estabilidade de cada time.`;
+    }
+    leadHtml = `
+    <section class="lead">
+      <div class="lead-copy">
+        <div class="kicker">Jogo em destaque · ${esc(competitionLabel(c))}</div>
+        <h1>${esc(teamName(teamA.team))} × ${esc(teamName(teamB.team))}</h1>
+        <div class="lead-deck">${esc(deckText)}</div>
+      </div>
+      <aside class="lead-card">
+        <div>
+          <div class="label">${featMatch?.date ? matchDate(featMatch.date) + ' · ' : ''}${esc(competitionLabel(c))}</div>
+          <div class="match-compact">
+            <div class="team-abbr">${esc(teamAbbr(teamA.team))}</div>
+            <div class="vs">VS</div>
+            <div class="team-abbr right">${esc(teamAbbr(teamB.team))}</div>
+          </div>
+          <div class="match-info">
+            ${featMatch?.home_sets != null ? `Último placar: ${featMatch.home_sets} × ${featMatch.away_sets}<br>` : ''}
+            Temporada ${esc(seasonLabel(c.season))}<br>
+            ${num(matches.length)} partidas registradas
+          </div>
+        </div>
+        <button type="button" class="match-link" data-open-confronto="${esc(teamA.team)}" data-open-opponent="${esc(teamB.team)}">Abrir confronto →</button>
+      </aside>
+    </section>`;
+  } else {
+    leadHtml = `
+    <section class="lead">
+      <div class="lead-copy">
+        <div class="kicker">Edição da competição · ${esc(competitionLabel(c))}</div>
+        <h1>${esc(seasonLabel(c.season))}</h1>
+        <div class="lead-deck">
+          ${c.edition_status === 'CURRENT' && !matches.length ? 'Ainda sem partidas concluídas coletadas nesta edição. Consulte a lista de partidas ou selecione uma temporada anterior nos filtros.' : 'Visão geral dos dados consolidados da competição.'}
+        </div>
+      </div>
+      <aside class="lead-card">
+        <div>
+          <div class="label">${esc(competitionLabel(c))}</div>
+          <div class="match-info">
+            Temporada ${esc(seasonLabel(c.season))}<br>
+            ${matches.length ? num(matches.length) + ' partidas analisadas' : 'Aguardando partidas'}
+          </div>
+        </div>
+      </aside>
+    </section>`;
+  }
+
+  // 2. Metric Strip (.kpis)
+  const sources = c.source_snapshots || [];
+  const reconstructed = Object.keys(c.rallies || {}).length;
+  const scoresheets = sources.filter(s => s.source_type === 'scoresheet' && s.status === 'AVAILABLE').length;
+  let kpisHtml = '';
+  if(teamA && teamB && matches.length > 0){
+    kpisHtml = `
+    <section class="section">
+      <div class="section-heading">
+        <h2>Números do confronto</h2><span class="rule"></span><small>comparação rápida</small>
+      </div>
+      <div class="kpis">
+        <div class="kpi primary">
+          <span class="kpi-label">${esc(teamName(teamA.team))} · Side-out</span>
+          ${tooltip(teamA.metrics.so)}
+          <strong>${pct(teamA.metrics.so.value)}</strong>
+          <p>${teamA.metrics.so.delta != null ? signed(teamA.metrics.so.delta) + ' pp vs média da liga' : 'Média da equipe'}</p>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">${esc(teamName(teamA.team))} · Break point</span>
+          ${tooltip(teamA.metrics.bp)}
+          <strong>${pct(teamA.metrics.bp.value)}</strong>
+          <p>${teamA.metrics.bp.delta != null ? signed(teamA.metrics.bp.delta) + ' pp vs média da liga' : 'Média da equipe'}</p>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">${esc(teamName(teamB.team))} · Side-out</span>
+          ${tooltip(teamB.metrics.so)}
+          <strong>${pct(teamB.metrics.so.value)}</strong>
+          <p>${teamB.metrics.so.delta != null ? signed(teamB.metrics.so.delta) + ' pp vs média da liga' : 'Média da equipe'}</p>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Amostra usada</span>
+          <strong>${num(matches.filter(m => m.validation_status === 'VALID').length)} jogos</strong>
+          <p>partidas validadas na liga</p>
+        </div>
+      </div>
+      <div class="advanced">
+        AMOSTRA CONSOLIDADA: ${num(matches.length)} PARTIDAS COLETADAS (${num(matches.filter(m => m.validation_status === 'VALID').length)} VÁLIDAS) · ${num(reconstructed)} RECONSTRUÍDAS · ${num(scoresheets)} SÚMULAS DISPONÍVEIS · INTERVALOS WILSON 95% CALCULADOS SOBRE DENOMINADORES REAIS DO MATCH REPORT.
+      </div>
+    </section>`;
+  } else {
+    kpisHtml = `
+    <section class="section">
+      <div class="section-heading">
+        <h2>Números da competição</h2><span class="rule"></span><small>indicadores consolidados</small>
+      </div>
+      <div class="kpis">
+        <div class="kpi primary">
+          <span class="kpi-label">Side-out médio</span>
+          <strong>${pct(c.metrics?.so?.value)}</strong>
+          <p>Média da liga</p>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Break point médio</span>
+          <strong>${pct(c.metrics?.bp?.value)}</strong>
+          <p>Média da liga</p>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Eficiência de ataque</span>
+          <strong>${pct(c.metrics?.eff?.value)}</strong>
+          <p>Média da liga</p>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Partidas</span>
+          <strong>${num(matches.length)}</strong>
+          <p>registros na base</p>
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // 3. Tactical Reading (.content-grid)
+  let readingHtml = '';
+  if(teamA && teamB && matches.length > 0){
+    const effKeys = ['pos_rec_eff','neg_rec_eff','trans_eff'];
+    const pA = effKeys.map(k => ({k, v: teamA.metrics[k]?.value})).filter(x => x.v != null).sort((a,b) => b.v - a.v)[0];
+    const worstA = effKeys.map(k => ({k, v: teamA.metrics[k]?.value})).filter(x => x.v != null).sort((a,b) => a.v - b.v)[0];
+    const topTeams = [...c.teams].filter(t => t.metrics.so.value != null).sort((a,b) => b.metrics.so.value - a.metrics.so.value).slice(0, 5);
+    const readings = Object.values(c.atlas_teams || {}).filter(t => t.readings && t.readings.length).slice(0, 3);
+    
+    readingHtml = `
+    <section class="section">
+      <div class="content-grid">
+        <div class="panel">
+          <div class="panel-head"><h3>Leitura do confronto</h3><small>o que diferencia as equipes</small></div>
+          <div class="panel-body">
+            <div class="insight">
+              <div class="insight-value">${pA ? pct(pA.v) : '—'}</div>
+              <div>
+                <h4>${esc(teamName(teamA.team))} · ${pA ? phaseName(pA.k.replace('_eff','')) : 'Fase'}</h4>
+                <p>Passagem de maior rendimento ofensivo da equipe observada na temporada.</p>
+              </div>
+            </div>
+            <div class="insight alert">
+              <div class="insight-value">${worstA ? pct(worstA.v) : '—'}</div>
+              <div>
+                <h4>Atenção em ${worstA ? phaseName(worstA.k.replace('_eff','')) : 'Fase'}</h4>
+                <p>Menor taxa de eficiência observada para ${esc(teamName(teamA.team))} nesta amostra.</p>
+              </div>
+            </div>
+            <div class="insight">
+              <div class="insight-value">${pct(teamB.metrics.bp.value)}</div>
+              <div>
+                <h4>${esc(teamName(teamB.team))} no Break Point</h4>
+                <p>Capacidade de pontuar sacando; taxa média de conversão em contra-ataques e bloqueio.</p>
+              </div>
+            </div>
+            ${readings.length ? `
+            <div style="border-top:1px solid var(--line);padding:14px 4px 6px;">
+              <small style="font:800 9px var(--mono);color:var(--soft);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px;">Leituras táticas da competição</small>
+              <ul class="atlas-readings">
+                ${readings.map(t => `<li>${teamLink(t.team)} · ${esc(t.readings[0].text)}</li>`).join('')}
+              </ul>
+            </div>` : ''}
+          </div>
+        </div>
+        <aside class="panel">
+          <div class="panel-head"><h3>Side-out na liga</h3><small>top 5</small></div>
+          <div class="panel-body">
+            ${topTeams.map((t,i) => {
+              const isCurr = [teamA.team, teamB.team].includes(t.team);
+              return `<div class="rank-row ${isCurr ? 'current' : ''}"><span class="pos">0${i+1}</span><b>${esc(teamName(t.team))}</b><span class="v">${pct(t.metrics.so.value)}</span></div>`;
+            }).join('') || '<p class="empty">Sem dados de ranking.</p>'}
+          </div>
+        </aside>
+      </div>
+    </section>`;
+  }
+
+  // 4. Rotations Grid (P1-P6)
+  let rotationHtml = '';
+  if(teamA && matches.length > 0){
+    const ad = atlasTeam(teamA.team);
+    const metric = state.overviewRotMetric || 'so';
+    const curP = state.overviewRotIndex || 1;
+    const rotList = [1,2,3,4,5,6].map(p => {
+      const r = ad?.rotations?.find(x => x.position === p);
+      const m = metric === 'so' ? r?.so : r?.bp;
+      const v = m?.value;
+      const d = metric === 'so' ? r?.so_delta_team : r?.bp_delta_team;
+      const n = m?.n || 0;
+      const s = d > 2 ? 'good' : d < -2 ? 'bad' : '';
+      return { p, v, d, n, s, ci: m?.ci };
+    });
+    const activeItem = rotList.find(x => x.p === curP) || rotList[0];
+    let noteText = '';
+    if(activeItem.v != null){
+      if(activeItem.d > 2){
+        noteText = `P${activeItem.p} é a passagem de maior rendimento nesta amostra (+${fmt(activeItem.d)} pp vs média da equipe). É onde o ${teamName(teamA.team)} tem sido mais estável.`;
+      } else if(activeItem.d < -2){
+        noteText = `P${activeItem.p} é a passagem de menor rendimento (${fmt(activeItem.d)} pp vs média da equipe); ponto de vulnerabilidade observado nesta temporada.`;
+      } else {
+        noteText = `P${activeItem.p} opera próximo da média da equipe nesta amostra (${signed(activeItem.d)} pp).`;
+      }
+    } else {
+      noteText = `Rotação P${curP} observada nos relatórios de partida; consulte a ficha da equipe para o saldo de pontos.`;
+    }
+    rotationHtml = `
+    <section class="section">
+      <div class="section-heading">
+        <h2>Rotação a rotação · ${esc(teamName(teamA.team))}</h2><span class="rule"></span><small>selecione P1–P6</small>
+      </div>
+      <div class="panel">
+        <div class="panel-body">
+          <div class="rotation-toolbar">
+            <div class="metric-tabs" id="overview-metric-tabs">
+              <button type="button" class="${metric === 'so' ? 'active' : ''}" data-overview-metric="so">Side-out</button>
+              <button type="button" class="${metric === 'bp' ? 'active' : ''}" data-overview-metric="bp">Break point</button>
+            </div>
+          </div>
+          <div class="rotation-grid" id="overview-rotations">
+            ${rotList.map(r => `
+              <button type="button" class="rotation ${r.s} ${r.p === curP ? 'active' : ''}" data-overview-p="${r.p}" aria-label="P${r.p}: ${pct(r.v)}">
+                <span class="p">P${r.p}</span>
+                <strong>${pct(r.v)}</strong>
+                <span class="status"></span>
+              </button>`).join('')}
+          </div>
+          <div class="rotation-detail">
+            <div><span>Valor</span><strong>${pct(activeItem.v)}</strong></div>
+            <div><span>vs média da equipe</span><strong>${activeItem.d != null ? signed(activeItem.d) + ' pp' : '—'}</strong></div>
+            <div><span>Amostra</span><strong>n=${num(activeItem.n)}</strong></div>
+          </div>
+          <div class="note">${esc(noteText)}</div>
+          <div class="advanced">
+            MÉTRICA: ${metric.toUpperCase()} CREDITADO NO RELATÓRIO · ROTAÇÃO P${curP} · COBERTURA: ${num(activeItem.n)} AÇÕES REGISTRADAS · IC WILSON 95%: ${activeItem.ci ? activeItem.ci.map(fmt).join('–') + '%' : 'INTERVALO NÃO ESTIMADO'} · LEITURA DESCRITIVA.
+          </div>
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // 5. Team Comparison
+  let compareHtml = '';
+  if(teamA && teamB && matches.length > 0){
+    const rows = [
+      {label: 'Side-out', va: teamA.metrics.so.value, vb: teamB.metrics.so.value},
+      {label: 'Break point', va: teamA.metrics.bp.value, vb: teamB.metrics.bp.value},
+      {label: 'Eficiência de ataque', va: teamA.metrics.eff.value, vb: teamB.metrics.eff.value},
+      {label: 'K1 com passe positivo (Kill%)', va: teamA.metrics.pos_rec.value, vb: teamB.metrics.pos_rec.value},
+      {label: 'K1 fora do sistema (Kill%)', va: teamA.metrics.neg_rec.value, vb: teamB.metrics.neg_rec.value},
+      {label: 'K2 / Transição (Kill%)', va: teamA.metrics.trans.value, vb: teamB.metrics.trans.value},
+      {label: 'Campanha', va: `${teamA.wins}V – ${teamA.losses}D`, vb: `${teamB.wins}V – ${teamB.losses}D`, raw: true, better: teamA.wins > teamB.wins ? 'a' : teamB.wins > teamA.wins ? 'b' : null}
+    ];
+    compareHtml = `
+    <section class="section">
+      <div class="section-heading">
+        <h2>Comparação das equipes</h2><span class="rule"></span><small>sem esconder a tabela</small>
+      </div>
+      <div class="content-grid">
+        <div class="panel">
+          <div class="panel-body">
+            <div class="table-wrap">
+              <table class="compare">
+                <thead>
+                  <tr>
+                    <th>Métrica</th>
+                    <th>${esc(teamName(teamA.team))}</th>
+                    <th>${esc(teamName(teamB.team))}</th>
+                    <th>Melhor índice</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rows.map(r => {
+                    let bestText = '—';
+                    let bestA = false, bestB = false;
+                    if(r.raw){
+                      bestText = r.better === 'a' ? teamName(teamA.team) : r.better === 'b' ? teamName(teamB.team) : 'Empate';
+                      bestA = r.better === 'a'; bestB = r.better === 'b';
+                    } else if(r.va != null && r.vb != null){
+                      if(r.va > r.vb){ bestA = true; bestText = teamName(teamA.team); }
+                      else if(r.vb > r.va){ bestB = true; bestText = teamName(teamB.team); }
+                      else bestText = 'Empate';
+                    }
+                    return `
+                    <tr>
+                      <td>${esc(r.label)}</td>
+                      <td class="num ${bestA ? 'best' : ''}">${r.raw ? r.va : pct(r.va)}</td>
+                      <td class="num ${bestB ? 'best' : ''}">${r.raw ? r.vb : pct(r.vb)}</td>
+                      <td>${esc(bestText)}</td>
+                    </tr>`;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+            <div class="advanced">
+              TAXAS CALCULADAS COM DENOMINADOR REAL DAS AÇÕES DA COORTE SELECIONADA · IC WILSON 95% E AJUSTE BETA-BINOMIAL DISPONÍVEIS NA FICHA DE CADA EQUIPE.
+            </div>
+          </div>
+        </div>
+        <aside class="panel">
+          <div class="panel-head"><h3>Como ler</h3><small>camada essencial</small></div>
+          <div class="panel-body">
+            <div class="insight">
+              <div class="insight-value">SO</div>
+              <div>
+                <h4>Side-out</h4>
+                <p>Percentual de pontos conquistados quando a equipe recebe o saque adversário (fase de recepção).</p>
+              </div>
+            </div>
+            <div class="insight">
+              <div class="insight-value">BP</div>
+              <div>
+                <h4>Break point</h4>
+                <p>Percentual de pontos conquistados quando a própria equipe está sacando (fase de defesa/bloqueio).</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>`;
+  }
+
+  // 6. Scatter Plot SO x BP (Moved down)
+  let scatterHtml = `
+  <section class="section">
+    <div class="section-heading">
+      <h2>Mapa da competição · Match Report</h2><span class="rule"></span><small>Side-Out e Break Point por equipe</small>
+    </div>
+    <div class="panel">
+      <div class="panel-body">
+        ${scatter()}
+        <p class="chart-key" style="padding:10px 14px 4px;margin:0;font-size:11px;color:var(--soft);">
+          SO/BP creditados no relatório, sem erros do adversário. Linhas tracejadas: média da competição. Clique em uma equipe no gráfico para abrir o perfil tático completo.
+        </p>
+        <div class="advanced">
+          SCATTER SO × BP: COORDENADAS HISTÓRICAS DA TEMPORADA ATUAL · DENOMINADOR EXCLUI ERROS NÃO FORÇADOS DO ADVERSÁRIO · EIXOS DELIMITADOS PELA AMPLITUDE DA LIGA.
+        </div>
+      </div>
+    </div>
+  </section>`;
+
+  // 7. Recent Matches
+  let recentHtml = `
+  <section class="section">
+    <div class="section-heading">
+      <h2>Partidas recentes</h2><span class="rule"></span><button type="button" class="text-button" data-all-matches>Ver todas as partidas</button>
+    </div>
+    <div class="panel">
+      <div class="panel-body">
+        ${recentMatches()}
+      </div>
+    </div>
+  </section>`;
+
+  return leadHtml + kpisHtml + readingHtml + rotationHtml + compareHtml + scatterHtml + recentHtml;
+};
+
 const oldTeams=teams;
 teams=function(){const t=team();if(!t)return oldTeams();const data=atlasTeam(t.team);return selectors()+heading(teamName(t.team),`${t.wins}–${t.losses} · ${t.games} jogos · ${competitionLabel()} ${seasonLabel(C().season)}`)+courtSection(data)+`<section class="atlas-sheet"><h2>Leitura tática</h2><ul class="atlas-readings">${data?.readings.map(r=>`<li data-rule="${r.rule_id}">${esc(r.text)}</li>`).join('')||'<li>Sem amostra suficiente por rotação; consulte a cobertura.</li>'}</ul></section>`+matrixSection(data)+`<section class="atlas-sheet"><h2>Como ataca em cada fase?</h2>${phases(t)}${expectedAttackSection(t.team)}</section>`+runSection(data)+opponentSection(t.team)+distributionSection(data)+lineupSection(data)+`<section class="atlas-sheet"><h2>Atletas</h2>${athletes(t)}</section><details class="details-panel"><summary>Match Report · perfil, indicadores e tendência</summary><p class="note">SO/BP creditados às ações no relatório; denominadores preservados do histórico.</p>${teamKpis(t)}${profile(t)}${trend(t)}</details>`};
 function expectedAttackSection(name){const rows=(C().expected_attack||[]).filter(r=>r.team===name&&r.expected_kills!=null);return `<details><summary>xAttack por fase · experimental</summary>${table(['Fase','Tentativas cobertas','Kills aprox.','Esperados','Acima esperado'],['pos_rec','neg_rec','trans'].map(phase=>{const part=rows.filter(r=>r.phase===phase),sum=k=>part.reduce((a,r)=>a+r[k],0);return row([phaseName(phase),num(sum('n')),part.length?fmt(sum('kills')):'—',part.length?fmt(sum('expected_kills')):'—',part.length?signed(sum('above_expected')):'—'])}))}<p class="note">Baseline da fase na competição, usando somente datas anteriores. Kills publicados por fase podem ser aproximados por arredondamento. Sem ajuste por adversário.</p></details>`}
@@ -47,7 +433,43 @@ function athleteProfile(name,list){const entries=list.filter(t=>!state.athleteTe
 const oldDataPage=dataPage;
 dataPage=function(){const c=C(),sources=c.source_snapshots||[],attempts=c.atlas_attempts||[],count=kind=>sources.filter(s=>s.source_type===kind&&s.status==='AVAILABLE').length;return heading('Dados','Fontes, cobertura, conciliação e versões')+editionAudit()+`<section class="atlas-sheet"><h2>O que foi possível reconstruir?</h2>${[['Match Report',count('match_report')],['Scoresheet',count('scoresheet')],['Controle de líbero',count('libero_report')],['Ponto a ponto original',count('play_by_play')],['Partidas reconstruídas',Object.keys(c.rallies||{}).length],['Rotações completas',c.coverage?.rotation_matches||0],['Presença reconciliada',c.coverage?.lineup_matches||0]].map(([name,n])=>`<div class="coverage-bars"><span>${name}</span><progress max="${c.matches.length||1}" value="${n}"></progress><span class="numeric">${n}/${c.matches.length}</span></div>`).join('')}<p class="note">O widget original retornou 403. Sequência disponível foi reconstruída das passagens de saque, sem inventar autoria de ações.</p>${table(['Reconciliação','Partidas'],['VALID','VALID_WITH_WARNINGS','PARTIAL','FAILED'].map(status=>row([status,attempts.filter(a=>a.status===status).length])))}<p><a href="https://github.com/lucaaregis4r-ops/Dados-Voleibr/blob/main/docs/CADERNO_METODOLOGICO.md" target="_blank" rel="noopener">Abrir caderno metodológico</a></p><details><summary>Tentativas por partida</summary>${table(['Partida','Estado','Motivo'],attempts.map(a=>row([`<button data-match="${a.match_id}" class="text-button">${a.match_id}</button>`,esc(a.status),esc(a.report.reason||a.report.lineup_warnings?.join('; ')||'Placares reconciliados')])) ,[1,2])}</details><details><summary>Fontes, hashes e versões</summary>${table(['Partida','Fonte','Estado','SHA256 / coleta'],sources.map(s=>row([String(s.match_id),s.source_url?`<a class="atlas-data-link" href="${esc(s.source_url)}" target="_blank" rel="noopener">${esc(s.source_type)}</a>`:esc(s.source_type),esc(s.status),`<span title="${esc(s.sha256||'')}">${esc(s.sha256?.slice(0,16)||'—')}</span><br>${esc(s.fetched_at||'data de coleta não registrada')}`]),[1,2,3]),[1,2,3])}</details></section><section class="atlas-sheet"><h2>Modelos e avaliações</h2><p>Baseline pré-jogo: logistic-l2-v1 · preservado.</p>${table(['Pré-jogo · mesma amostra','n','Brier','Log Loss','Calibration Error'],['baseline','candidate'].map(key=>{const e=c.challenger?.[key];return row([key==='baseline'?'Baseline v1':'v2 com intercepto · experimental',num(e?.total_matches),fmt(e?.brier_score,3),fmt(e?.log_loss,3),fmt(e?.calibration_error,3)])}))}<p class="note">${esc(c.challenger?.limitation||'')} Ganho em todos os critérios: ${c.challenger?.improved?'sim':'não'}. Modelo ativo preservado.</p><p class="experimental-text">${esc(c.rally_model?.model_version||'—')} · EXPERIMENTAL</p>${table(['Modelo de ponto','n comum','Brier','Log Loss'],['candidate','baseline'].map(key=>{const e=c.rally_model?.[key];return row([key==='candidate'?'Equipe + prior de fase':'Prior da competição',num(e?.n),fmt(e?.brier),fmt(e?.log_loss)])}))}<p class="note">${esc(c.rally_model?.wp_validation||'Sem avaliação disponível.')}</p><details><summary>Treinos reproduzíveis</summary>${table(['Partida','Janela','Jogos de treino','Parâmetros'],(c.rally_model?.runs||[]).map(r=>row([r.match_id,esc(r.training_window?.join(' → ')||'Sem histórico'),r.training_matches,esc(JSON.stringify(r.parameters))]),[1,3]),[1,3])}</details></section><details class="details-panel"><summary>Estatísticas legadas e operações locais</summary>${oldDataPage().replace(heading('Dados'),'').replace(/SO\/BP por rotação e métricas de sequência exigem eventos por rally, ausentes da base atual\./g,'A cobertura reconstruída está discriminada acima; agregados legados permanecem separados.')}</details>`};
 const oldBind=bind;
-bind=function(){oldBind();const activate=(selector,fn)=>document.querySelectorAll(selector).forEach(el=>{el.onclick=()=>fn(el);el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn(el)}}});activate('[data-layer]',el=>{state.layer=el.dataset.layer;render()});activate('[data-rotation]',el=>{state.rotation=Number(el.dataset.rotation);render()});activate('[data-cell]',el=>{state.matrixCell=el.dataset.cell.split(',').map(Number);render()});if($('#matrix-metric'))$('#matrix-metric').onchange=e=>{state.matrixMetric=e.target.value;render()};const go=i=>{const scroll=window.scrollY;state.rallyIndex=i;render();window.scrollTo(0,scroll)};activate('[data-rally]',el=>go(Number(el.dataset.rally)));activate('[data-step]',el=>go(state.rallyIndex+Number(el.dataset.step)));if($('#rally-slider'))$('#rally-slider').onchange=e=>go(Number(e.target.value));document.querySelectorAll('#athlete-table tbody tr').forEach(tr=>{const td=tr.firstElementChild;if(td&&!td.querySelector('button')&&tr.children.length>1){const name=td.textContent;td.innerHTML=`<button class="team-link" data-athlete="${esc(name)}">${esc(name)}</button>`;td.firstChild.onclick=()=>{state.athlete=tr.dataset.athleteName||null;state.athleteTeam=tr.dataset.athleteTeam||null;state.page='Atletas';render()}}});};
+bind=function(){
+  oldBind();
+  const activate=(selector,fn)=>document.querySelectorAll(selector).forEach(el=>{el.onclick=()=>fn(el);el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn(el)}}});
+  activate('[data-layer]',el=>{state.layer=el.dataset.layer;render()});
+  activate('[data-rotation]',el=>{state.rotation=Number(el.dataset.rotation);render()});
+  activate('[data-cell]',el=>{state.matrixCell=el.dataset.cell.split(',').map(Number);render()});
+  if($('#matrix-metric'))$('#matrix-metric').onchange=e=>{state.matrixMetric=e.target.value;render()};
+  const go=i=>{const scroll=window.scrollY;state.rallyIndex=i;render();window.scrollTo(0,scroll)};
+  activate('[data-rally]',el=>go(Number(el.dataset.rally)));
+  activate('[data-step]',el=>go(state.rallyIndex+Number(el.dataset.step)));
+  if($('#rally-slider'))$('#rally-slider').onchange=e=>go(Number(e.target.value));
+  document.querySelectorAll('#athlete-table tbody tr').forEach(tr=>{const td=tr.firstElementChild;if(td&&!td.querySelector('button')&&tr.children.length>1){const name=td.textContent;td.innerHTML=`<button class="team-link" data-athlete="${esc(name)}">${esc(name)}</button>`;td.firstChild.onclick=()=>{state.athlete=tr.dataset.athleteName||null;state.athleteTeam=tr.dataset.athleteTeam||null;state.page='Atletas';render()}}});
+  
+  // Placar 2026 overview rotation interaction
+  document.querySelectorAll('#overview-metric-tabs button').forEach(btn => {
+    btn.onclick = () => {
+      state.overviewRotMetric = btn.dataset.overviewMetric;
+      render();
+    };
+  });
+  document.querySelectorAll('#overview-rotations button').forEach(btn => {
+    btn.onclick = () => {
+      state.overviewRotIndex = Number(btn.dataset.overviewP);
+      render();
+    };
+  });
+  document.querySelectorAll('[data-open-confronto]').forEach(btn => {
+    btn.onclick = () => {
+      state.team = btn.dataset.openConfronto;
+      state.opponent = btn.dataset.openOpponent;
+      state.page = 'Confrontos';
+      closeMenu();
+      render();
+      window.scrollTo(0, 0);
+    };
+  });
+};
 
 function opponentSection(name){const rows=Object.entries(C().opponent_ratings||{});return `<details class="details-panel"><summary>Força ajustada por adversário · experimental</summary><p class="note">Regressão logística regularizada com efeitos de equipe e adversário. SO/BP usam a definição creditada do Match Report. Efeitos descritivos; sem causalidade.</p>${table(['Fase','Força contra oponente médio','Δ referência','Jogos avaliados','Ganho temporal'],rows.map(([phase,result])=>{const rating=result.ratings.find(r=>r.team===name);return row([{so:'SO do relatório',bp:'BP do relatório',kill:'Ataque · Kill%',positive:'Recepção positiva'}[phase],pct(rating?.strength),signed(rating?.delta)+' pp',num(result.candidate.matches),result.improved?'Brier e log loss menores':'Não retido'])}))}<details><summary>Auditoria da comparação na mesma amostra</summary>${table(['Fase','Brier candidato','Brier baseline','Log Loss candidato','Log Loss baseline'],rows.map(([phase,result])=>row([phase,fmt(result.candidate.brier,3),fmt(result.baseline.brier,3),fmt(result.candidate.log_loss,3),fmt(result.baseline.log_loss,3)])))}<p class="note">Regularização fixa 50. São exigidos 20 jogos anteriores para treino e 20 de avaliação antes de reter ratings; calibração ainda requer estudo, portanto permanecem experimentais.</p></details></details>`}
 function athleteLineups(name,teamName){const data=atlasTeam(teamName);return data?lineupSection({...data,lineups:data.lineups.filter(l=>l.identities?.includes(name)),on_off:data.on_off.filter(a=>a.player===name)}):''}
@@ -58,11 +480,11 @@ const bindWithDistribution=bind;
 bind=function(){bindWithDistribution();const detail=$('#distribution-experiment');if(detail)detail.addEventListener('toggle',()=>{state.expOpen=detail.open});for(const [id,key] of [['exp-rotation','expRotation'],['exp-pass','expPass']])if($('#'+id))$('#'+id).onchange=e=>{state[key]=id==='exp-rotation'?Number(e.target.value):e.target.value;state.expOpen=true;render()}};
 
 // Edition scope and a reading guide are available from every view.
-function seasonContext(){const c=C(),label={CURRENT:'Temporada atual',COMPLETED:'Temporada encerrada',UPCOMING:'Próxima temporada',UNKNOWN:'Edição selecionada'}[c.edition_status||'UNKNOWN'];return `<aside class="season-context" aria-label="Recorte da temporada"><div><strong>${label} · ${esc(seasonLabel(c.season))}</strong><p>${esc(c.statistics_scope||'Estatísticas restritas à edição selecionada.')}${!c.matches.length?' Ainda sem partidas concluídas coletadas nesta edição.':''}</p></div><button class="text-button" data-legend>Legenda das variáveis</button></aside>`}
+function seasonContext(){const c=C(),label={CURRENT:'Temporada atual',COMPLETED:'Temporada encerrada',UPCOMING:'Próxima temporada',UNKNOWN:'Edição selecionada'}[c?.edition_status||'UNKNOWN'];return `<aside class="season-context" aria-label="Recorte da temporada"><div><strong>${label} · ${esc(seasonLabel(c?.season))}</strong><p>${esc(c?.statistics_scope||'Estatísticas restritas à edição selecionada.')}${!c?.matches?.length?' Ainda sem partidas concluídas coletadas nesta edição.':''}</p></div><button class="text-button" data-legend>Legenda das variáveis</button></aside>`}
 const pageLegendKeys={'Visão geral':['so','bp','eff','n','pp'],'Equipes':['rotation','so','bp','k1','n','pp','expected','runs','onoff'],'Confrontos':['so','bp','expected','evaluation'],'Partidas':['rotation','wp','wpa','leverage','crunch','missing'],'Atletas':['kill','eff','positive','n','pp'],'Dados':['classes','evaluation','missing']};
 function contextLegend(){const keys=pageLegendKeys[state.page];if(!keys)return '';return `<details class="details-panel context-legend"><summary>Como ler as variáveis desta página</summary><dl class="legend-list">${(DATA.glossary||[]).filter(g=>keys.includes(g.key)).map(g=>`<div><dt>${esc(g.label)}</dt><dd>${esc(g.meaning)} <span class="note">${esc(g.reading)}</span></dd></div>`).join('')}</dl><button class="text-button" data-legend>Abrir legenda completa e fórmulas</button></details>`}
 function legendPage(){return heading('Legenda das variáveis','Significado, unidade, fórmula e cuidados na interpretação')+`<label class="legend-search">Buscar sigla ou variável<input id="legend-search" type="search" placeholder="Ex.: SO, WPA, eficiência, amostra" aria-label="Buscar na legenda"></label><section class="atlas-sheet"><h2>Guia de leitura</h2><dl class="legend-list">${(DATA.glossary||[]).map(g=>`<div data-legend-item><dt>${esc(g.label)}</dt><dd>${esc(g.meaning)}<p class="note">${esc(g.reading)}</p></dd></div>`).join('')}</dl></section><section class="atlas-sheet"><h2>Catálogo de variáveis e fórmulas</h2><p class="note">Amostras e comparações usam a mesma competição, gênero, categoria e temporada. Modelos com histórico insuficiente permanecem indisponíveis.</p>${(DATA.metric_registry||[]).map(m=>`<details class="legend-metric" data-legend-item><summary>${esc(m.short_name||m.name)} <span class="note">${esc(m.metric_id)}</span></summary><p>${badge(m.metric_class)} ${esc(m.description)}</p><dl class="legend-list"><div><dt>Fórmula</dt><dd>${esc(m.formula)}</dd></div><div><dt>Unidade</dt><dd>${esc(m.unit)}</dd></div><div><dt>Fontes</dt><dd>${esc(m.required_sources.join(', '))}</dd></div><div><dt>Exemplo</dt><dd>${esc(m.example)}</dd></div><div><dt>Limitações</dt><dd>${esc(m.limitations)}</dd></div></dl></details>`).join('')}<p id="legend-empty" class="atlas-empty" hidden>Nenhuma variável encontrada.</p></section>`}
 const bindWithLegend=bind;
 bind=function(){bindWithLegend();document.querySelectorAll('[data-legend]').forEach(b=>b.onclick=()=>{state.page='Legenda';render();$('#main').scrollIntoView({block:'start'})});const input=$('#legend-search');if(input)input.oninput=()=>{const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),query=norm(input.value);let found=0;document.querySelectorAll('[data-legend-item]').forEach(item=>{item.hidden=!norm(item.textContent).includes(query);if(!item.hidden)found++});$('#legend-empty').hidden=found>0}};
 
-function editionAudit(){const c=C(),source=c.edition_source;return `<section class="atlas-sheet"><h2>Qual edição está sendo analisada?</h2><p><strong>${esc(seasonLabel(c.season))}</strong> · ${esc(c.statistics_scope||'Recorte selecionado')}</p>${source?`<p class="note">Edição atual confirmada pela CBV: ${esc(seasonLabel(source.season))}. Fonte: <a href="${esc(source.source_url)}" target="_blank" rel="noopener">página oficial da competição</a>. Verificação: ${dateText(source.verified_at)}.</p><details><summary>Identidade da fonte</summary><p class="atlas-data-link numeric">SHA256: ${esc(source.sha256)}</p><p class="note">O título oficial identifica a edição. A data isolada de um jogo não determina sua temporada.</p></details>`:'<p class="note">Sem metadados da edição atual; temporada conservada conforme a identidade cadastrada.</p>'}</section>`}
+function editionAudit(){const c=C(),source=c?.edition_source;return `<section class="atlas-sheet"><h2>Qual edição está sendo analisada?</h2><p><strong>${esc(seasonLabel(c?.season))}</strong> · ${esc(c?.statistics_scope||'Recorte selecionado')}</p>${source?`<p class="note">Edição atual confirmada pela CBV: ${esc(seasonLabel(source.season))}. Fonte: <a href="${esc(source.source_url)}" target="_blank" rel="noopener">página oficial da competição</a>. Verificação: ${dateText(source.verified_at)}.</p><details><summary>Identidade da fonte</summary><p class="atlas-data-link numeric">SHA256: ${esc(source.sha256)}</p><p class="note">O título oficial identifica a edição. A data isolada de um jogo não determina sua temporada.</p></details>`:'<p class="note">Sem metadados da edição atual; temporada conservada conforme a identidade cadastrada.</p>'}</section>`}

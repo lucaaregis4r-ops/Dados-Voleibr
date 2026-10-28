@@ -47,3 +47,43 @@ def test_validate_pdf_bytes():
     assert validate_pdf_bytes(b"<html><body>Erro 404</body></html>") is False
     assert validate_pdf_bytes(b"") is False
     assert validate_pdf_bytes(None) is False
+
+
+def test_fetch_sumulas_modern_li_layout(monkeypatch):
+    """Verifies that fetch_sumulas_table handles the modern Tailwind <li> component layout."""
+    from cbv.scraper.superliga import fetch_sumulas_table
+    import io
+
+    sample_html = """
+    <ul>
+      <li class="grid">
+        <div><p class="text-xs">27/10/2026 · 21h00</p></div>
+        <div>
+          <span class="truncate"><span class="hidden sm:inline">PRAIA CLUBE UBERLANDIA VOLEI</span></span>
+          <span class="tabular-nums font-bold">3 × 0</span>
+          <span class="truncate"><span class="hidden sm:inline">VIAPOL VÔLEI SÃO JOSÉ</span></span>
+        </div>
+        <div>
+          <a href="https://fra1.digitaloceanspaces.com/pls-api/matches/2584866-abc/PCU-VSJ-scoresheet.pdf">Súmula</a>
+        </div>
+      </li>
+    </ul>
+    """
+    class DummyResp:
+        def read(self):
+            return sample_html.encode("utf-8")
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+
+    monkeypatch.setattr("urllib.request.urlopen", lambda req, timeout=20: DummyResp())
+    matches = fetch_sumulas_table("https://cbv.com.br/dummy")
+    assert len(matches) == 1
+    m = matches[0]
+    assert m["match_id"] == 2584866
+    assert m["home_team"] == "PRAIA CLUBE UBERLANDIA VOLEI"
+    assert m["away_team"] == "VIAPOL VÔLEI SÃO JOSÉ"
+    assert m["home_sets"] == 3
+    assert m["away_sets"] == 0
+    assert m["scoresheet_url"] is not None

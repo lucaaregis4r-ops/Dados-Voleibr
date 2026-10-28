@@ -74,7 +74,8 @@ SUPERLIGA_EDITIONS: Dict[str, Dict[str, str]] = {
 
 def fetch_sumulas_table(url: str) -> List[Dict[str, Any]]:
     """
-    Fetches and parses all match rows from a CBV sumulas table page.
+    Fetches and parses all match rows from a CBV sumulas table/page.
+    Supports both legacy <table>/<tr>/<td> layouts and modern Tailwind <ul>/<li> components.
     Returns structured list of matches with IDs, teams, scores, and document links.
     """
     req = urllib.request.Request(
@@ -85,16 +86,17 @@ def fetch_sumulas_table(url: str) -> List[Dict[str, Any]]:
     )
 
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=20) as resp:
             html = resp.read().decode("utf-8", errors="ignore")
     except Exception as e:
         logger.error(f"Failed to fetch sumulas page {url}: {e}")
         return []
 
     soup = BeautifulSoup(html, "lxml")
-    rows = soup.find_all("tr")
     parsed_matches: List[Dict[str, Any]] = []
 
+    # 1. Try legacy <tr> rows
+    rows = soup.find_all("tr")
     for r in rows:
         tds = r.find_all("td")
         if len(tds) < 8:
@@ -136,6 +138,69 @@ def fetch_sumulas_table(url: str) -> List[Dict[str, Any]]:
             "match_report_url": mr_url,
             "scoresheet_url": sc_url,
         })
+
+    if parsed_matches:
+        return parsed_matches
+
+    # 2. Modern <li> component layout (Superliga 2026-2027+)
+    for li in soup.find_all("li"):
+        pdf_links = li.find_all("a", href=lambda h: h and ("matches/" in h or ".pdf" in h))
+        if not pdf_links:
+            continue
+
+        mr_url = None
+        sc_url = None
+        match_id = None
+        for a in pdf_links:
+            href = a["href"].strip()
+            label = a.get_text(strip=True).lower()
+            if "scoresheet" in href.lower() or "súmula" in label or "sumula" in label:
+                sc_url = href
+            else:
+                mr_url = href
+            m = re.search(r"/matches/(\d+)-", href)
+            if m:
+                match_id = int(m.group(1))
+
+        # Date & Time (e.g. "27/10/2026 · 21h00")
+        date_str = ""
+        for p in li.find_all("p"):
+            t = p.get_text(" ", strip=True)
+            if re.search(r"\d{2}/\d{2}/\d{4}", t):
+                date_str = t
+                break
+
+        # Teams
+        team_spans = li.find_all("span", class_=re.compile(r"truncate"))
+        home_raw = ""
+        away_raw = ""
+        if len(team_spans) >= 2:
+            h_span = team_spans[0].find("span", class_=re.compile(r"hidden\s+sm:inline")) or team_spans[0]
+            a_span = team_spans[1].find("span", class_=re.compile(r"hidden\s+sm:inline")) or team_spans[1]
+            home_raw = h_span.get_text(strip=True)
+            away_raw = a_span.get_text(strip=True)
+
+        # Sets score
+        score_span = li.find("span", class_=re.compile(r"tabular-nums|font-bold"))
+        home_sets = None
+        away_sets = None
+        if score_span:
+            sm = re.search(r"(\d+)\s*[×xX\-–]\s*(\d+)", score_span.get_text())
+            if sm:
+                home_sets = int(sm.group(1))
+                away_sets = int(sm.group(2))
+
+        if home_raw and away_raw:
+            parsed_matches.append({
+                "match_id": match_id,
+                "date_str": date_str,
+                "home_team": normalize_team_name(home_raw),
+                "away_team": normalize_team_name(away_raw),
+                "home_sets": home_sets,
+                "away_sets": away_sets,
+                "match_report_url": mr_url,
+                "scoresheet_url": sc_url,
+            })
 
     return parsed_matches
 
@@ -233,9 +298,9 @@ def process_superliga_match(
 
         time_val = None
         if d_str:
-            t_m = re.search(r"(\d{2}:\d{2})", d_str)
+            t_m = re.search(r"(\d{2})[:hH](\d{2})", d_str)
             if t_m:
-                time_val = t_m.group(1)
+                time_val = f"{t_m.group(1)}:{t_m.group(2)}"
 
         fallback_match = Match(
             match_id=mid,

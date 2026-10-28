@@ -47,6 +47,7 @@ def staged_update(root,worker):
         old_count=quality_gate(production)
         with tempfile.TemporaryDirectory(prefix='.atlas-daily-',dir=data) as directory:
             stage=Path(directory);stage_data=stage/'data';stage_data.mkdir();shutil.copy2(production,stage_data/'cbv.duckdb')
+            (data/'raw').mkdir(parents=True,exist_ok=True)
             (stage_data/'raw').symlink_to((data/'raw').resolve(),target_is_directory=True)
             worker(stage_data,stage)
             compact_database(stage_data/'cbv.duckdb')

@@ -211,8 +211,10 @@ def export_dashboard_html(target_file=DEFAULT_HTML_PATH):
     data=generate_dashboard_data()
     html=build_dashboard_html(data)
     from cbv.export.atlas_export import export_atlas
-    with default_repo.get_connection() as conn:export_atlas(data,EXPORTS_DIR,conn)
+    exports_dir = target_file.parent if target_file != DEFAULT_HTML_PATH else EXPORTS_DIR
+    with default_repo.get_connection() as conn:export_atlas(data,exports_dir,conn)
     target_file.write_text(html,encoding='utf-8')
-    for p in (PUBLISH_DIR/'index.html',PUBLISH_DIR/'docs'/'index.html'):
-        p.parent.mkdir(parents=True,exist_ok=True); p.write_text(html,encoding='utf-8')
+    if target_file == DEFAULT_HTML_PATH:
+        for p in (PUBLISH_DIR/'index.html',PUBLISH_DIR/'docs'/'index.html'):
+            p.parent.mkdir(parents=True,exist_ok=True); p.write_text(html,encoding='utf-8')
     return target_file
