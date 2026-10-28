@@ -40,6 +40,10 @@ def quality_gate(path,minimum_matches=0):
 def staged_update(root,worker):
     root=Path(root);data=root/'data';production=data/'cbv.duckdb'
     with publication_lock(data):
+        # A fresh GitHub runner can start without the cached raw directory. The
+        # staging area exposes raw as a symlink, so its real target must exist
+        # before cbv.config runs mkdir(..., exist_ok=True) inside the worker.
+        (data/'raw').mkdir(parents=True,exist_ok=True)
         old_count=quality_gate(production)
         with tempfile.TemporaryDirectory(prefix='.atlas-daily-',dir=data) as directory:
             stage=Path(directory);stage_data=stage/'data';stage_data.mkdir();shutil.copy2(production,stage_data/'cbv.duckdb')
