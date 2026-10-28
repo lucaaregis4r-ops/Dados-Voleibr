@@ -261,6 +261,7 @@ __ATLAS_CSS__
 const DATA=JSON.parse(document.getElementById('dataset').textContent);
 const state={page:'Visão geral',sub:'',cohort:0,team:'',opponent:'',query:'',athleteQuery:'',athleteSort:'points',athleteDirection:-1,matchId:null,mode:'read',overviewRotMetric:'so',overviewRotIndex:1};
 let overview;
+let referencesPage;
 const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(v,d=1)=>v==null?'—':Number(v).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const pct=v=>v==null?'—':fmt(v)+'%';const num=v=>fmt(v,0);const C=()=>DATA.cohorts[state.cohort];const team=()=>C()?.teams.find(t=>t.team===state.team);
@@ -515,7 +516,7 @@ function render(){
  if(state.team&&!c.teams.some(t=>t.team===state.team))state.team='';
  if(state.opponent===state.team||!c.teams.some(t=>t.team===state.opponent))state.opponent='';
  filters();
- $('#primary').innerHTML=['Visão geral','Equipes','Confrontos','Partidas','Atletas','Dados','Legenda'].map(page=>`<button data-page="${page}" class="${page===state.page?'active':''}" ${page===state.page?'aria-current="page"':''}>${page}</button>`).join('');
+ $('#primary').innerHTML=['Visão geral','Equipes','Confrontos','Partidas','Atletas','Dados','Legenda','Referências'].map(page=>`<button data-page="${page}" class="${page===state.page?'active':''}" ${page===state.page?'aria-current="page"':''}>${page}</button>`).join('');
  const crumbPage=state.page;
  $('#crumb').innerHTML=`<strong>${esc(competitionLabel(c))} ${esc(seasonLabel(c.season))}</strong> · ${esc(crumbPage)}`;
  document.querySelectorAll('#mode button').forEach(b=>{
@@ -526,7 +527,7 @@ function render(){
  const tabs=state.page==='Partidas'&&state.matchId==null?['Próximas','Encerradas','Súmulas']:[];
  if(tabs.length&&!tabs.includes(state.sub))state.sub=tabs[0];
  const subnav=tabs.length?`<nav class="subnav" aria-label="Listas de partidas">${tabs.map(tab=>`<button data-sub="${tab}" ${tab===state.sub?'aria-current="page"':''}>${tab}</button>`).join('')}</nav>`:'';
- const page={'Visão geral':overview,Equipes:teams,Confrontos:confrontation,Partidas:matchesPage,Atletas:athletesPage,Dados:dataPage,Legenda:legendPage}[state.page];
+ const page={'Visão geral':overview,Equipes:teams,Confrontos:confrontation,Partidas:matchesPage,Atletas:athletesPage,Dados:dataPage,Legenda:legendPage,'Referências':referencesPage}[state.page];
  $('#main').innerHTML=seasonContext()+(tabs.length?heading('Partidas')+subnav:'')+page()+contextLegend();
  bind();
 }

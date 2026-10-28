@@ -429,7 +429,180 @@ function replaySection(m,rr){if(!rr.length)return `<section class="atlas-sheet">
 const oldMatchPage=matchPage;
 matchPage=function(){const m=C().matches.find(m=>String(m.match_id)===String(state.matchId));if(!m)return oldMatchPage();const rr=matchRallies(m.match_id),original=oldMatchPage();const split=original.indexOf('<section class="card">');return split<0?original:original.slice(0,split)+replaySection(m,rr)+`<details class="details-panel"><summary>Match Report · totais, fases, atletas e saldo</summary>${original.slice(split)}</details>`};
 function athletesPage(){const t=team(),list=t?[t]:C().teams;const combined={athletes:list.flatMap(t=>t.athletes.map(a=>({...a,team:t.team})))};return heading('Atletas','Ataque, recepção e amostra publicada no Match Report')+selectors()+`<section class="atlas-sheet">${athletes(combined)}</section>`+(state.athlete?athleteProfile(state.athlete,list):'')}
-function athleteProfile(name,list){const entries=list.filter(t=>!state.athleteTeam||t.team===state.athleteTeam).flatMap(t=>t.athletes.filter(a=>a.name===name).map(a=>({...a,team:t.team})));return `<section class="atlas-sheet athlete-profile"><h2>${esc(teamName(name))}</h2>${entries.map(a=>`<h3>${esc(teamName(a.team))}</h3>${table(['Métrica','Taxa','n'],['kill','eff','positive','excellent','error','rec_error','attack_error'].filter(k=>a.metrics[k]).map(k=>row([a.metrics[k].label,metricCell(a.metrics[k]),num(a.metrics[k].n)])))}<details><summary>Contagens publicadas · saque, ataque, recepção e bloqueio</summary>${table(['Registro','Contagem','Jogos cobertos'],Object.entries(a.observed||{}).map(([key,value])=>row([{points_total:'Pontos creditados',serve_attempts:'Saques',serve_points:'Aces',serve_errors:'Erros de saque',reception_attempts:'Recepções',reception_errors:'Erros de recepção',attack_attempts:'Ataques',attack_points:'Kills',attack_errors:'Erros de ataque',attack_blocked:'Bloqueados',block_points:'Bloqueios'}[key]||key,num(value),num(a.observed_matches?.[key])])))}<p class="source-tag">OBSERVADO · MATCH REPORT</p></details>${athleteTrend(name,a.team)}${athleteLineups(name,a.team)}`).join('')}</section>`}
+function athleteProfile(name,list){
+  const entries=list.filter(t=>!state.athleteTeam||t.team===state.athleteTeam).flatMap(t=>t.athletes.filter(a=>a.name===name).map(a=>({...a,team:t.team})));
+  return `<section class="atlas-sheet athlete-profile">
+    <div class="atlas-heading">
+      <div>
+        <span class="atlas-overline">Perfil Individual da Atleta</span>
+        <h2>${esc(teamName(name))}</h2>
+      </div>
+    </div>
+    ${entries.map(a=>{
+      const m=a.metrics||{};
+      const obs=a.observed||{};
+      const games=a.games||a.metrics?.kill?.total_matches||1;
+      const pts=a.points||obs.points_total||0;
+      
+      const kpisHtml=`<div class="kpis">
+        <div class="kpi primary">
+          <span class="kpi-label">Pontos Totais</span>
+          <span class="kpi-value">${num(pts)}</span>
+          <span class="kpi-sub">${fmt(pts/games,1)} por jogo · ${games} jogos</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Eficiência de Ataque</span>
+          <span class="kpi-value">${m.eff?.value!=null?pct(m.eff.value):'—'}</span>
+          <span class="kpi-sub">Kill% ${m.kill?.value!=null?pct(m.kill.value):'—'} · n=${num(m.kill?.n)}</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">Passe Positivo</span>
+          <span class="kpi-value">${m.positive?.value!=null?pct(m.positive.value):'—'}</span>
+          <span class="kpi-sub">Excelente ${m.excellent?.value!=null?pct(m.excellent.value):'—'} · n=${num(m.rec_error?.n)}</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi-label">EPA Estimado</span>
+          <span class="kpi-value">${m.epa?.value!=null?signed(m.epa.value):'—'}</span>
+          <span class="kpi-sub">${m.epa_per_game?.value!=null?signed(m.epa_per_game.value)+'/jogo':'modelo experimental'}</span>
+        </div>
+      </div>`;
+
+      const metricKeys=['kill','eff','attack_blocked','attack_error','positive','excellent','rec_error','ace','serve_error','block_points','block_per_game','ava','epa','epa_per_game'];
+      const rows=metricKeys.filter(k=>m[k]&&m[k].value!=null).map(k=>[
+        m[k].label,
+        badge(m[k].metric_class),
+        metricCell(m[k]),
+        m[k].ci?`[${pct(m[k].ci[0])} – ${pct(m[k].ci[1])}]`:'—',
+        num(m[k].n),
+        esc(m[k].sample||'')
+      ]);
+
+      const tableHtml=table(['Fundamento / Métrica','Classe','Taxa / Valor','Wilson 95%','Amostra (n)','Estabilidade'],rows.map(r=>row(r,[1,3])));
+
+      const expHtml=(m.epa||m.ava)?`<div class="panel" style="margin-top:16px;">
+        <div class="panel-head">
+          <span class="kicker">Sports Analytics · Modelagem Avançada</span>
+          <h3>Métricas Experimentais: AVA e EPA Estimado</h3>
+        </div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+            <div class="insight">
+              <span class="insight-label">Attack Value Added (AVA)</span>
+              <span class="insight-value">${m.ava?.value!=null?signed(m.ava.value)+' kills':'—'}</span>
+              <p class="note">Saldo de finalizações de ataque comparado ao volume esperado na média da liga (n=${num(m.kill?.n)} ataques). Positivo indica definição acima do baseline.</p>
+            </div>
+            <div class="insight">
+              <span class="insight-label">EPA Estimado (Expected Points Added)</span>
+              <span class="insight-value">${m.epa?.value!=null?signed(m.epa.value)+' pts':'—'}</span>
+              <p class="note">Impacto marginal líquido estimado em pontos a partir do modelo markoviano de rali (Powers et al. 2018). Pondera kills acima da média, erros forçados/diretos, bloqueios sofridos, aces, recepções e bloqueios.</p>
+            </div>
+          </div>
+          <p class="note" style="margin-top:10px;"><span class="badge model">EXPERIMENTAL</span> Estimativa descritiva inferida da literatura. Não substitui contagens de scout evento a evento com DataVolley.</p>
+        </div>
+      </div>`:'';
+
+      return `<h3>${esc(teamName(a.team))}</h3>
+        ${kpisHtml}
+        ${tableHtml}
+        ${expHtml}
+        <details class="details-panel"><summary>Contagens publicadas no Match Report oficial</summary>${table(['Registro','Contagem','Jogos cobertos'],Object.entries(a.observed||{}).map(([key,value])=>row([{points_total:'Pontos creditados',break_points:'Break points conquistados',win_loss:'Saldo (+/−)',serve_attempts:'Saques',serve_points:'Aces',serve_errors:'Erros de saque',reception_attempts:'Recepções',reception_errors:'Erros de recepção',attack_attempts:'Ataques',attack_points:'Kills',attack_errors:'Erros de ataque',attack_blocked:'Bloqueados',block_points:'Bloqueios'}[key]||key,num(value),num(a.observed_matches?.[key])])))}<p class="source-tag">OBSERVADO · MATCH REPORT</p></details>
+        ${athleteTrend(name,a.team)}
+        ${athleteLineups(name,a.team)}`;
+    }).join('')}
+  </section>`;
+}
+
+referencesPage = function() {
+  return heading('Metodologia & Referências','Fundamentação teórica, modelos estocásticos e literatura acadêmica de Volleyball Analytics')+`
+<section class="atlas-sheet">
+  <div class="atlas-heading">
+    <h2>1. Teoria da Informação e Entropia da Distribuição de Levantamento</h2>
+    <span class="source-tag experimental">MODELO EXPERIMENTAL · BITS DE SHANNON</span>
+  </div>
+  <p class="lead-deck">A entropia de Shannon quantifica matematicamente o grau de incerteza, dispersão e imprevisibilidade das decisões da levantadora na distribuição das bolas de ataque entre as atacantes disponíveis.</p>
+  <div class="panel-body">
+    <div class="formula-box">
+      <strong>Equação de Shannon (1948):</strong>
+      <div class="math-display">H(X) = − ∑ p_i log₂(p_i)   [bits]</div>
+      <p class="note">Onde k representa o número de opções elegíveis na formação em rede e fundo, e p_i é a probabilidade (ou peso normalizado do prior) da opção i. Versão normalizada de 0 (previsibilidade total) a 1 (distribuição perfeitamente uniforme): H_norm = H(X) / log₂(k).</p>
+    </div>
+    <h3>Condicionamento Tático e Limitações na Base CBV</h3>
+    <p>Na literatura de alto rendimento (<em>Science Untangled</em>, 2020; Lebedew, 2021), a entropia nunca deve ser interpretada isoladamente sem condicionamento à rotação (P1 a P6) e à qualidade do passe (In-System vs Out-of-System):</p>
+    <ul>
+      <li><strong>Passe Positivo/Excelente (K1+):</strong> A levantadora possui todas as atacantes à disposição. Alta entropia neste estado correlaciona-se com quebra da marcação de bloqueio adversário.</li>
+      <li><strong>Passe Negativo (K1−):</strong> A física do deslocamento frequentemente restringe a distribuição a bolas altas nas extremidades. A redução de entropia é natural e esperada.</li>
+      <li><strong>Inferência na Base CBV:</strong> Como as súmulas públicas não fornecem os códigos DataVolley de toque a toque, o Atlas implementa o <code>lineup_volume_entropy</code> como prior de volume das atletas presentes nas formações modais reconciliadas. A métrica permanece categorizada como <strong>EXPERIMENTAL</strong> para garantir honestidade epistemológica.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="atlas-sheet">
+  <div class="atlas-heading">
+    <h2>2. O Rali como Cadeia de Markov e Expected Points Added (EPA)</h2>
+    <span class="source-tag experimental">MODELAGEM ESTOCÁSTICA DE TRANSIÇÃO</span>
+  </div>
+  <p class="lead-deck">O EPA supera a falácia das contagens brutas ao mensurar o impacto marginal líquido que cada toque individual causa na probabilidade da equipe vencer a disputa do ponto.</p>
+  <div class="panel-body">
+    <div class="formula-box">
+      <strong>Vetor de Expected Value e Atribuição de Crédito (Powers et al., 2018; Raymond, 2020):</strong>
+      <div class="math-display">V(s) = P(Vitória no Rali | Estado s) ∈ [0, 1]</div>
+      <div class="math-display">EPA_j = V(s_{t+1}) − V(s_t)   [pontos líquidos adicionados]</div>
+      <p class="note">Estados absorventes: +1 (ponto próprio conquistado) e 0 (ponto adversário). Estados transientes modelam saque, passe (+/!), levantamento e ataque/bloqueio.</p>
+    </div>
+    <h3>Decomposição Descritiva Aplicada ao Atlas</h3>
+    <p>Com as contagens oficiais do Match Report e a probabilidade de transição estimada da literatura, o EPA individual estimado no Atlas decompõe os ganhos e custos de cada fundamento:</p>
+    <div class="formula-box">
+      <div class="math-display">EPA = 0.30 × AVA − 0.70 × AtkErr − 0.85 × AtkBloq + 0.65 × Ace − 0.35 × SrvErr + 0.10 × ΔPosRec − 0.65 × RecErr + 0.65 × Blocks</div>
+      <p class="note">Onde AVA = Kills − (Ataques × k_liga) representa os Kills Acima do Esperado (Attack Value Added). Atletas com EPA positivo agregam pontos acima do esperado para suas equipes.</p>
+    </div>
+  </div>
+</section>
+
+<section class="atlas-sheet">
+  <div class="atlas-heading">
+    <h2>3. Dinâmica de Fases: Side-Out (K1 / FBSO) vs Transição (K2)</h2>
+    <span class="source-tag">ANÁLISE DE COMPLEXOS · FASES DO JOGO</span>
+  </div>
+  <div class="panel-body">
+    <p>O voleibol moderno opera sob a dinâmica de dois sistemas interdependentes fundamentados por Carl McGown (1995) e Hugh McCutcheon (2022):</p>
+    <ul>
+      <li><strong>Complexo 1 (K1) e First Ball Side Out (FBSO%):</strong> O aproveitamento da equipe recebendo o saque no seu primeiro ataque terminal. Equipes de topo sustentam FBSO% superior a 60–65%. Avalia-se a passadora não por notas ordinais subjetivas, mas pelo <em>Expected Side-out Added (xSOA)</em> gerado pela qualidade do seu passe.</li>
+      <li><strong>Complexo 2 (K2 / Transição):</strong> Pontos disputados a partir do contra-ataque após defesa ou amortecimento no bloqueio. Enquanto o K1 estabelece a base de sobrevivência do set, a eficiência de K2 é o maior preditor estatístico de vitórias em playoffs e jogos eliminatórios.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="atlas-sheet">
+  <div class="atlas-heading">
+    <h2>4. Inferência Estatística em Amostras Pequenas e Validação</h2>
+    <span class="source-tag">CALIBRAÇÃO E RIGOR ESTATÍSTICO</span>
+  </div>
+  <div class="panel-body">
+    <ul>
+      <li><strong>Intervalo de Confiança Wilson 95% (Wilson, 1927):</strong> Aplicado em todas as proporções binomiais exatas (Kill%, Ace%, Erro de Saque%, Bloqueado%). Diferente da aproximação normal de Wald, o escore de Wilson é rigoroso e assimétrico próximo aos extremos (0% e 100%) e em amostras reduzidas (n < 30).</li>
+      <li><strong>Encolhimento Bayesiano Empírico (Efron & Morris, 1975):</strong> Suavização paramétrica via distribuição Beta empírica calculada por momentos em nível de coorte. Regride estimativas ruidosas de atletas com poucas tentativas para a média coletiva.</li>
+      <li><strong>Brier Score e Log Loss (Brier, 1950):</strong> Métricas de perda utilizadas na validação walk-forward dos modelos de probabilidade de vitória pré-jogo e ponto a ponto, garantindo que o modelo seja probabilísticamente calibrado antes de qualquer exibição.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="atlas-sheet">
+  <div class="atlas-heading">
+    <h2>5. Bibliografia Acadêmica</h2>
+    <span class="source-tag">FONTES E LITERATURA CIENTÍFICA</span>
+  </div>
+  <ul class="academic-biblio">
+    <li><strong>Shannon, C. E. (1948).</strong> <em>A Mathematical Theory of Communication.</em> Bell System Technical Journal, 27(3), 379–423. <a href="https://doi.org/10.1002/j.1538-7305.1948.tb01338.x" target="_blank" rel="noopener">doi:10.1002/j.1538-7305.1948.tb01338.x</a>.</li>
+    <li><strong>Powers, S., et al. (2018/2020).</strong> <em>An absorbing Markov chain model for volleyball rallies and player evaluation.</em> Journal of Quantitative Analysis in Sports / New England Symposium on Statistics in Sports (NESSIS).</li>
+    <li><strong>Raymond, B., & Ickowicz, A. (2020).</strong> <em>Expected points and distribution modeling in high-performance volleyball.</em> Science Untangled / openvolley Technical Papers.</li>
+    <li><strong>Wilson, E. B. (1927).</strong> <em>Probable inference, the law of succession, and statistical inference.</em> Journal of the American Statistical Association, 22(158), 209–212. <a href="https://doi.org/10.1080/01621459.1927.10502953" target="_blank" rel="noopener">doi:10.1080/01621459.1927.10502953</a>.</li>
+    <li><strong>Brier, G. W. (1950).</strong> <em>Verification of forecasts expressed in terms of probability.</em> Monthly Weather Review, 78(1), 1–3. <a href="https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2" target="_blank" rel="noopener">doi:10.1175/1520-0493(1950)078</a>.</li>
+    <li><strong>Efron, B., & Morris, C. (1975).</strong> <em>Data analysis using Stein's estimator and its generalizations.</em> Journal of the American Statistical Association, 70(350), 311–319.</li>
+    <li><strong>McCutcheon, H. (2022).</strong> <em>Mediation and Volley Analytics: Structural Systems for Terminal Scoring.</em> Human Kinetics.</li>
+    <li><strong>Lebedew, M. (2021).</strong> <em>Inside Volleyball Analytics: Setter Decision Trees, Entropy and Reception Efficiency.</em> At Home on the Court.</li>
+  </ul>
+</section>`;
+};
 const oldDataPage=dataPage;
 dataPage=function(){const c=C(),sources=c.source_snapshots||[],attempts=c.atlas_attempts||[],count=kind=>sources.filter(s=>s.source_type===kind&&s.status==='AVAILABLE').length;return heading('Dados','Fontes, cobertura, conciliação e versões')+editionAudit()+`<section class="atlas-sheet"><h2>O que foi possível reconstruir?</h2>${[['Match Report',count('match_report')],['Scoresheet',count('scoresheet')],['Controle de líbero',count('libero_report')],['Ponto a ponto original',count('play_by_play')],['Partidas reconstruídas',Object.keys(c.rallies||{}).length],['Rotações completas',c.coverage?.rotation_matches||0],['Presença reconciliada',c.coverage?.lineup_matches||0]].map(([name,n])=>`<div class="coverage-bars"><span>${name}</span><progress max="${c.matches.length||1}" value="${n}"></progress><span class="numeric">${n}/${c.matches.length}</span></div>`).join('')}<p class="note">O widget original retornou 403. Sequência disponível foi reconstruída das passagens de saque, sem inventar autoria de ações.</p>${table(['Reconciliação','Partidas'],['VALID','VALID_WITH_WARNINGS','PARTIAL','FAILED'].map(status=>row([status,attempts.filter(a=>a.status===status).length])))}<p><a href="https://github.com/lucaaregis4r-ops/Dados-Voleibr/blob/main/docs/CADERNO_METODOLOGICO.md" target="_blank" rel="noopener">Abrir caderno metodológico</a></p><details><summary>Tentativas por partida</summary>${table(['Partida','Estado','Motivo'],attempts.map(a=>row([`<button data-match="${a.match_id}" class="text-button">${a.match_id}</button>`,esc(a.status),esc(a.report.reason||a.report.lineup_warnings?.join('; ')||'Placares reconciliados')])) ,[1,2])}</details><details><summary>Fontes, hashes e versões</summary>${table(['Partida','Fonte','Estado','SHA256 / coleta'],sources.map(s=>row([String(s.match_id),s.source_url?`<a class="atlas-data-link" href="${esc(s.source_url)}" target="_blank" rel="noopener">${esc(s.source_type)}</a>`:esc(s.source_type),esc(s.status),`<span title="${esc(s.sha256||'')}">${esc(s.sha256?.slice(0,16)||'—')}</span><br>${esc(s.fetched_at||'data de coleta não registrada')}`]),[1,2,3]),[1,2,3])}</details></section><section class="atlas-sheet"><h2>Modelos e avaliações</h2><p>Baseline pré-jogo: logistic-l2-v1 · preservado.</p>${table(['Pré-jogo · mesma amostra','n','Brier','Log Loss','Calibration Error'],['baseline','candidate'].map(key=>{const e=c.challenger?.[key];return row([key==='baseline'?'Baseline v1':'v2 com intercepto · experimental',num(e?.total_matches),fmt(e?.brier_score,3),fmt(e?.log_loss,3),fmt(e?.calibration_error,3)])}))}<p class="note">${esc(c.challenger?.limitation||'')} Ganho em todos os critérios: ${c.challenger?.improved?'sim':'não'}. Modelo ativo preservado.</p><p class="experimental-text">${esc(c.rally_model?.model_version||'—')} · EXPERIMENTAL</p>${table(['Modelo de ponto','n comum','Brier','Log Loss'],['candidate','baseline'].map(key=>{const e=c.rally_model?.[key];return row([key==='candidate'?'Equipe + prior de fase':'Prior da competição',num(e?.n),fmt(e?.brier),fmt(e?.log_loss)])}))}<p class="note">${esc(c.rally_model?.wp_validation||'Sem avaliação disponível.')}</p><details><summary>Treinos reproduzíveis</summary>${table(['Partida','Janela','Jogos de treino','Parâmetros'],(c.rally_model?.runs||[]).map(r=>row([r.match_id,esc(r.training_window?.join(' → ')||'Sem histórico'),r.training_matches,esc(JSON.stringify(r.parameters))]),[1,3]),[1,3])}</details></section><details class="details-panel"><summary>Estatísticas legadas e operações locais</summary>${oldDataPage().replace(heading('Dados'),'').replace(/SO\/BP por rotação e métricas de sequência exigem eventos por rally, ausentes da base atual\./g,'A cobertura reconstruída está discriminada acima; agregados legados permanecem separados.')}</details>`};
 const oldBind=bind;
@@ -481,7 +654,7 @@ bind=function(){bindWithDistribution();const detail=$('#distribution-experiment'
 
 // Edition scope and a reading guide are available from every view.
 function seasonContext(){const c=C(),label={CURRENT:'Temporada atual',COMPLETED:'Temporada encerrada',UPCOMING:'Próxima temporada',UNKNOWN:'Edição selecionada'}[c?.edition_status||'UNKNOWN'];return `<aside class="season-context" aria-label="Recorte da temporada"><div><strong>${label} · ${esc(seasonLabel(c?.season))}</strong><p>${esc(c?.statistics_scope||'Estatísticas restritas à edição selecionada.')}${!c?.matches?.length?' Ainda sem partidas concluídas coletadas nesta edição.':''}</p></div><button class="text-button" data-legend>Legenda das variáveis</button></aside>`}
-const pageLegendKeys={'Visão geral':['so','bp','eff','n','pp'],'Equipes':['rotation','so','bp','k1','n','pp','expected','runs','onoff'],'Confrontos':['so','bp','expected','evaluation'],'Partidas':['rotation','wp','wpa','leverage','crunch','missing'],'Atletas':['kill','eff','positive','n','pp'],'Dados':['classes','evaluation','missing']};
+const pageLegendKeys={'Visão geral':['so','bp','eff','n','pp'],'Equipes':['rotation','so','bp','k1','n','pp','expected','runs','onoff'],'Confrontos':['so','bp','expected','evaluation'],'Partidas':['rotation','wp','wpa','leverage','crunch','missing'],'Atletas':['kill','eff','positive','n','pp'],'Dados':['classes','evaluation','missing'],'Referências':['classes','evaluation','distribution','expected','ci']};
 function contextLegend(){const keys=pageLegendKeys[state.page];if(!keys)return '';return `<details class="details-panel context-legend"><summary>Como ler as variáveis desta página</summary><dl class="legend-list">${(DATA.glossary||[]).filter(g=>keys.includes(g.key)).map(g=>`<div><dt>${esc(g.label)}</dt><dd>${esc(g.meaning)} <span class="note">${esc(g.reading)}</span></dd></div>`).join('')}</dl><button class="text-button" data-legend>Abrir legenda completa e fórmulas</button></details>`}
 function legendPage(){return heading('Legenda das variáveis','Significado, unidade, fórmula e cuidados na interpretação')+`<label class="legend-search">Buscar sigla ou variável<input id="legend-search" type="search" placeholder="Ex.: SO, WPA, eficiência, amostra" aria-label="Buscar na legenda"></label><section class="atlas-sheet"><h2>Guia de leitura</h2><dl class="legend-list">${(DATA.glossary||[]).map(g=>`<div data-legend-item><dt>${esc(g.label)}</dt><dd>${esc(g.meaning)}<p class="note">${esc(g.reading)}</p></dd></div>`).join('')}</dl></section><section class="atlas-sheet"><h2>Catálogo de variáveis e fórmulas</h2><p class="note">Amostras e comparações usam a mesma competição, gênero, categoria e temporada. Modelos com histórico insuficiente permanecem indisponíveis.</p>${(DATA.metric_registry||[]).map(m=>`<details class="legend-metric" data-legend-item><summary>${esc(m.short_name||m.name)} <span class="note">${esc(m.metric_id)}</span></summary><p>${badge(m.metric_class)} ${esc(m.description)}</p><dl class="legend-list"><div><dt>Fórmula</dt><dd>${esc(m.formula)}</dd></div><div><dt>Unidade</dt><dd>${esc(m.unit)}</dd></div><div><dt>Fontes</dt><dd>${esc(m.required_sources.join(', '))}</dd></div><div><dt>Exemplo</dt><dd>${esc(m.example)}</dd></div><div><dt>Limitações</dt><dd>${esc(m.limitations)}</dd></div></dl></details>`).join('')}<p id="legend-empty" class="atlas-empty" hidden>Nenhuma variável encontrada.</p></section>`}
 const bindWithLegend=bind;

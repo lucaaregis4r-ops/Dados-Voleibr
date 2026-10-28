@@ -621,6 +621,43 @@ body.data-mode .advanced { display: block; }
 .legend-search input { display: block; width: 100%; margin-top: 6px; }
 [data-legend-item][hidden], #legend-empty[hidden] { display: none !important; }
 
+/* Metodologia & Referências Acadêmicas */
+.formula-box {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--blue);
+  padding: 14px 18px;
+  margin: 14px 0;
+  border-radius: 2px;
+}
+.math-display {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  padding: 8px 0;
+  letter-spacing: 0.5px;
+  overflow-x: auto;
+}
+.academic-biblio {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.academic-biblio li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.academic-biblio li:last-child {
+  border-bottom: 0;
+}
+.academic-biblio a {
+  color: var(--blue);
+  text-decoration: underline;
+}
+
 /* Responsive adjustments */
 @media(max-width: 1100px) {
   .atlas-courts, .replay-grid { grid-template-columns: 1fr; }

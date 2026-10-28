@@ -24,6 +24,8 @@ GLOSSARY=[
  ('evaluation','Brier · Log Loss · ECE · acurácia','Brier: erro quadrático das probabilidades. Log Loss: penaliza especialmente previsões erradas muito confiantes. ECE: diferença entre confiança e frequência observada. Acurácia: proporção de vencedores acertados.','Brier, Log Loss e ECE menores são melhores na mesma amostra. Acurácia isolada não mede calibração. Comparação usa datas anteriores, sem misturar edições.'),
  ('missing','— · cobertura · confiança','— significa informação indisponível ou amostra insuficiente; cobertura indica quanto da fonte foi reconciliado.','Não é zero. Formação parcial não confirma seis atletas presentes; falhas de fonte não são preenchidas por suposição.'),
  ('classes','OBSERVADO · DERIVADO · RECONSTRUÍDO · MODELADO · EXPERIMENTAL','Observado vem diretamente da fonte; derivado aplica uma fórmula; reconstruído recompõe informação por regras; modelado usa um modelo; experimental ainda tem limitações de validação.','A classe, a fonte e a amostra acompanham a medida. Uma previsão não vira dado observado.'),
+ ('epa','EPA · Expected Points Added','Pontos líquidos estimados adicionados pela atleta através de modelagem estocástica descritiva de rali.','Pondera kills acima do esperado, aces, erros, bloqueios e recepções. Métrica experimental inferida da literatura (Powers et al. 2018), sem scout toque a toque.'),
+ ('ava','AVA · Attack Value Added','Kills da atleta menos os esperados pelo seu volume de tentativas à taxa média da liga.','Mede o saldo líquido de definição ofensiva acima do baseline da competição. Experimental.'),
 ]
 
 
