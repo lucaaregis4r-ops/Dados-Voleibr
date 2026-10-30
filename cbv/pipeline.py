@@ -52,9 +52,13 @@ def staged_update(root,worker):
             worker(stage_data,stage)
             compact_database(stage_data/'cbv.duckdb')
             quality_gate(stage_data/'cbv.duckdb',old_count)
-            artifacts=[stage/'index.html',stage/'docs/index.html',stage/'exports/dashboard.html',stage/'docs/CADERNO_METODOLOGICO.md']
+            artifacts=[stage/'index.html',stage/'docs/index.html',stage/'exports/dashboard.html',stage/'docs/CADERNO_METODOLOGICO.md',stage/'exports/sync_health.json']
             if any(not p.exists() or not p.stat().st_size for p in artifacts):raise RuntimeError('Build incompleto: produção preservada')
             if '__SCOUTING_DATA__' in artifacts[0].read_text():raise RuntimeError('Payload ausente no HTML')
+            import json
+            health_data = json.loads((stage/'exports/sync_health.json').read_text(encoding='utf-8'))
+            if health_data.get('status') == 'FAILED':
+                raise RuntimeError('Falha crítica no sync: status FAILED, produção preservada')
             backup=data/'cbv.last-valid.duckdb';shutil.copy2(production,backup)
             # All expensive/fallible operations complete before publication. Preserve
             # previous bytes for rollback if a filesystem operation fails midway.

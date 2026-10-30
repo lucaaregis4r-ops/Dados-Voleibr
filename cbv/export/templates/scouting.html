@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vôlei BR — Atlas Tático</title>
+<title>Vôlei BR — Atlas do Vôlei</title>
 <style>
 __FONT_CSS__
 :root {
@@ -222,38 +222,95 @@ __ATLAS_CSS__
 <a class="sr-only" href="#main">Ir para o conteúdo</a>
 <header class="site-header">
   <div class="header-main">
-    <div class="wordmark"><a href="#" onclick="state.page='Visão geral';state.matchId=null;render();return false;">VÔLEI<span>BR</span></a></div>
-    <nav class="main-nav" id="primary" aria-label="Navegação principal"></nav>
-    <div class="header-tools">
-      <div class="mode" id="mode" role="group" aria-label="Nível de leitura">
-        <button type="button" class="active" data-mode="read">Leitura</button>
-        <button type="button" data-mode="data">Dados</button>
-      </div>
-      <div class="global-search">
-        <label for="team-search" class="sr-only">Buscar equipe</label>
-        <input id="team-search" placeholder="Buscar equipe" autocomplete="off" aria-controls="team-results" aria-expanded="false">
-        <div id="team-results" class="search-results" hidden></div>
-      </div>
-      <button class="mobile-menu menu-toggle" id="menu-toggle" aria-controls="primary" aria-expanded="false">Menu</button>
+    <div class="wordmark">
+      <a href="#" onclick="navigateTo('Início');return false;">
+        ATLAS DO <span>VÔLEI</span>
+        <span class="sr-only">Vôlei BR</span>
+      </a>
     </div>
+    
+    <div class="global-search-bar" role="search">
+      <span class="search-icon-inside" aria-hidden="true">🔍</span>
+      <label for="global-search" class="sr-only">Buscar atletas, equipes e confrontos</label>
+      <input id="global-search" type="search" placeholder="Buscar atletas, equipes, jogos..." autocomplete="off" aria-expanded="false" aria-controls="global-search-results">
+      <div id="global-search-results" class="search-results-dropdown" hidden role="listbox"></div>
+    </div>
+
+    <nav class="desktop-nav" aria-label="Navegação desktop">
+      <button type="button" class="nav-btn-desktop active" data-nav="Início">Início</button>
+      <button type="button" class="nav-btn-desktop" data-nav="Jogos">Jogos</button>
+      <button type="button" class="nav-btn-desktop" data-nav="Times">Times</button>
+      <button type="button" class="nav-btn-desktop" data-nav="Atletas">Atletas</button>
+    </nav>
+
+    <button type="button" class="status-badge" id="sync-status-badge" aria-label="Saúde do pipeline e fontes de dados" title="Ver saúde das fontes">
+      <div class="status-row">
+        <span class="status-dot healthy" id="sync-status-dot"></span>
+        <span id="sync-status-label">Atualizado</span>
+      </div>
+      <span class="status-sub" id="sync-status-sub">583 jogos</span>
+    </button>
   </div>
 </header>
-<div class="context-strip">
-  <div class="context-inner">
-    <span id="crumb"><strong>Superliga</strong> · Visão geral</span>
-    <div class="filters">
-      <label class="sr-only" for="competition">Competição</label>
-      <select id="competition" aria-label="Competição"></select>
-      <label class="sr-only" for="gender">Gênero</label>
-      <select id="gender" aria-label="Gênero"></select>
-      <label class="sr-only" for="season">Temporada</label>
-      <select id="season" aria-label="Temporada"></select>
+
+<div class="filter-strip">
+  <div class="chips-rail" id="quick-filter-chips" role="toolbar" aria-label="Filtros rápidos"></div>
+</div>
+
+<main id="main" tabindex="-1"></main>
+
+<div class="compare-dock" id="compare-dock" hidden role="region" aria-label="Comparação rápida">
+  <div class="dock-content">
+    <div class="dock-label">Comparar <span id="dock-count">(0/2)</span></div>
+    <div class="dock-slots" id="dock-slots"></div>
+    <div class="dock-btns">
+      <button type="button" class="btn-text" id="btn-compare-clear">Limpar</button>
+      <button type="button" class="btn-primary" id="btn-compare-action" disabled>Comparar</button>
     </div>
-    <span id="updated" class="updated"></span>
   </div>
 </div>
-<main id="main" tabindex="-1"></main>
-<footer class="footer"><span>Projeto independente • dados públicos disponibilizados pela CBV</span><span id="edition"></span></footer>
+
+<nav class="bottom-nav" id="bottom-nav" aria-label="Navegação principal">
+  <button type="button" class="nav-item active" data-nav="Início" aria-current="page">
+    <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    <span>Início</span>
+  </button>
+  <button type="button" class="nav-item" data-nav="Jogos">
+    <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+    <span>Jogos</span>
+  </button>
+  <button type="button" class="nav-item" data-nav="Times">
+    <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+    <span>Times</span>
+  </button>
+  <button type="button" class="nav-item" data-nav="Atletas">
+    <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg>
+    <span>Atletas</span>
+  </button>
+</nav>
+
+<footer class="footer">
+  <div><strong>Atlas do Vôlei</strong> · Vôlei BR — Análise e Estatística de Voleibol</div>
+  <span>Visão geral e inteligência tática com cobertura de dados e qualidade dos dados verificada.</span>
+  <span id="edition"></span>
+</footer>
+
+<div class="sheet-backdrop" id="sheet-backdrop" aria-hidden="true"></div>
+<div class="bottom-sheet app-sheet" id="app-sheet" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="sheet-handle" id="sheet-handle" aria-label="Arrastar para fechar"></div>
+  <div class="sheet-header">
+    <div class="sheet-titles">
+      <h3 class="sheet-title" id="sheet-title"></h3>
+      <p class="sheet-subtitle" id="sheet-subtitle"></p>
+    </div>
+    <button type="button" class="sheet-close" id="sheet-close" aria-label="Fechar painel">✕</button>
+  </div>
+  <div class="sheet-body" id="sheet-body"></div>
+  <div class="sheet-footer" id="sheet-footer" style="display:none;">
+    <button type="button" class="btn-primary" id="sheet-action-btn" style="width:100%;">Aplicar</button>
+  </div>
+</div>
+
 <div id="plot-tooltip" class="plot-tooltip" role="tooltip" hidden></div>
 <script type="application/json" id="dataset">__SCOUTING_DATA__</script>
 <script>
@@ -568,7 +625,7 @@ function bind(){
 
 async function operation(url,body,reload){const status=$('#operation-status');if(!['localhost','127.0.0.1'].includes(location.hostname)){status.textContent='Esta operação requer o servidor local: python -m cbv app';return}status.textContent='Processando…';try{const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const result=await res.json();if(!res.ok)throw new Error(result.detail||'Falha na operação');status.textContent=result.message||'Concluído.';if(reload)location.reload()}catch(e){status.textContent=e.message}}
 matchMedia('(max-width:600px)').addEventListener('change',()=>{if(state.page==='Visão geral')render()});
-$('#menu-toggle').onclick=()=>{const open=$('#primary').classList.toggle('open');$('#menu-toggle').setAttribute('aria-expanded',String(open))};
+if($('#menu-toggle')){$('#menu-toggle').onclick=()=>{const open=$('#primary')?.classList.toggle('open');$('#menu-toggle').setAttribute('aria-expanded',String(open))};}
 document.querySelectorAll('#mode button').forEach(b=>{
   b.onclick=()=>{
     state.mode=b.dataset.mode;
@@ -576,10 +633,12 @@ document.querySelectorAll('#mode button').forEach(b=>{
     document.body.classList.toggle('data-mode',state.mode==='data');
   };
 });
-$('#team-search').oninput=globalSearch;
-$('#team-search').onkeydown=e=>{if(e.key==='Escape'){$('#team-results').hidden=true;e.target.setAttribute('aria-expanded','false')}if(e.key==='ArrowDown'){$('#team-results button')?.focus();e.preventDefault()}if(e.key==='Enter'){const first=$('#team-results button');if(first){first.click();e.preventDefault()}}};
-document.addEventListener('click',e=>{if(!e.target.closest('.global-search')){$('#team-results').hidden=true;$('#team-search').setAttribute('aria-expanded','false')}});
-for(const id of ['competition','gender','season'])$('#'+id).onchange=e=>chooseFilter(id,e.target.value);
+if($('#team-search')){
+  $('#team-search').oninput=globalSearch;
+  $('#team-search').onkeydown=e=>{if(e.key==='Escape'){if($('#team-results'))$('#team-results').hidden=true;e.target.setAttribute('aria-expanded','false')}if(e.key==='ArrowDown'){$('#team-results button')?.focus();e.preventDefault()}if(e.key==='Enter'){const first=$('#team-results button');if(first){first.click();e.preventDefault()}}};
+  document.addEventListener('click',e=>{if(!e.target.closest('.global-search')){if($('#team-results'))$('#team-results').hidden=true;$('#team-search')?.setAttribute('aria-expanded','false')}});
+}
+for(const id of ['competition','gender','season']){if($('#'+id))$('#'+id).onchange=e=>chooseFilter(id,e.target.value);}
 __ATLAS_JS__
 render();
 </script></body></html>

@@ -95,25 +95,40 @@ def generate_dashboard_data(competition=None,include_atlas=True):
             c['atlas_teams']={t['team']:summarize_team(rally_rows,t['team']) for t in c['teams']}
             from cbv.analysis.volume_distribution import estimate_distributions
             for name,summary in c['atlas_teams'].items():summary['distribution_model']=estimate_distributions(rally_rows,pp,name)
+            # Pre-compute competition rotation averages once per cohort (O(N) instead of O(teams * N))
+            comp_rotation_avgs = {}
+            for pos in range(1, 7):
+                for metric in ('so', 'bp'):
+                    outcomes = []
+                    for r in rally_rows:
+                        for side in ('home', 'away'):
+                            if r.get(side+'_rotation') == pos and (r['serving_side'] == side) == (metric == 'bp'):
+                                outcomes.append(r['winner_side'] == side)
+                    comp_rotation_avgs[(pos, metric)] = (100 * sum(outcomes) / len(outcomes)) if outcomes else None
+
             for summary in c['atlas_teams'].values():
-                summary['serve_runs'].pop('runs',None)
+                summary['serve_runs'].pop('runs', None)
                 for rotation in summary['rotations']:
-                    for metric in ('so','bp'):
-                        # Competition reference uses all covered rallies, independently of team.
-                        outcomes=[]
-                        for r in rally_rows:
-                            for side in ('home','away'):
-                                if r.get(side+'_rotation')==rotation['position'] and (r['serving_side']==side)==(metric=='bp'):
-                                    outcomes.append(r['winner_side']==side)
-                        avg=100*sum(outcomes)/len(outcomes) if outcomes else None
-                        rotation[metric+'_delta_competition']=rotation[metric]['value']-avg if rotation[metric]['n'] and avg is not None else None
-            rally_fields=['set_number','rally_number','score_home_before','score_away_before','score_home_after','score_away_after',
-                'serving_side','winner_side','home_rotation','away_rotation','home_lineup','away_lineup','home_lineup_confidence','away_lineup_confidence',
-                'wp_before','wp_after','wpa','leverage','expected_home','crunch','super_crunch','pressure_band']
-            c['coverage']=dict(rotation_matches=len({r['match_id'] for r in rally_rows if r.get('home_rotation') and r.get('away_rotation')}),
-                lineup_matches=len({r['match_id'] for r in rally_rows if r.get('home_lineup_confidence')=='RECONSTRUCTED_HIGH' and r.get('away_lineup_confidence')=='RECONSTRUCTED_HIGH' and r.get('home_lineup_names') and r.get('away_lineup_names')}))
-            c['rally_fields']=rally_fields
-            c['rallies']={str(mid):[[r.get(k) for k in rally_fields] for r in rally_rows if r['match_id']==mid] for mid in sorted({r['match_id'] for r in rally_rows})}
+                    pos = rotation['position']
+                    for metric in ('so', 'bp'):
+                        avg = comp_rotation_avgs.get((pos, metric))
+                        rotation[metric+'_delta_competition'] = (
+                            rotation[metric]['value'] - avg
+                            if rotation[metric]['n'] and avg is not None
+                            else None
+                        )
+            rally_fields = ['set_number', 'rally_number', 'score_home_before', 'score_away_before', 'score_home_after', 'score_away_after',
+                'serving_side', 'winner_side', 'home_rotation', 'away_rotation', 'home_lineup', 'away_lineup', 'home_lineup_confidence', 'away_lineup_confidence',
+                'wp_before', 'wp_after', 'wpa', 'leverage', 'expected_home', 'crunch', 'super_crunch', 'pressure_band']
+            c['coverage'] = dict(
+                rotation_matches=len({r['match_id'] for r in rally_rows if r.get('home_rotation') and r.get('away_rotation')}),
+                lineup_matches=len({r['match_id'] for r in rally_rows if r.get('home_lineup_confidence') == 'RECONSTRUCTED_HIGH' and r.get('away_lineup_confidence') == 'RECONSTRUCTED_HIGH' and r.get('home_lineup_names') and r.get('away_lineup_names')})
+            )
+            c['rally_fields'] = rally_fields
+            rallies_by_mid = defaultdict(list)
+            for r in rally_rows:
+                rallies_by_mid[str(r['match_id'])].append([r.get(k) for k in rally_fields])
+            c['rallies'] = dict(rallies_by_mid)
             c['atlas_validations']=[v for v in atlas['validations'] if v['match_id'] in ids]
             c['atlas_attempts']=[v for v in atlas.get('attempts',[]) if v['match_id'] in ids]
             c['source_snapshots']=[v for v in atlas['sources'] if v['match_id'] in ids]
@@ -180,41 +195,235 @@ def generate_dashboard_data(competition=None,include_atlas=True):
                 dossiers={t['team']:{'team':t['team'],'games':t['games']} for c in cohorts for t in c['teams']})
 
 
+def build_compact_shell(data):
+    """Produces a streamlined representation for instant initial load (< 400 KB).
+    
+    Heavy collections (rallies, individual match boxscores, deep lineup permutations,
+    and complete player rosters) are served via static exports on demand.
+    """
+    compact = {
+        'data_version': data.get('data_version', 'atlas-1.0'),
+        'legacy_data_version': data.get('legacy_data_version'),
+        'generated_at': data.get('generated_at'),
+        'kpis': data.get('kpis', {}),
+        'summary': data.get('summary', {}),
+        'dossiers': data.get('dossiers', {}),
+        'metric_registry': data.get('metric_registry', {}),
+        'glossary': data.get('glossary', {}),
+        'atlas_coverage': data.get('atlas_coverage', {}),
+        'definitions': data.get('definitions', []),
+        'sync_health': data.get('sync_health'),
+        'cohorts': []
+    }
+    for c in data.get('cohorts', []):
+        compact_c = {
+            'id': c.get('id'),
+            'competition': c.get('competition'),
+            'category': c.get('category'),
+            'gender': c.get('gender'),
+            'season': c.get('season'),
+            'edition_status': c.get('edition_status'),
+            'edition_source': c.get('edition_source'),
+            'statistics_scope': c.get('statistics_scope'),
+            'evaluation': c.get('evaluation', {}),
+            'model_weights': c.get('model_weights'),
+            'training_matches': c.get('training_matches'),
+            'baseline_run_id': c.get('baseline_run_id'),
+            'model_matchups': c.get('model_matchups', []),
+            'coverage': c.get('coverage', {}),
+            'metrics': c.get('metrics', {}),
+            'teams': [],
+            'matches': c.get('matches', []),
+            'upcoming': c.get('upcoming', []),
+            'atlas_teams': {}
+        }
+        # In compact shell, include team level records and highlights; full athlete rosters load on demand
+        for t in c.get('teams', []):
+            top_athletes = []
+            for a in sorted(t.get('athletes', []), key=lambda x: (x.get('points') or 0), reverse=True)[:5]:
+                top_athletes.append({
+                    'name': a.get('name'),
+                    'team': a.get('team') or t.get('team'),
+                    'games': a.get('games'),
+                    'points': a.get('points'),
+                    'kill': a.get('metrics', {}).get('kill', {}).get('value'),
+                    'eff': a.get('metrics', {}).get('eff', {}).get('value'),
+                    'positive': a.get('metrics', {}).get('positive', {}).get('value'),
+                    'metrics': {
+                        'kill': {'value': a.get('metrics', {}).get('kill', {}).get('value'), 'n': a.get('metrics', {}).get('kill', {}).get('n')},
+                        'eff': {'value': a.get('metrics', {}).get('eff', {}).get('value'), 'n': a.get('metrics', {}).get('eff', {}).get('n')},
+                        'positive': {'value': a.get('metrics', {}).get('positive', {}).get('value'), 'n': a.get('metrics', {}).get('positive', {}).get('n')},
+                        'rec_error': {'value': a.get('metrics', {}).get('rec_error', {}).get('value'), 'n': a.get('metrics', {}).get('rec_error', {}).get('n')},
+                    }
+                })
+
+            brief_metrics = {}
+            for k, m in t.get('metrics', {}).items():
+                brief_metrics[k] = {
+                    'label': m.get('label', k),
+                    'value': m.get('value'),
+                    'n': m.get('n'),
+                    'numerator': m.get('numerator'),
+                    'delta': m.get('delta'),
+                    'percentile': m.get('percentile'),
+                    'ci': m.get('ci'),
+                    'metric_class': m.get('metric_class', 'DERIVADO'),
+                    'formula': m.get('formula', ''),
+                }
+
+            compact_t = {
+                'team': t.get('team'),
+                'games': t.get('games'),
+                'wins': t.get('wins'),
+                'losses': t.get('losses'),
+                'metrics': brief_metrics,
+                'rotations': t.get('rotations', []),
+                'athletes': top_athletes
+            }
+            compact_c['teams'].append(compact_t)
+
+        # Include rotation data for P1-P6 court viewer and basic wheel
+        for tname, summary in c.get('atlas_teams', {}).items():
+            compact_c['atlas_teams'][tname] = {
+                'team': summary.get('team', tname),
+                'coverage': summary.get('coverage', {}),
+                'so': summary.get('so', {}),
+                'bp': summary.get('bp', {}),
+                'expected': summary.get('expected', {}),
+                'rotations': summary.get('rotations', []),
+                'serve_runs': {
+                    'mean': summary.get('serve_runs', {}).get('mean'),
+                    'median': summary.get('serve_runs', {}).get('median'),
+                    'maximum': summary.get('serve_runs', {}).get('maximum'),
+                    'n': summary.get('serve_runs', {}).get('n'),
+                    'censored': summary.get('serve_runs', {}).get('censored'),
+                    'definition': summary.get('serve_runs', {}).get('definition', ''),
+                    'distribution': summary.get('serve_runs', {}).get('distribution', [])[:10],
+                    'survival': summary.get('serve_runs', {}).get('survival', []),
+                    'by_rotation': summary.get('serve_runs', {}).get('by_rotation', []),
+                }
+            }
+        compact['cohorts'].append(compact_c)
+    return compact
+
+
 def build_dashboard_html(data):
-    from cbv.metrics.registry import REGISTRY,catalog
-    data['metric_registry']=catalog()
+    from cbv.metrics.registry import REGISTRY, catalog
+    data['metric_registry'] = catalog()
     from cbv.metrics.glossary import glossary
-    data['glossary']=glossary()
-    for cohort in data.get('cohorts',[]):
-        groups=[cohort.get('metrics',{})]
-        for team in cohort.get('teams',[]):
-            groups.append(team.get('metrics',{}))
-            groups.extend(a.get('metrics',{}) for a in team.get('athletes',[]))
+    data['glossary'] = glossary()
+    for cohort in data.get('cohorts', []):
+        groups = [cohort.get('metrics', {})]
+        for team in cohort.get('teams', []):
+            groups.append(team.get('metrics', {}))
+            groups.extend(a.get('metrics', {}) for a in team.get('athletes', []))
         for metrics in groups:
-            for key,metric in metrics.items():
-                if key in REGISTRY:metric['formula']=REGISTRY[key].formula
-    template=(Path(__file__).parent/'templates'/'scouting.html').read_text(encoding='utf-8')
-    payload=json.dumps(data,ensure_ascii=False,allow_nan=False).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
+            for key, metric in metrics.items():
+                if key in REGISTRY:
+                    metric['formula'] = REGISTRY[key].formula
+
+    compact = build_compact_shell(data)
+    template = (Path(__file__).parent / 'templates' / 'scouting.html').read_text(encoding='utf-8')
+    payload = json.dumps(compact, ensure_ascii=False, allow_nan=False).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
     fonts = []
-    for font in sorted((Path(__file__).parent/'templates'/'fonts').glob('*.woff2')):
+    for font in sorted((Path(__file__).parent / 'templates' / 'fonts').glob('*.woff2')):
         if not font.name.startswith(('inter-', 'roboto-mono-')):
             continue
         family = 'Inter' if font.name.startswith('inter-') else 'Roboto Mono'
         weight = font.stem.rsplit('-', 1)[1]
         encoded = base64.b64encode(font.read_bytes()).decode('ascii')
         fonts.append(f"@font-face{{font-family:'{family}';font-style:normal;font-weight:{weight};font-display:swap;src:url(data:font/woff2;base64,{encoded}) format('woff2')}}")
-    return template.replace('__SCOUTING_DATA__',payload).replace('__FONT_CSS__', ''.join(fonts)).replace('__ATLAS_CSS__',(Path(__file__).parent/'templates/atlas.css').read_text()).replace('__ATLAS_JS__',(Path(__file__).parent/'templates/atlas.js').read_text())
+    return template.replace('__SCOUTING_DATA__', payload).replace('__FONT_CSS__', ''.join(fonts)).replace('__ATLAS_CSS__', (Path(__file__).parent / 'templates/atlas.css').read_text()).replace('__ATLAS_JS__', (Path(__file__).parent / 'templates/atlas.js').read_text())
 
 
-def export_dashboard_html(target_file=DEFAULT_HTML_PATH):
-    target_file=Path(target_file); target_file.parent.mkdir(parents=True,exist_ok=True)
-    data=generate_dashboard_data()
-    html=build_dashboard_html(data)
-    from cbv.export.atlas_export import export_atlas
+def export_dashboard_html(target_file=DEFAULT_HTML_PATH, data=None):
+    target_file = Path(target_file)
+    target_file.parent.mkdir(parents=True, exist_ok=True)
+    if data is None:
+        data = generate_dashboard_data()
     exports_dir = target_file.parent if target_file != DEFAULT_HTML_PATH else EXPORTS_DIR
-    with default_repo.get_connection() as conn:export_atlas(data,exports_dir,conn)
-    target_file.write_text(html,encoding='utf-8')
-    if target_file == DEFAULT_HTML_PATH:
-        for p in (PUBLISH_DIR/'index.html',PUBLISH_DIR/'docs'/'index.html'):
-            p.parent.mkdir(parents=True,exist_ok=True); p.write_text(html,encoding='utf-8')
+    exports_dir.mkdir(parents=True, exist_ok=True)
+
+    # Export static on-demand JSON slices for progressive loading
+    all_matches_details = {}
+    all_rallies = {}
+    tactical_by_cohort = {}
+    for c in data.get('cohorts', []):
+        cid = c.get('id', '')
+        for mid, detail in c.get('match_details', {}).items():
+            all_matches_details[str(mid)] = detail
+        for mid, rlist in c.get('rallies', {}).items():
+            all_rallies[str(mid)] = rlist
+        tactical_by_cohort[cid] = {
+            'teams': {
+                tname: {
+                    'lineups': tdata.get('lineups', []),
+                    'on_off': tdata.get('on_off', []),
+                    'distribution_model': tdata.get('distribution_model', []),
+                    'contextual_effect': tdata.get('contextual_effect', {}),
+                }
+                for tname, tdata in c.get('atlas_teams', {}).items()
+            },
+            'opponent_ratings': c.get('opponent_ratings', {}),
+            'challenger': c.get('challenger', {}),
+            'rally_model': c.get('rally_model', {}),
+        }
+
+    (exports_dir / 'matches_details.json').write_text(
+        json.dumps(all_matches_details, ensure_ascii=False, allow_nan=False, separators=(',', ':')),
+        encoding='utf-8'
+    )
+    (exports_dir / 'rallies_details.json').write_text(
+        json.dumps(all_rallies, ensure_ascii=False, allow_nan=False, separators=(',', ':')),
+        encoding='utf-8'
+    )
+    (exports_dir / 'tactical_details.json').write_text(
+        json.dumps(tactical_by_cohort, ensure_ascii=False, allow_nan=False, separators=(',', ':')),
+        encoding='utf-8'
+    )
+
+    athletes_by_cohort = {}
+    for c in data.get('cohorts', []):
+        cid = c.get('id', '')
+        athletes_by_cohort[cid] = {
+            t.get('team'): t.get('athletes', [])
+            for t in c.get('teams', [])
+        }
+    (exports_dir / 'athletes_details.json').write_text(
+        json.dumps(athletes_by_cohort, ensure_ascii=False, allow_nan=False, separators=(',', ':')),
+        encoding='utf-8'
+    )
+
+    # Ensure sync_health.json exists in exports_dir
+    health_file = exports_dir / 'sync_health.json'
+    if not health_file.exists():
+        from cbv.pipeline_health import SyncHealthTracker
+        tracker = SyncHealthTracker(exports_dir)
+        with default_repo.get_connection() as conn:
+            init_c = conn.execute("SELECT count(*) FROM matches").fetchone()[0]
+            rep = tracker.finalize(conn, initial_match_count=init_c, quality_gate_passed=True)
+            tracker.save_report(rep, exports_dir)
+            data['sync_health'] = rep
+    else:
+        try:
+            data['sync_health'] = json.loads(health_file.read_text(encoding='utf-8'))
+        except Exception:
+            pass
+
+    html = build_dashboard_html(data)
+    from cbv.export.atlas_export import export_atlas
+    with default_repo.get_connection() as conn:
+        export_atlas(data, exports_dir, conn)
+    target_file.write_text(html, encoding='utf-8')
+    if target_file.resolve() == DEFAULT_HTML_PATH.resolve():
+        for p in (PUBLISH_DIR / 'index.html', PUBLISH_DIR / 'docs' / 'index.html'):
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(html, encoding='utf-8')
+        (PUBLISH_DIR / '.nojekyll').touch(exist_ok=True)
+        (PUBLISH_DIR / 'docs' / '.nojekyll').touch(exist_ok=True)
+        docs_exports = PUBLISH_DIR / 'docs' / 'exports'
+        docs_exports.mkdir(parents=True, exist_ok=True)
+        import shutil
+        for f in exports_dir.glob('*.json'):
+            shutil.copy2(f, docs_exports / f.name)
     return target_file

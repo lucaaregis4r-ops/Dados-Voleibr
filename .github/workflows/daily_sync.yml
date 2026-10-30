@@ -54,6 +54,24 @@ jobs:
         run: |
           python scripts/daily_update.py
 
+      - name: Run Mandatory Pre-Publish Quality Gates & Smoke Tests
+        run: |
+          python scripts/verify_sync_release.py
+
+      - name: Publish Sync Health Summary to Actions
+        if: always()
+        run: |
+          if [ -f exports/sync_health.json ]; then
+            python -c "
+import json
+from pathlib import Path
+from cbv.pipeline_health import SyncHealthTracker
+data = json.loads(Path('exports/sync_health.json').read_text(encoding='utf-8'))
+summary = SyncHealthTracker.generate_github_summary(data, data.get('database_match_count', 0) - data.get('new_matches', 0))
+Path('${{ github.step_summary }}').write_text(summary, encoding='utf-8')
+"
+          fi
+
       - name: Preserve raw snapshots and validation logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -69,7 +87,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add data/cbv.duckdb exports/ index.html docs/index.html docs/CADERNO_METODOLOGICO.md
+          git add data/cbv.duckdb exports/ docs/ index.html .nojekyll
           if git diff --staged --quiet; then
             echo "Nenhuma alteração detectada. Repositório já está atualizado."
           else

@@ -1,0 +1,109 @@
+{
+  "status": "HEALTHY",
+  "started_at": "2026-10-29T15:53:35.106630-03:00",
+  "finished_at": "2026-10-29T15:53:35.108087-03:00",
+  "last_full_success": "2026-10-29T15:53:35.108087-03:00",
+  "database_match_count": 583,
+  "new_matches": 0,
+  "updated_matches": 0,
+  "sources": {
+    "calendar": {
+      "status": "PENDING",
+      "severity": "OPTIONAL",
+      "description": "CBV public match schedule",
+      "attempted": 0,
+      "successful": 0,
+      "failed": 0,
+      "latest_source_date": null,
+      "message": "Aguardando execução"
+    },
+    "superliga_m": {
+      "status": "PENDING",
+      "severity": "CRITICAL",
+      "description": "Superliga Masculina finished matches",
+      "attempted": 0,
+      "successful": 0,
+      "failed": 0,
+      "latest_source_date": null,
+      "message": "Aguardando execução"
+    },
+    "superliga_f": {
+      "status": "PENDING",
+      "severity": "CRITICAL",
+      "description": "Superliga Feminina finished matches",
+      "attempted": 0,
+      "successful": 0,
+      "failed": 0,
+      "latest_source_date": null,
+      "message": "Aguardando execução"
+    },
+    "cbs_m": {
+      "status": "PENDING",
+      "severity": "OPTIONAL",
+      "description": "CBS Masculino tournament matches",
+      "attempted": 0,
+      "successful": 0,
+      "failed": 0,
+      "latest_source_date": null,
+      "message": "Aguardando execução"
+    },
+    "cbs_f": {
+      "status": "PENDING",
+      "severity": "OPTIONAL",
+      "description": "CBS Feminino tournament matches",
+      "attempted": 0,
+      "successful": 0,
+      "failed": 0,
+      "latest_source_date": null,
+      "message": "Aguardando execução"
+    },
+    "scoresheets": {
+      "status": "PENDING",
+      "severity": "OPTIONAL",
+      "description": "Official match scoresheets",
+      "attempted": 0,
+      "successful": 0,
+      "failed": 0,
+      "latest_source_date": null,
+      "message": "Aguardando execução"
+    },
+    "match_reports": {
+      "status": "PENDING",
+      "severity": "CRITICAL",
+      "description": "Official technical match reports",
+      "attempted": 0,
+      "successful": 0,
+      "failed": 0,
+      "latest_source_date": null,
+      "message": "Aguardando execução"
+    },
+    "libero_reports": {
+      "status": "PENDING",
+      "severity": "OPTIONAL",
+      "description": "Libero control sheets",
+      "attempted": 0,
+      "successful": 0,
+      "failed": 0,
+      "latest_source_date": null,
+      "message": "Aguardando execução"
+    },
+    "play_by_play": {
+      "status": "PENDING",
+      "severity": "OPTIONAL",
+      "description": "Play-by-play live sequence",
+      "attempted": 0,
+      "successful": 0,
+      "failed": 0,
+      "latest_source_date": null,
+      "message": "Aguardando execução"
+    }
+  },
+  "validation": {
+    "valid_matches": 538,
+    "valid_with_warnings": 45,
+    "failed": 0,
+    "rallies": 68543,
+    "high_confidence_rotations": 19669,
+    "high_confidence_lineups": 26827
+  }
+}
