@@ -1,10 +1,10 @@
 {
   "status": "HEALTHY",
-  "started_at": "2026-10-31T21:27:15.865778-03:00",
-  "finished_at": "2026-10-31T21:27:55.936147-03:00",
-  "last_full_success": "2026-10-31T21:27:55.936147-03:00",
+  "started_at": "2026-10-31T22:24:06.035495-03:00",
+  "finished_at": "2026-10-31T22:24:37.227130-03:00",
+  "last_full_success": "2026-10-31T22:24:37.227130-03:00",
   "database_match_count": 599,
-  "new_matches": 6,
+  "new_matches": 0,
   "updated_matches": 0,
   "sources": {
     "calendar": {
@@ -62,30 +62,30 @@
       "severity": "OPTIONAL",
       "description": "Official match scoresheets",
       "attempted": 599,
-      "successful": 0,
+      "successful": 587,
       "failed": 0,
       "latest_source_date": null,
-      "message": "0/599 snapshots"
+      "message": "587/599 snapshots"
     },
     "match_reports": {
       "status": "HEALTHY",
       "severity": "CRITICAL",
       "description": "Official technical match reports",
       "attempted": 599,
-      "successful": 0,
+      "successful": 599,
       "failed": 0,
       "latest_source_date": null,
-      "message": "0/599 snapshots"
+      "message": "599/599 snapshots"
     },
     "libero_reports": {
       "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "Libero control sheets",
       "attempted": 599,
-      "successful": 0,
+      "successful": 345,
       "failed": 0,
       "latest_source_date": null,
-      "message": "0/599 snapshots"
+      "message": "345/599 snapshots"
     },
     "play_by_play": {
       "status": "HEALTHY",
