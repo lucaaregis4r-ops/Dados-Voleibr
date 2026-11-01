@@ -1027,7 +1027,7 @@ function renderTeamRotations(t, at) {
 function renderTeamAttack(t) {
   const model = t.presumed_distribution;
   const cal = model?.calibration;
-  const lines = (model?.distribution || []).map(item => `<div class="prob-row"><span>${esc(teamName(item.name))} <small>(${num(item.attempts)} ataques)</small></span><strong>${pct(100*item.probability)}</strong></div>`).join('');
+  const lines = (model?.distribution || []).map(item => `<div class="prob-row"><span>${esc(teamName(item.name))} <small>(${num(item.attempts)} ataques)</small></span><strong>${pct(100*item.probability)}</strong></div><div style="height:6px;border-radius:4px;background:var(--border);margin:4px 0 12px"><div style="height:100%;border-radius:4px;background:var(--primary);width:${Math.max(0,Math.min(100,100*item.probability))}%"></div></div>`).join('');
   return `
     <div class="rotation-widget-box">
       <h3>Distribuição presumida <span class="pct-pill">Experimental</span></h3>
