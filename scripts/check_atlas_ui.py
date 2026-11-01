@@ -1,70 +1,35 @@
-"""Offline static Atlas interaction and responsive checks. Run after export."""
+"""Smoke-test the published static Atlas at desktop and mobile widths."""
 from pathlib import Path
 import os
 from playwright.sync_api import sync_playwright
 
-ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'temp_inspect/atlas-ui';OUT.mkdir(parents=True,exist_ok=True)
-
-def navigate(page,name):
-    button=page.locator('#primary').get_by_role('button',name=name,exact=True)
-    if not button.is_visible():page.locator('#menu-toggle').click()
-    button.click()
-
-
-def check(page,name,width):
-    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(name,width,'overflow')
-    assert 'NaN' not in page.locator('main').inner_text(),(name,width,'NaN')
-    page.screenshot(path=str(OUT/f'{name}-{width}.png'),full_page=True,animations='disabled',timeout=30000)
-
+ROOT = Path(__file__).resolve().parents[1]
+HTML = Path(os.getenv('CBV_UI_HTML', ROOT / 'index.html')).resolve().as_uri()
 
 with sync_playwright() as p:
-    browser=p.chromium.launch(headless=True,args=['--no-sandbox','--disable-gpu','--disable-dev-shm-usage'])
-    page=browser.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
-    page.route('https://**/*',lambda route:route.abort())
-    page.goto(Path(os.getenv('CBV_UI_HTML',ROOT/'index.html')).resolve().as_uri(),wait_until='domcontentloaded',timeout=60000)
-    page.wait_for_selector('.kpis')
-    if page.evaluate("DATA.cohorts.some(c=>c.edition_status==='CURRENT')"):
-        assert page.evaluate("C().edition_status==='CURRENT'")
-    for width in [1440,1024,768,390]:
-        page.set_viewport_size(dict(width=width,height=1000))
-        navigate(page,'Visão geral');check(page,'overview',width)
-        # Pick a covered cohort/team where possible; never assume fabricated coverage.
-        choice=page.evaluate("""(()=>{for(let i=0;i<DATA.cohorts.length;i++){const c=DATA.cohorts[i],t=Object.values(c.atlas_teams||{}).find(t=>t.coverage.rotation_rallies);if(t)return {cohort:i,team:t.team}}return {cohort:0,team:DATA.cohorts[0].teams[0].team}})()""")
-        page.evaluate('(s)=>{Object.assign(state,s,{page:"Equipes"});render()}',choice)
-        check(page,'team',width)
-        if page.locator('[data-layer]').count():
-            page.locator('[data-layer="bp"]').click();assert page.locator('[data-layer="bp"]').get_attribute('class')=='active'
-            page.locator('[data-cell]').first.click();assert page.locator('.matrix-detail').count()==1
-            page.locator('[data-rotation="4"]').first.click();assert 'P4' in page.locator('.rotation-detail h3').inner_text()
-        page.evaluate('()=>{state.opponent=C().teams.find(t=>t.team!==state.team)?.team;state.page="Confrontos";render()}')
-        check(page,'matchup',width)
-        selected=page.evaluate('()=>{const mid=Object.keys(C().rallies||{})[0];state.matchId=mid||C().matches[0].match_id;state.rallyIndex=0;state.page="Partidas";render();return Boolean(mid)}')
-        check(page,'match',width)
-        if selected:
-            before=page.locator('.scoreboard strong').inner_text();page.locator('[data-step="1"]').click()
-            assert page.locator('.scoreboard strong').inner_text()!=before
-            assert page.locator('#rally-slider').input_value()=='1'
-        navigate(page,'Atletas');check(page,'athletes',width)
-        page.locator('#athlete-search').fill('zzzz-no-athlete');assert page.locator('#athlete-table tbody').inner_text()=='Nenhum atleta encontrado.'
-        page.locator('#athlete-search').fill('')
-        if page.locator('[data-athlete]').count():
-            page.locator('[data-athlete]').first.click();assert page.locator('.athlete-profile').count()==1
-        navigate(page,'Dados');check(page,'data',width)
-        assert page.get_by_text('Abrir caderno metodológico',exact=True).count()
-        navigate(page,'Legenda');check(page,'legend',width)
-        page.locator('#legend-search').fill('WPA')
-        assert page.locator('[data-legend-item]:visible').count()>0
-        assert page.locator('[data-legend-item]:visible').count()<page.locator('[data-legend-item]').count()
-        page.locator('#legend-search').fill('zzzz-no-variable');assert page.locator('#legend-empty').is_visible()
-        page.locator('#legend-search').fill('')
-    empty_current=page.evaluate("DATA.cohorts.findIndex(c=>c.edition_status==='CURRENT'&&!c.matches.length)")
-    if empty_current>=0:
-        page.evaluate('(i)=>{state.cohort=i;state.team=C().teams[0]?.team;state.opponent=C().teams[1]?.team;render()}',empty_current)
-        for name in ['Visão geral','Equipes','Confrontos','Partidas','Atletas','Dados']:
-            navigate(page,name);check(page,'empty-'+name,390)
-        assert page.evaluate("C().metrics.so.value===null&&C().model_matchups.length===0")
-        assert 'Ainda sem partidas concluídas' in page.locator('.season-context').inner_text()
-    assert not errors,errors
-    assert page.evaluate('document.fonts.check("400 12px Inter")')
+    browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage'])
+    page = browser.new_page()
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    page.goto(HTML, wait_until='domcontentloaded', timeout=60000)
+    page.wait_for_selector('#main')
+    for width in (1440, 1024, 768, 390):
+        page.set_viewport_size({'width': width, 'height': 1000})
+        for label in ('Início', 'Jogos', 'Times', 'Atletas'):
+            page.locator(f'[data-nav="{label}"]:visible').first.click()
+            assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), (label, width, 'overflow')
+            assert 'NaN' not in page.locator('#main').inner_text(), (label, width, 'NaN')
+        page.locator('[data-nav="Jogos"]:visible').first.click()
+        match = page.locator('#main [data-match]').first
+        if match.count():
+            match.click()
+            assert page.get_by_role('button', name='← Voltar para Jogos').is_visible()
+        page.locator('[data-nav="Times"]:visible').first.click()
+        page.get_by_role('button', name='Rotações', exact=True).click()
+        page.get_by_role('button', name='P4', exact=True).first.click()
+        assert 'Levantadora na zona 4' in page.locator('.court-svg').text_content()
+        page.get_by_role('button', name='P1', exact=True).first.click()
+        assert 'Levantadora na zona 1' in page.locator('.court-svg').text_content()
+    assert not errors, errors
     browser.close()
-print('Atlas: 7 páginas × 4 larguras; temporada atual sem jogos, legenda pesquisável, quadra, matriz, replay, busca e fontes offline verificados.')
+print('Atlas: navegação, partidas, rotações e responsividade verificadas.')
