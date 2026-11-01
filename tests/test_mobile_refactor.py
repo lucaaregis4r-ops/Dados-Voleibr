@@ -42,12 +42,12 @@ def test_team_tabs_advanced_and_roster_navigation(phone):
     page.locator('[data-nav="Times"]:visible').first.click()
     assert page.locator('#team-picker').is_visible()
     for label in ['Visão geral', 'Rotações', 'Ataque', 'Passe', 'Atletas', 'Avançado']:
-        assert page.get_by_role('button', name=label, exact=True).is_visible()
+        assert page.locator('.section-tabs-rail').get_by_role('button', name=label, exact=True).is_visible()
     page.get_by_role('button', name='Avançado', exact=True).click()
     assert page.get_by_role('heading', name='Análise avançada').is_visible()
     page.get_by_role('button', name='Ver análise de presença').click()
     page.wait_for_function("!document.querySelector('#tactical-lineups-container').textContent.includes('Carregando')")
-    page.get_by_role('button', name='Atletas', exact=True).last.click()
+    page.locator('.section-tabs-rail').get_by_role('button', name='Atletas', exact=True).click()
     button = page.locator('[data-open-athlete]').first
     name = button.get_attribute('data-open-athlete')
     button.click()
