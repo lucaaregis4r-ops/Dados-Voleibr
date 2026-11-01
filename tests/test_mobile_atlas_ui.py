@@ -109,12 +109,12 @@ def test_team_profile_rotations_follow_setter_position(browser_context):
     page.wait_for_timeout(50)
     assert p4.evaluate("el => el.classList.contains('active')")
 
-    assert 'Levantadora na zona 4' in page.locator('.court-svg').inner_text()
-    assert 'rede' in page.locator('.court-svg').inner_text()
+    assert 'Levantadora na zona 4' in page.locator('.court-svg').text_content()
+    assert 'rede' in page.locator('.court-svg').text_content()
     assert page.locator('#setter-fundo, #setter-rede').count() == 0
     page.locator('.p-selector .p-btn:has-text("P1")').click()
-    assert 'Levantadora na zona 1' in page.locator('.court-svg').inner_text()
-    assert 'fundo' in page.locator('.court-svg').inner_text()
+    assert 'Levantadora na zona 1' in page.locator('.court-svg').text_content()
+    assert 'fundo' in page.locator('.court-svg').text_content()
 
     page.close()
 
