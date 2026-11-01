@@ -1025,8 +1025,16 @@ function renderTeamRotations(t, at) {
 }
 
 function renderTeamAttack(t) {
+  const model = t.presumed_distribution;
+  const cal = model?.calibration;
+  const lines = (model?.distribution || []).map(item => `<div class="prob-row"><span>${esc(teamName(item.name))} <small>(${num(item.attempts)} ataques)</small></span><strong>${pct(100*item.probability)}</strong></div><div style="height:6px;border-radius:4px;background:var(--border);margin:4px 0 12px"><div style="height:100%;border-radius:4px;background:var(--primary);width:${Math.max(0,Math.min(100,100*item.probability))}%"></div></div>`).join('');
   return `
     <div class="rotation-widget-box">
+      <h3>Distribuição presumida <span class="pct-pill">Experimental</span></h3>
+      ${model ? `<p>Estimativa geral de participação ofensiva nesta equipe e temporada.</p><div class="probabilities">${lines}</div>
+      <p class="note">Amostra: ${num(model.attempts)} ataques individuais · ${num(model.games)} partidas. Previsibilidade: ${fmt(model.predictability, 1)}/100 (concentração da distribuição, não certeza da próxima bola).</p>
+      <p class="note">${cal?.calibrated ? `Suavização selecionada em avaliação retrospectiva deste recorte: ${num(cal.evaluated_attempts)} ataques avaliáveis em ${num(cal.evaluated_games)} jogos. Avaliação independente ainda necessária.` : 'Amostra insuficiente para calibrar a suavização; prior provisório fraco.'}</p>` : '<p class="empty">Ainda não há pelo menos duas atacantes com volume registrado nesta equipe e temporada.</p>'}
+      <p class="note">Baseada nos ataques agregados por atleta. Passe, rotação, levantadora e presença em quadra não estão ligados a cada ataque; o resultado não prevê essas situações nem comprova o destino de cada levantamento.</p>
       <h3>Eficiência e Kills por Fase de Jogo</h3>
       ${phases(t)}
     </div>
