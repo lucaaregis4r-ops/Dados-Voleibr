@@ -81,3 +81,55 @@ def build_distribution(matches, players, cohort, team, strength):
                 strength=strength, predictability=100*(1-entropy/log(k)),
                 conditional_available=False,
                 limitation='Participação ofensiva presumida; não identifica passe, levantadora, rotação ou opções presentes em quadra.')
+
+
+def build_phase_scenarios(matches, players, tactical, cohort, team):
+    """Match-level proportional scenario and mathematically feasible margins.
+
+    This is ecological analysis, not observed contact or a validated forecast.
+    The allocation is independent within each match. Only exact reconciliations
+    are used so the bounds have their stated meaning.
+    """
+    valid = _matches(matches, cohort)
+    grouped = defaultdict(list)
+    for row in players:
+        if row.get('match_id') in valid and row.get('team') == team:
+            grouped[row['match_id']].append(row)
+    phase_fields = {'positive': 'pos_rec_att_attempts', 'negative': 'neg_rec_att_attempts', 'transition': 'trans_att_attempts'}
+    out = {phase: dict(method='proportional_by_match', attempts=0, games=0,
+                       excluded_games=0, distribution=[]) for phase in phase_fields}
+    accum = {phase: defaultdict(lambda: [0., 0, 0]) for phase in phase_fields}
+    for row in tactical:
+        mid = row.get('match_id')
+        if mid not in valid or row.get('team') != team:
+            continue
+        individual = grouped.get(mid, [])
+        phase_values = [row.get(f) for f in phase_fields.values()]
+        valid_counts = bool(individual) and all(isinstance(x,(int,float)) and x >= 0 for x in phase_values)
+        valid_counts = valid_counts and all(p.get('attack_attempts') is None or (isinstance(p['attack_attempts'],(int,float)) and p['attack_attempts'] >= 0 and (not p['attack_attempts'] or p.get('player_name'))) for p in individual)
+        if not valid_counts:
+            for value in out.values(): value['excluded_games'] += 1
+            continue
+        counts = Counter()
+        for p in individual:
+            if p.get('attack_attempts') is not None and p['attack_attempts'] > 0:
+                counts[p['player_name']] += p['attack_attempts']
+        total = sum(counts.values())
+        if not total or total != sum(phase_values):
+            for value in out.values(): value['excluded_games'] += 1
+            continue
+        for phase, field in phase_fields.items():
+            n = row[field]
+            if n <= 0: continue
+            out[phase]['attempts'] += n
+            out[phase]['games'] += 1
+            for name, attacks in counts.items():
+                stat = accum[phase][name]
+                stat[0] += attacks*n/total
+                stat[1] += max(0, attacks-(total-n))
+                stat[2] += min(attacks,n)
+    for phase, result in out.items():
+        total = result['attempts']
+        if total:
+            result['distribution'] = sorted((dict(name=name,scenario=v[0]/total,minimum=v[1]/total,maximum=v[2]/total) for name,v in accum[phase].items()),key=lambda v:-v['scenario'])
+    return out

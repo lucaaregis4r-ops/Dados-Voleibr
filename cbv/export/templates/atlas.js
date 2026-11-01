@@ -945,7 +945,7 @@ function renderTeamsPage() {
 function renderTeamSubSection(t, at, section) {
   if (section === 'Rotações') return renderTeamRotations(t, at);
   if (section === 'Atletas') return renderTeamAthletes(t);
-  if (section === 'Ataque') return renderTeamAttack(t);
+  if (section === 'Ataque') return renderTeamAttack(t, at);
   if (section === 'Passe') return renderTeamReception(t);
   if (section === 'Avançado') return renderTeamAdvanced(t, at);
 
@@ -1024,21 +1024,25 @@ function renderTeamRotations(t, at) {
   `;
 }
 
-function renderTeamAttack(t) {
+function renderTeamAttack(t, at) {
   const model = t.presumed_distribution;
   const cal = model?.calibration;
-  const lines = (model?.distribution || []).map(item => `<div class="prob-row"><span>${esc(teamName(item.name))} <small>(${num(item.attempts)} ataques)</small></span><strong>${pct(100*item.probability)}</strong></div><div style="height:6px;border-radius:4px;background:var(--border);margin:4px 0 12px"><div style="height:100%;border-radius:4px;background:var(--primary);width:${Math.max(0,Math.min(100,100*item.probability))}%"></div></div>`).join('');
-  return `
-    <div class="rotation-widget-box">
+  const lines = (model?.distribution || []).map(item => `<div class="prob-row"><span>${esc(teamName(item.name))} <small>(${num(item.attempts)} ataques · bruto ${pct(100*item.attempts/model.attempts)})</small></span><strong>${pct(100*item.probability)}</strong></div><div style="height:6px;border-radius:4px;background:var(--border);margin:4px 0 12px"><div style="height:100%;border-radius:4px;background:var(--primary);width:${Math.max(0,Math.min(100,100*item.probability))}%"></div></div>`).join('');
+  const names = {positive:'Recepção positiva (K1+)',negative:'Recepção negativa (K1−)',transition:'Transição (K2)'};
+  const phasesHtml = Object.entries(names).map(([key,label]) => {
+    const phase = model?.phase_scenarios?.[key];
+    const items = phase?.distribution || [];
+    return `<details class="block"><summary>${esc(label)} · ${num(phase?.attempts || 0)} ataques</summary>${items.length ? `<p class="note">Cenário proporcional dentro de cada partida; não há registros de quem atacou em cada fase.</p><div class="table-wrap"><table><thead><tr><th>Atleta</th><th>Cenário</th><th>Faixa possível</th></tr></thead><tbody>${items.map(x=>`<tr><td>${esc(teamName(x.name))}</td><td>${pct(100*x.scenario)}</td><td>${pct(100*x.minimum)}–${pct(100*x.maximum)}</td></tr>`).join('')}</tbody></table></div><p class="note">${num(phase.games)} partidas reconciliadas · ${num(phase.excluded_games)} excluídas por dados incompletos ou totais divergentes. A faixa mostra os valores possíveis com os totais disponíveis; não é intervalo de confiança. Extremos das atletas podem não ocorrer simultaneamente.</p>`:'<p class="empty">Sem dados reconciliados suficientes nesta fase.</p>'}</details>`;
+  }).join('');
+  const rotations = at?.distribution_model || [];
+  const rotationHtml = rotations.length ? rotations.map(r=>`<details class="block"><summary>P${num(r.position)} · ${num(r.availability_rallies)} rallies com formação reconciliada</summary><p class="note">Formação histórica mais frequente: ${num(r.n_lineup)} rallies. Cobertura total desta rotação: ${num(r.source_match_count)} partidas. Pesos relativos ao volume de ataques da temporada entre atletas dessa formação; não são levantamentos observados nessa rotação.</p>${(r.distribution||[]).filter(x=>x.weight>0).sort((a,b)=>b.weight-a.weight).map(x=>`<div class="prob-row"><span>${esc(teamName(x.name))}</span><strong>${pct(100*x.weight)}</strong></div>`).join('')}</details>`).join('') : '<p class="empty">Sem formação reconciliada suficiente para uma hipótese por rotação.</p>';
+  return `<div class="rotation-widget-box">
       <h3>Distribuição presumida <span class="pct-pill">Experimental</span></h3>
-      ${model ? `<p>Estimativa geral de participação ofensiva nesta equipe e temporada.</p><div class="probabilities">${lines}</div>
-      <p class="note">Amostra: ${num(model.attempts)} ataques individuais · ${num(model.games)} partidas. Previsibilidade: ${fmt(model.predictability, 1)}/100 (concentração da distribuição, não certeza da próxima bola).</p>
-      <p class="note">${cal?.calibrated ? `Suavização selecionada em avaliação retrospectiva deste recorte: ${num(cal.evaluated_attempts)} ataques avaliáveis em ${num(cal.evaluated_games)} jogos. Avaliação independente ainda necessária.` : 'Amostra insuficiente para calibrar a suavização; prior provisório fraco.'}</p>` : '<p class="empty">Ainda não há pelo menos duas atacantes com volume registrado nesta equipe e temporada.</p>'}
-      <p class="note">Baseada nos ataques agregados por atleta. Passe, rotação, levantadora e presença em quadra não estão ligados a cada ataque; o resultado não prevê essas situações nem comprova o destino de cada levantamento.</p>
-      <h3>Eficiência e Kills por Fase de Jogo</h3>
-      ${phases(t)}
-    </div>
-  `;
+      ${model ? `<p>Participação ofensiva estimada para a equipe nesta temporada.</p><div class="probabilities">${lines}</div><p class="note">${num(model.attempts)} ataques individuais · ${num(model.games)} partidas. Prior simétrico: ${fmt(model.strength,1)} ataques equivalentes. Concentração: ${fmt(model.predictability,1)}/100, entre atletas registradas; não é certeza sobre a próxima bola.</p><p class="note">${cal?.calibrated ? `Força da suavização escolhida em ${num(cal.evaluated_games)} jogos do mesmo recorte (${num(cal.evaluated_attempts)} ataques avaliáveis). Ainda requer avaliação independente.` : 'Força da suavização provisória: amostra insuficiente para calibrar.'}</p>` : '<p class="empty">Sem pelo menos duas atacantes com ataques registrados neste recorte.</p>'}
+      <h3>Cenários por fase</h3><p class="note">Os relatórios trazem totais por atleta e por fase em cada jogo. O cenário supõe que a participação de cada atleta foi igual nas três fases dentro de cada partida. É uma hipótese, não um efeito de passe aprendido; os limites mostram a incerteza dos dados agregados.</p>${phasesHtml}
+      <h3>Hipóteses por rotação</h3>${rotationHtml}
+      <p class="note">A base não identifica a levantadora que fez cada distribuição nem a atacante em cada fase. As opções acima não equivalem à presença atual em quadra.</p>
+      <h3>Eficiência e kills por fase de jogo</h3>${phases(t)}</div>`;
 }
 
 function renderTeamReception(t) {
