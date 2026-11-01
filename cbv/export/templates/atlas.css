@@ -1131,3 +1131,7 @@ h3 {
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+
+/* Keep labels legible against the selected rotation and setter badge. */
+.court-position.selected text,
+.court-position rect + text { fill: #fff; }

@@ -578,7 +578,7 @@ function renderHomeFeed() {
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;margin-bottom:24px;">
         <div class="rail-card" style="max-width:none;cursor:pointer;" onclick="navigateTo('Times');">
           <h3>Mapa Tático de Rotações</h3>
-          <p style="font-size:12px;color:var(--text-soft);margin:4px 0 12px 0;">Distribuição P1 a P6, zonas de ataque e eficiência com levantadora na rede versus fundo.</p>
+          <p style="font-size:12px;color:var(--text-soft);margin:4px 0 12px 0;">Side-out e break point conforme a posição da levantadora de P1 a P6.</p>
           <span style="color:var(--blue);font-weight:700;font-size:12px;">Explorar Rotações →</span>
         </div>
         <div class="rail-card" style="max-width:none;cursor:pointer;" onclick="navigateTo('Atletas');">
@@ -979,7 +979,7 @@ function renderTeamRotations(t, at) {
           <div class="stat-box">
             <span class="lbl">Volume</span>
             <span class="val">${num(rot.so?.n || 0)}</span>
-            <span class="pct-pill">ações de recepção</span>
+            <span class="pct-pill">rallies em recepção</span>
           </div>
           <div class="stat-box">
             <span class="lbl">Δ Liga</span>
