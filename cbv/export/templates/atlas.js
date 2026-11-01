@@ -1027,6 +1027,9 @@ function renderTeamRotations(t, at) {
 function renderTeamAttack(t) {
   return `
     <div class="rotation-widget-box">
+      <h3>Previsão de acionamento</h3>
+      <p class="empty">Indisponível nesta versão: a base não registra a sequência de passe, levantamento e ataque necessária para calcular probabilidades confiáveis.</p>
+      <p class="note">Os totais de ataque por atleta não identificam quem foi acionado em cada situação.</p>
       <h3>Eficiência e Kills por Fase de Jogo</h3>
       ${phases(t)}
     </div>
