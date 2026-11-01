@@ -65,3 +65,22 @@ test('quick competition selection chooses an existing gender and never falls bac
   assert.equal(context.state.cohort,0);
   assert.equal(notice.hidden,true);
 });
+
+test('advanced filters offer only real gender and season combinations', () => {
+  const source = fs.readFileSync('cbv/export/templates/atlas.js', 'utf8');
+  const start = source.indexOf('function availableFilterChoices(');
+  assert.notEqual(start, -1, 'dependent filter logic should exist');
+  const code = source.slice(start, source.indexOf('// ADVANCED FILTERS BOTTOM SHEET', start));
+  const context={compKey:c=>`${c.competition} · ${c.category}`}; vm.createContext(context); vm.runInContext(code,context);
+  const rows=[
+    {competition:'CBS',category:'sub18',gender:'masculino',season:'2026'},
+    {competition:'SUPERLIGA',category:'A',gender:'feminino',season:'2026-2027',edition_status:'CURRENT'},
+    {competition:'SUPERLIGA',category:'A',gender:'masculino',season:'2026-2027',edition_status:'CURRENT'},
+    {competition:'SUPERLIGA',category:'A',gender:'masculino',season:'2025-2026'}
+  ];
+  let c=context.availableFilterChoices(rows,'SUPERLIGA · A','masculino','2026');
+  assert.equal(c.gender,'masculino'); assert.equal(c.season,'2026-2027');
+  c=context.availableFilterChoices(rows,'CBS · sub18','feminino','2026-2027');
+  assert.equal(c.gender,'masculino'); assert.equal(c.season,'2026');
+  assert.deepEqual(Array.from(c.genders),['masculino']);
+});

@@ -351,12 +351,22 @@ function openSyncHealthSheet() {
   });
 }
 
+function availableFilterChoices(cohorts, competition, requestedGender, requestedSeason) {
+  const group = cohorts.filter(c => compKey(c) === competition);
+  const genders = [...new Set(group.map(c => c.gender).filter(Boolean))];
+  const gender = genders.includes(requestedGender) ? requestedGender : genders[0];
+  const matching = group.filter(c => c.gender === gender);
+  const seasons = [...new Set(matching.map(c => String(c.season)))].sort((a, b) => b.localeCompare(a));
+  const current = matching.find(c => c.edition_status === 'CURRENT');
+  const season = seasons.includes(String(requestedSeason)) ? String(requestedSeason) : (current ? String(current.season) : seasons[0]);
+  return {genders, gender, seasons, season};
+}
+
 // ADVANCED FILTERS BOTTOM SHEET
 function openFiltersSheet() {
   const c = C();
   const comps = [...new Set(DATA.cohorts.map(compKey))];
-  const genders = [...new Set(DATA.cohorts.map(x => x.gender || 'Não informado'))];
-  const seasons = [...new Set(DATA.cohorts.map(x => x.season))];
+  const choices = availableFilterChoices(DATA.cohorts, compKey(c), c.gender, c.season);
 
   const html = `
     <div style="display:flex;flex-direction:column;gap:16px;">
@@ -370,14 +380,14 @@ function openFiltersSheet() {
       <div>
         <label style="font:800 11px var(--mono);text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:6px;">Gênero</label>
         <select id="sheet-filter-gender" style="width:100%;height:44px;border:1px solid var(--border);border-radius:6px;padding:0 12px;background:var(--surface);">
-          ${genders.map(v => `<option value="${esc(v)}" ${c.gender === v ? 'selected' : ''}>${esc(v)}</option>`).join('')}
+          ${choices.genders.map(v => `<option value="${esc(v)}" ${choices.gender === v ? 'selected' : ''}>${esc(v)}</option>`).join('')}
         </select>
       </div>
 
       <div>
         <label style="font:800 11px var(--mono);text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:6px;">Temporada</label>
         <select id="sheet-filter-season" style="width:100%;height:44px;border:1px solid var(--border);border-radius:6px;padding:0 12px;background:var(--surface);">
-          ${seasons.map(v => `<option value="${esc(v)}" ${c.season === v ? 'selected' : ''}>${esc(seasonLabel(v))}</option>`).join('')}
+          ${choices.seasons.map(v => `<option value="${esc(v)}" ${choices.season === v ? 'selected' : ''}>${esc(seasonLabel(v))}</option>`).join('')}
         </select>
       </div>
     </div>
@@ -385,7 +395,7 @@ function openFiltersSheet() {
 
   BottomSheet.open({
     title: 'Filtros da Base',
-    subtitle: 'Selecione a coorte de análise',
+    subtitle: 'Selecione competição, gênero e temporada',
     contentHtml: html,
     actionLabel: 'Aplicar Filtros',
     onAction: () => {
@@ -404,6 +414,17 @@ function openFiltersSheet() {
       render();
     }
   });
+
+  const compSelect = $('#sheet-filter-comp');
+  const genderSelect = $('#sheet-filter-gender');
+  const seasonSelect = $('#sheet-filter-season');
+  const refreshChoices = () => {
+    const next = availableFilterChoices(DATA.cohorts, compSelect.value, genderSelect.value, seasonSelect.value);
+    genderSelect.innerHTML = next.genders.map(v => `<option value="${esc(v)}" ${v === next.gender ? 'selected' : ''}>${esc(v)}</option>`).join('');
+    seasonSelect.innerHTML = next.seasons.map(v => `<option value="${esc(v)}" ${v === next.season ? 'selected' : ''}>${esc(seasonLabel(v))}</option>`).join('');
+  };
+  compSelect.onchange = refreshChoices;
+  genderSelect.onchange = refreshChoices;
 }
 
 // 5. SCREEN 1: HOME FEED (FEED EXPLORÁVEL)
