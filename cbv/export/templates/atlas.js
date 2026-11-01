@@ -392,9 +392,15 @@ function openFiltersSheet() {
       const compVal = $('#sheet-filter-comp')?.value;
       const genVal = $('#sheet-filter-gender')?.value;
       const seaVal = $('#sheet-filter-season')?.value;
-      const matched = DATA.cohorts.find(x => compKey(x) === compVal && x.gender === genVal && x.season === seaVal)
-        || DATA.cohorts.find(x => compKey(x) === compVal) || DATA.cohorts[0];
+      const matched = DATA.cohorts.find(x => compKey(x) === compVal && x.gender === genVal && String(x.season) === seaVal);
+      const notice = $('#filter-notice');
+      if (!matched) {
+        if (notice) { notice.textContent = 'Não há dados para essa combinação de competição, gênero e temporada.'; notice.hidden = false; }
+        return;
+      }
       state.cohort = DATA.cohorts.indexOf(matched);
+      state.team = ''; state.opponent = ''; state.query = ''; state.athleteQuery = ''; state.matchId = null;
+      if (notice) { notice.textContent = ''; notice.hidden = true; }
       render();
     }
   });
@@ -1381,6 +1387,27 @@ function setupGlobalSearch() {
   });
 }
 
+function selectQuickCompetition(competition, gender) {
+  const current = C();
+  const candidates = DATA.cohorts.filter(c => c.competition === competition && c.gender === gender);
+  const notice = $('#filter-notice');
+  if (!candidates.length) {
+    if (notice) {
+      notice.textContent = `${competition === 'CBS' ? 'CBS' : 'Superliga'} ${gender} não está disponível na base ainda.`;
+      notice.hidden = false;
+    }
+    return false;
+  }
+  const sameSeason = current?.competition === competition && candidates.find(c => c.season === current.season && c.category === current.category);
+  const sorted = [...candidates].sort((a, b) => String(b.season || '').localeCompare(String(a.season || '')));
+  const selected = sameSeason || sorted.find(c => c.edition_status === 'CURRENT') || sorted[0];
+  state.cohort = DATA.cohorts.indexOf(selected);
+  state.team = ''; state.opponent = ''; state.query = ''; state.athleteQuery = ''; state.matchId = null;
+  if (notice) { notice.textContent = ''; notice.hidden = true; }
+  render();
+  return true;
+}
+
 // 12. RENDER PIPELINE
 function render() {
   const c = C();
@@ -1393,10 +1420,10 @@ function render() {
   const chipsRail = $('#quick-filter-chips');
   if (chipsRail) {
     chipsRail.innerHTML = `
-      <button type="button" class="chip-btn ${c.competition === 'SUPERLIGA' && c.gender === 'masculino' ? 'active' : ''}" onclick="chooseFilter('competition', 'SUPERLIGA · Sem categoria');chooseFilter('gender', 'masculino');">Superliga Masc</button>
-      <button type="button" class="chip-btn ${c.competition === 'SUPERLIGA' && c.gender === 'feminino' ? 'active' : ''}" onclick="chooseFilter('competition', 'SUPERLIGA · Sem categoria');chooseFilter('gender', 'feminino');">Superliga Fem</button>
-      <button type="button" class="chip-btn ${c.competition === 'CBS' && c.gender === 'masculino' ? 'active' : ''}" onclick="chooseFilter('competition', 'CBS · sub18');chooseFilter('gender', 'masculino');">CBS Masc</button>
-      <button type="button" class="chip-btn ${c.competition === 'CBS' && c.gender === 'feminino' ? 'active' : ''}" onclick="chooseFilter('competition', 'CBS · sub18');chooseFilter('gender', 'feminino');">CBS Fem</button>
+      <button type="button" class="chip-btn ${c.competition === 'SUPERLIGA' && c.gender === 'masculino' ? 'active' : ''}" onclick="selectQuickCompetition('SUPERLIGA', 'masculino');">Superliga Masc</button>
+      <button type="button" class="chip-btn ${c.competition === 'SUPERLIGA' && c.gender === 'feminino' ? 'active' : ''}" onclick="selectQuickCompetition('SUPERLIGA', 'feminino');">Superliga Fem</button>
+      <button type="button" class="chip-btn ${c.competition === 'CBS' && c.gender === 'masculino' ? 'active' : ''}" onclick="selectQuickCompetition('CBS', 'masculino');">CBS Masc</button>
+      <button type="button" class="chip-btn ${c.competition === 'CBS' && c.gender === 'feminino' ? 'active' : ''}" onclick="selectQuickCompetition('CBS', 'feminino');">CBS Fem</button>
       <button type="button" class="chip-btn more-filters" onclick="openFiltersSheet();">+ Filtros (${esc(seasonLabel(c.season))})</button>
     `;
   }

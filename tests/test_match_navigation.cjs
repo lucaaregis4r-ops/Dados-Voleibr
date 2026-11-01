@@ -37,3 +37,31 @@ test('rotation identifies the setter in the selected zone with no independent fr
   const section = source.slice(source.indexOf('function renderTeamRotations('), source.indexOf('function renderTeamAttack('));
   assert.doesNotMatch(section, /setter-fundo|setter-rede/);
 });
+
+test('quick competition selection chooses an existing gender and never falls back to another gender', () => {
+  const source = fs.readFileSync('cbv/export/templates/atlas.js', 'utf8');
+  const start = source.indexOf('function selectQuickCompetition(');
+  assert.notEqual(start, -1, 'quick selector should exist');
+  const code = source.slice(start, source.indexOf('// 12. RENDER PIPELINE', start));
+  const cohorts = [
+    {competition:'SUPERLIGA',category:'A',gender:'feminino',season:'2026-2027',edition_status:'CURRENT'},
+    {competition:'SUPERLIGA',category:'A',gender:'masculino',season:'2025-2026'},
+    {competition:'SUPERLIGA',category:'A',gender:'masculino',season:'2026-2027',edition_status:'CURRENT'},
+    {competition:'CBS',category:'sub18',gender:'masculino',season:'2026'}
+  ];
+  const notice={textContent:'',hidden:true};
+  const context={DATA:{cohorts}, state:{cohort:0,team:'old',matchId:1}, C(){return cohorts[this.state.cohort]}, $(s){return s==='#filter-notice'?notice:null},render(){}};
+  context.C=()=>cohorts[context.state.cohort]; vm.createContext(context); vm.runInContext(code,context);
+  context.selectQuickCompetition('SUPERLIGA','masculino');
+  assert.equal(context.state.cohort,2);
+  assert.equal(context.state.matchId,null);
+  context.selectQuickCompetition('CBS','masculino');
+  assert.equal(context.state.cohort,3);
+  context.selectQuickCompetition('CBS','feminino');
+  assert.equal(context.state.cohort,3);
+  assert.match(notice.textContent,/CBS feminino.*não.*disponível/i);
+  assert.equal(notice.hidden,false);
+  context.selectQuickCompetition('SUPERLIGA','feminino');
+  assert.equal(context.state.cohort,0);
+  assert.equal(notice.hidden,true);
+});

@@ -255,6 +255,7 @@ __ATLAS_CSS__
 
 <div class="filter-strip">
   <div class="chips-rail" id="quick-filter-chips" role="toolbar" aria-label="Filtros rápidos"></div>
+  <p id="filter-notice" role="status" hidden style="margin:4px 16px 8px;color:#fff;font-size:13px;"></p>
 </div>
 
 <main id="main" tabindex="-1"></main>
@@ -337,7 +338,7 @@ function filters(){
   $('#edition').textContent='Página gerada em '+dateText(DATA.generated_at);
 }
 
-function chooseFilter(which,value){const current=C();let candidates=DATA.cohorts.filter(c=>which==='competition'?compKey(c)===value:compKey(c)===compKey(current)&& (which==='gender'?c.gender===value:c.gender===current.gender&&c.season===value));const selected=candidates.find(c=>c.gender===current.gender&&c.season===current.season)||candidates[0];state.cohort=DATA.cohorts.indexOf(selected);state.team='';state.opponent='';state.query='';state.matchId=null;render()}
+function chooseFilter(which,value){const current=C();let candidates=DATA.cohorts.filter(c=>which==='competition'?compKey(c)===value:compKey(c)===compKey(current)&& (which==='gender'?c.gender===value:c.gender===current.gender&&c.season===value));const selected=candidates.find(c=>c.gender===current.gender&&c.season===current.season)||candidates[0];if(!selected)return;state.cohort=DATA.cohorts.indexOf(selected);state.team='';state.opponent='';state.query='';state.matchId=null;render()}
 function table(head,rows,leftColumns=[]){return `<div class="table-wrap"><table><thead><tr>${head.map((h,i)=>`<th scope="col" class="${i&&!leftColumns.includes(i)?'num':''}">${h}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.join(''):`<tr><td colspan="${head.length}">Sem dados neste recorte.</td></tr>`}</tbody></table></div>`}
 function row(cells,leftColumns=[]){return '<tr>'+cells.map((x,i)=>`<td class="${i&&!leftColumns.includes(i)?'num':''}">${x}</td>`).join('')+'</tr>'}
 function teamLink(t){return `<button class="team-link" data-team="${esc(t)}">${esc(teamName(t))}</button>`}
