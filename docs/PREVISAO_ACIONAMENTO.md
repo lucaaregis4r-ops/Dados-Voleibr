@@ -1,3 +1,15 @@
+# Distribuição presumida experimental
+
+## Primeira versão com a base agregada
+
+Na aba Ataque de cada equipe, a estimativa usa os ataques registrados por atleta na combinação exata de competição, categoria, gênero e temporada. Os dados de equipes ou naipes diferentes nunca são somados. Só são elegíveis atacantes com ao menos um ataque observado; as opções possíveis e a disponibilidade em quadra não são conhecidas. Sem pelo menos duas atacantes, não é apresentada previsão.
+
+Para k atacantes e n_i ataques, o prior simétrico tem massa total s e a estimativa é `(n_i+s/k)/(N+s)`. A força s é selecionada numa grade por log loss em partidas posteriores, para equipes do mesmo recorte de competição, categoria, gênero e temporada, usando apenas partidas de datas anteriores. Não se somam contagens de atletas entre equipes: outras equipes contribuem somente à escolha da força. Atacantes não vistas no histórico não são previstas e são contadas separadamente na avaliação. Selecionar a força nessa amostra não equivale a avaliá-la em um conjunto independente.
+
+Com menos de 100 ataques avaliáveis ou três partidas avaliáveis, o valor fraco provisório s=1 é usado e a interface informa que não foi calibrado. A entropia usa apenas atletas observadas, portanto não representa todas as opções em quadra. A análise não usa multiplicadores de passe nem afirma estimar passe, rotação ou levantadora. A incerteza sobre composição da equipe, passagem de tempo, disponibilidade e qualidade da fonte não está incluída em um intervalo de credibilidade; por isso nenhum intervalo validado é apresentado.
+
+Os dados agregados calibram a distribuição geral de volume ofensivo, não a distribuição condicional por passe/rotação. A observação de contatos permanece necessária para atualizar as previsões por situação e validar seus efeitos.
+
 # Previsão de acionamento: diagnóstico e núcleo experimental
 
 ## Diagnóstico da cópia do banco em 01/11/2026
@@ -6,9 +18,9 @@ Há 601 partidas, 9.041 registros de atletas por partida, 532 registros táticos
 
 A inferência de funções do módulo legado é heurística, não identifica uma levantadora observada. O volume individual não permite deduzir a distribuição condicional por recepção ou rotação. A base atual não autoriza valores de previsão, calibração empírica, intervalos validados ou retrospectiva de acionamentos. Não são preenchidas observações artificiais.
 
-## Núcleo preparado, ainda não integrado ao produto
+## Núcleo de contatos preparado, ainda não integrado ao produto
 
-`cbv.analysis.activation_model` recebe registros sequenciais já auditados, um por distribuição observada, com `team`, `category`, `gender`, `season`, `match_id`, `date`, `target` e, quando conhecidos, `setter`, `rotation`, `pass_quality`. Esses nomes são um contrato interno em memória, não novas colunas no banco. Falta criar e validar um adaptador a partir de uma fonte real de contatos; não basta a tabela existir. O código não decide que um contato de levantamento tenha resultado no ataque seguinte, não reconstrói autoria, nem garante opções presentes em quadra. A integração da interface e do jogo ao vivo depende dessa etapa. Nenhuma migração de schema é proposta sem a análise da fonte de eventos.
+`cbv.analysis.activation_model` recebe registros sequenciais já auditados, um por distribuição observada, com `team`, `category`, `gender`, `season`, `match_id`, `date`, `target` e, quando conhecidos, `setter`, `rotation`, `pass_quality`. Esses nomes são um contrato interno em memória, não novas colunas no banco. Falta criar e validar um adaptador a partir de uma fonte real de contatos; não basta a tabela existir. O código não decide que um contato de levantamento tenha resultado no ataque seguinte, não reconstrói autoria, nem garante opções presentes em quadra. A integração desse núcleo de contatos e do jogo ao vivo depende dessa etapa; a interface geral de volume acima usa outro módulo. Nenhuma migração de schema é proposta sem a análise da fonte de eventos.
 
 A identidade usa a tupla normalizada clube, categoria, gênero e temporada; campos ausentes invalidam a identidade e impedem a previsão. Outros anos, categorias e gêneros nunca entram no histórico direto. A competição ainda não compõe a identidade, pois a mesma equipe pode disputar mais de uma competição na mesma temporada; nomes ambíguos exigem identificador confiável da fonte.
 

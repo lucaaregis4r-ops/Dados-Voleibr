@@ -80,6 +80,13 @@ def generate_dashboard_data(competition=None,include_atlas=True):
         pp=[p for p in players if p['match_id'] in ids]
         scheduled=[u for u in upcoming if tuple(u.get(k) for k in ('competition','category','gender','season'))==key]
         c=aggregate_cohort(mm,rr,pp,{u[side+'_team'] for u in scheduled for side in ('home','away')})
+        from cbv.analysis.presumed_distribution import build_distribution, calibrate
+        calibration = calibrate(mm, pp, key)
+        for team_data in c['teams']:
+            prediction = build_distribution(mm, pp, key, team_data['team'], calibration['strength'])
+            if prediction is not None:
+                prediction['calibration'] = calibration
+            team_data['presumed_distribution'] = prediction
         from cbv.seasons import edition_status
         edition=next((e for e in edition_rows if tuple(e.get(k) for k in ('competition','category','gender'))==key[:3]),None)
         c['edition_status']=edition_status(key[3],edition['season']) if edition else 'UNKNOWN'
@@ -278,7 +285,8 @@ def build_compact_shell(data):
                 'losses': t.get('losses'),
                 'metrics': brief_metrics,
                 'rotations': t.get('rotations', []),
-                'athletes': top_athletes
+                'athletes': top_athletes,
+                'presumed_distribution': t.get('presumed_distribution')
             }
             compact_c['teams'].append(compact_t)
 
