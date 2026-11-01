@@ -22,6 +22,7 @@ def test_staged_update_handles_missing_raw_cache(tmp_path: Path):
         (stage / "docs").mkdir(parents=True, exist_ok=True)
         (stage / "index.html").write_text("<html>atlas</html>", encoding="utf-8")
         (stage / "exports" / "dashboard.html").write_text("<html>dashboard</html>", encoding="utf-8")
+        (stage / "exports" / "sync_health.json").write_text('{"status":"HEALTHY"}', encoding="utf-8")
         (stage / "docs" / "index.html").write_text("<html>docs</html>", encoding="utf-8")
         (stage / "docs" / "CADERNO_METODOLOGICO.md").write_text("# Metodologia\n", encoding="utf-8")
 
