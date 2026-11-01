@@ -1135,3 +1135,16 @@ h3 {
 /* Keep labels legible against the selected rotation and setter badge. */
 .court-position.selected text,
 .court-position rect + text { fill: #fff; }
+
+/* Clear controls for selecting a team and reaching every section on a phone. */
+.team-picker { display:block; margin:0 0 14px; color:var(--text-soft); font-weight:700; }
+.team-picker select { display:block; width:100%; min-height:48px; margin-top:5px; padding:8px 12px; background:var(--surface); border:1px solid var(--border-strong); border-radius:6px; }
+.athlete-link { display:inline-block; color:var(--blue); background:transparent; border:0; padding:8px 2px; font-weight:800; text-align:left; text-decoration:underline; text-underline-offset:3px; }
+.advanced-matrix { min-width:520px; text-align:center; }
+.advanced-matrix small { display:block; color:var(--text-muted); }
+#athlete-profile { scroll-margin-top:100px; }
+@media (max-width:680px) {
+  .section-tabs-rail { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; overflow:visible; margin:0 0 16px; padding:0 0 10px; }
+  .section-tab-btn { min-width:0; min-height:44px; padding:7px 3px; font-size:11px; white-space:normal; line-height:1.15; }
+  .card-action-bar { flex-wrap:wrap; gap:8px; }
+}

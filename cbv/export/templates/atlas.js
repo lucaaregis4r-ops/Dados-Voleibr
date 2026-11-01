@@ -23,6 +23,7 @@ const DataLoader = {
         return await res.json();
       } catch (err) {
         console.warn(`DataLoader: recurso sob demanda indisponível (${domain}):`, err);
+        this.cache.delete(key);
         return null;
       }
     })();
@@ -208,6 +209,8 @@ Object.assign(state, {
   page: 'Início',
   teamSection: 'Visão geral',
   athleteSection: 'Ataque',
+  athleteName: null,
+  athleteTeam: null,
   rotation: 1,
   matchFilter: 'Todas',
   positionFilter: 'Todas',
@@ -223,6 +226,7 @@ function navigateTo(pageName, matchId = null) {
     btn.setAttribute('aria-current', isAct ? 'page' : 'false');
   });
   render();
+  if (pageName === 'Atletas') loadAllAthletes();
   window.scrollTo(0, 0);
 }
 
@@ -409,7 +413,8 @@ function openFiltersSheet() {
         return;
       }
       state.cohort = DATA.cohorts.indexOf(matched);
-      state.team = ''; state.opponent = ''; state.query = ''; state.athleteQuery = ''; state.matchId = null;
+      if (state.page === 'Atletas') queueMicrotask(loadAllAthletes);
+      state.team = ''; state.opponent = ''; state.query = ''; state.athleteQuery = ''; state.athleteName = null; state.athleteTeam = null; state.matchId = null;
       if (notice) { notice.textContent = ''; notice.hidden = true; }
       render();
     }
@@ -556,6 +561,7 @@ function renderHomeFeed() {
               </div>
             </div>
             <div class="card-action-bar">
+              <button type="button" class="btn-chip" data-open-athlete="${esc(a.name)}" data-athlete-team="${esc(a.teamName || a.team)}">Ver perfil</button>
               <button type="button" class="btn-chip" data-add-compare-athlete="${esc(a.name)}" data-team="${esc(a.teamName || a.team)}">+ Comparar</button>
             </div>
           </div>
@@ -864,19 +870,17 @@ function renderTeamsPage() {
   if (!state.team && teams.length) state.team = teams[0].team;
 
   const t = teams.find(x => x.team === state.team) || teams[0];
+  if (!t) return '<p class="empty">Não há equipes disponíveis nesta competição.</p>';
   const at = atlasTeam(t.team);
   const activeSection = state.teamSection || 'Visão geral';
 
   return `
     <div>
-      <!-- Team Selector Chips Rail -->
-      <div class="chips-rail" style="margin-bottom:16px;">
-        ${teams.map(x => `
-          <button type="button" class="chip-btn ${x.team === t.team ? 'active' : ''}" onclick="state.team='${esc(x.team)}';render();">
-            ${esc(teamName(x.team))}
-          </button>
-        `).join('')}
-      </div>
+      <label class="team-picker">Equipe
+        <select id="team-picker" aria-label="Selecionar equipe">
+          ${teams.map(x => `<option value="${esc(x.team)}" ${x.team === t.team ? 'selected' : ''}>${esc(teamName(x.team))}</option>`).join('')}
+        </select>
+      </label>
 
       <!-- Team Identity Hero -->
       <div class="team-hero-card">
@@ -942,6 +946,7 @@ function renderTeamSubSection(t, at, section) {
   if (section === 'Rotações') return renderTeamRotations(t, at);
   if (section === 'Atletas') return renderTeamAthletes(t);
   if (section === 'Ataque') return renderTeamAttack(t);
+  if (section === 'Passe') return renderTeamReception(t);
   if (section === 'Avançado') return renderTeamAdvanced(t, at);
 
   // Visão geral default
@@ -1028,6 +1033,11 @@ function renderTeamAttack(t) {
   `;
 }
 
+function renderTeamReception(t) {
+  const metrics = t.metrics || {};
+  return `<section class="rotation-widget-box"><h3>Recepção</h3><div class="athlete-big-stats">${[['positive','Recepção positiva'],['excellent','Recepção excelente'],['rec_error','Erros de recepção']].map(([key,label]) => `<div class="stat-box"><span class="lbl">${label}</span><span class="val">${pct(metrics[key]?.value)}</span><span class="pct-pill">${num(metrics[key]?.n || 0)} recepções</span></div>`).join('')}</div><p class="note">Os valores dependem da cobertura dos relatórios disponíveis.</p></section>`;
+}
+
 function renderTeamAthletes(t) {
   return `
     <div class="rotation-widget-box">
@@ -1050,7 +1060,7 @@ function renderTeamAthletes(t) {
             ${(t.athletes || []).map(a => `
               <tr>
                 <td data-label="Atleta">
-                  <strong>${esc(teamName(a.name))}</strong>
+                  <button type="button" class="athlete-link" data-open-athlete="${esc(a.name)}" data-athlete-team="${esc(t.team)}">${esc(teamName(a.name))} <span aria-hidden="true">→</span></button>
                 </td>
                 <td data-label="Pontos" class="num numeric"><strong>${num(a.points || 0)}</strong></td>
                 <td data-label="Kill%" class="num">${pct(a.kill || a.metrics?.kill?.value)}</td>
@@ -1068,17 +1078,24 @@ function renderTeamAthletes(t) {
 }
 
 function renderTeamAdvanced(t, at) {
+  const matrix = at?.matrix || [];
+  const runs = at?.serve_runs || {};
+  const matrixRows = [1,2,3,4,5,6].map(own => `<tr><th scope="row">P${own}</th>${[1,2,3,4,5,6].map(other => {
+    const cell = matrix.find(item => item.own === own && item.other === other);
+    const m = cell?.so;
+    return `<td>${m?.n ? `${pct(m.value)} <small>(${num(m.n)})</small>` : '—'}</td>`;
+  }).join('')}</tr>`).join('');
   return `
-    <div class="rotation-widget-box">
-      <h3>Modelos Táticos e Matriz 6×6</h3>
-      ${matrixSection(at)}
-      ${runSection(at)}
-      <div style="margin-top:20px;">
-        <button type="button" class="btn-primary" onclick="loadTacticalLineups('${esc(t.team)}');">Carregar Análise de Presença (On/Off)</button>
-      </div>
-      <div id="tactical-lineups-container"></div>
-    </div>
-  `;
+    <section class="rotation-widget-box">
+      <h3>Análise avançada</h3>
+      <p class="note">Side-out por rotação da sua equipe e do adversário. O número entre parênteses é a quantidade de rallies observados.</p>
+      ${matrix.some(cell => cell.so?.n) ? `<div class="table-wrap"><table class="advanced-matrix"><thead><tr><th>Equipe / rival</th>${[1,2,3,4,5,6].map(p=>`<th>P${p}</th>`).join('')}</tr></thead><tbody>${matrixRows}</tbody></table></div>` : '<p class="empty">Ainda não há amostra de rotações para montar a matriz.</p>'}
+      <h3>Passagens de saque</h3>
+      <p>${runs.n ? `Média de ${fmt(runs.mean)} pontos por passagem completa · ${num(runs.n)} passagens.` : 'Sem passagens de saque suficientes para esta equipe.'}</p>
+      <p class="note">Passagens encerradas pelo fim do set são excluídas da média.</p>
+      <button type="button" class="btn-primary" data-load-lineups="${esc(t.team)}">Ver análise de presença</button>
+      <div id="tactical-lineups-container" aria-live="polite"></div>
+    </section>`;
 }
 
 // 9. SCREEN 4: ATHLETES PAGE (ATLETAS)
@@ -1102,7 +1119,7 @@ function renderAthletesPage() {
   });
 
   filtered.sort((a,b) => (b.points || 0) - (a.points || 0));
-  const leadAthlete = filtered[0];
+  const leadAthlete = allAthletes.find(a => a.name === state.athleteName && a.teamName === state.athleteTeam) || filtered[0];
 
   return `
     <div>
@@ -1122,7 +1139,8 @@ function renderAthletesPage() {
 
       <!-- Athlete Roster Table / Cards -->
       <div class="rotation-widget-box">
-        <h3>Classificação e Rankings de Atletas</h3>
+        <h3>Atletas e rankings</h3>
+        <p class="note" id="athlete-loading-status">${athleteLoadState.get(c.id) === 'loading' ? 'Carregando todas as atletas…' : athleteLoadState.get(c.id) === 'failed' ? 'Não foi possível carregar todos os perfis. ' : ''}${athleteLoadState.get(c.id) === 'failed' ? '<button type="button" id="retry-athletes">Tentar novamente</button>' : ''}</p>
         <div class="table-wrap">
           <table class="responsive-table">
             <thead>
@@ -1138,7 +1156,7 @@ function renderAthletesPage() {
             <tbody>
               ${filtered.map(a => `
                 <tr data-athlete-name="${esc(a.name)}" data-athlete-team="${esc(a.teamName)}">
-                  <td data-label="Atleta"><strong>${esc(teamName(a.name))}</strong></td>
+                  <td data-label="Atleta"><button type="button" class="athlete-link" data-open-athlete="${esc(a.name)}" data-athlete-team="${esc(a.teamName)}">${esc(teamName(a.name))} <span aria-hidden="true">→</span></button></td>
                   <td data-label="Equipe">${esc(teamName(a.teamName))}</td>
                   <td data-label="Pontos" class="num numeric"><strong>${num(a.points || 0)}</strong></td>
                   <td data-label="Kill%" class="num">${pct(a.kill || a.metrics?.kill?.value)}</td>
@@ -1158,12 +1176,12 @@ function renderAthletesPage() {
 
 // LAYERED ATHLETE PROFILE VIEW
 function renderAthleteProfile(a) {
-  const killVal = a.kill || a.metrics?.kill?.value;
-  const effVal = a.eff || a.metrics?.eff?.value;
-  const posVal = a.positive || a.metrics?.positive?.value;
+  const killVal = a.kill ?? a.metrics?.kill?.value;
+  const effVal = a.eff ?? a.metrics?.eff?.value;
+  const posVal = a.positive ?? a.metrics?.positive?.value;
 
   return `
-    <div class="athlete-profile-card">
+    <div class="athlete-profile-card" id="athlete-profile" tabindex="-1">
       <div class="athlete-top">
         <div class="athlete-avatar" style="width:54px;height:54px;font-size:22px;">${esc(a.name?.charAt(0) || 'A')}</div>
         <div class="athlete-title">
@@ -1215,7 +1233,7 @@ function renderAthleteProfile(a) {
         </div>
         <div class="metric-card-interactive" onclick="openMetricSheet('block');">
           <div class="category">Bloqueio</div>
-          <div class="primary-num">${num(a.blocks || 0)}</div>
+          <div class="primary-num">${a.blocks == null ? '—' : num(a.blocks)}</div>
           <div class="sub-detail">Pontos de bloqueio</div>
         </div>
       </div>
@@ -1308,19 +1326,34 @@ async function loadAllTeamAthletes(teamName) {
   }
 }
 
-async function loadTacticalLineups(teamName) {
-  const container = $('#tactical-lineups-container');
-  if (container) container.innerHTML = '<p class="note">Carregando modelos táticos...</p>';
-  const tac = await DataLoader.load('tactical');
-  const c = C();
-  if (tac && tac[c.id] && tac[c.id].teams?.[teamName] && container) {
-    const data = tac[c.id].teams[teamName];
-    container.innerHTML = `
-      <div style="margin-top:16px;">
-        ${lineupSection(data)}
-      </div>
-    `;
+const athleteLoadState = new Map();
+async function loadAllAthletes() {
+  const cohort = C();
+  if (!cohort || ['loading','loaded'].includes(athleteLoadState.get(cohort.id))) return;
+  athleteLoadState.set(cohort.id, 'loading');
+  if (state.page === 'Atletas') render();
+  const roster = await DataLoader.load('athletes');
+  if (!roster?.[cohort.id]) {
+    athleteLoadState.set(cohort.id, 'failed');
+  } else {
+    for (const team of cohort.teams || []) {
+      if (Array.isArray(roster[cohort.id][team.team])) team.athletes = roster[cohort.id][team.team];
+    }
+    athleteLoadState.set(cohort.id, 'loaded');
   }
+  if (C() === cohort && state.page === 'Atletas') render();
+}
+
+async function loadTacticalLineups(teamName) {
+  const cohort = C();
+  const container = $('#tactical-lineups-container');
+  if (!container) return;
+  container.innerHTML = '<p class="note">Carregando análise de presença…</p>';
+  const tac = await DataLoader.load('tactical');
+  if (C() !== cohort || state.page !== 'Times' || state.team !== teamName || state.teamSection !== 'Avançado') return;
+  const data = tac?.[cohort.id]?.teams?.[teamName];
+  const onoff = data?.on_off || [];
+  container.innerHTML = onoff.length ? `<h4>Presença em quadra</h4><p class="note">Comparação descritiva, não indica causa. Percentuais de pontos ganhos com e sem a atleta em quadra; amostra entre parênteses.</p><div class="table-wrap"><table><thead><tr><th>Atleta</th><th>Com</th><th>Sem</th></tr></thead><tbody>${onoff.map(a => `<tr><td>${esc(a.player)}</td><td>${pct(a.on?.value)} (${num(a.on?.n || 0)})</td><td>${pct(a.off?.value)} (${num(a.off?.n || 0)})</td></tr>`).join('')}</tbody></table></div>` : `<p class="note">${data ? 'Não há amostra confiável de presença para esta equipe.' : 'Não foi possível carregar os dados de presença. Tente novamente.'}</p>`;
 }
 
 // 11. GLOBAL SEARCH
@@ -1423,7 +1456,8 @@ function selectQuickCompetition(competition, gender) {
   const sorted = [...candidates].sort((a, b) => String(b.season || '').localeCompare(String(a.season || '')));
   const selected = sameSeason || sorted.find(c => c.edition_status === 'CURRENT') || sorted[0];
   state.cohort = DATA.cohorts.indexOf(selected);
-  state.team = ''; state.opponent = ''; state.query = ''; state.athleteQuery = ''; state.matchId = null;
+  if (state.page === 'Atletas') queueMicrotask(loadAllAthletes);
+  state.team = ''; state.opponent = ''; state.query = ''; state.athleteQuery = ''; state.athleteName = null; state.athleteTeam = null; state.matchId = null;
   if (notice) { notice.textContent = ''; notice.hidden = true; }
   render();
   return true;
@@ -1507,6 +1541,24 @@ function bindInteractions() {
     }
   });
 
+  const picker = $('#team-picker');
+  if (picker) picker.onchange = e => { state.team = e.target.value; render(); };
+  document.querySelectorAll('[data-open-athlete]').forEach(el => {
+    el.onclick = e => {
+      e.stopPropagation();
+      state.athleteName = el.dataset.openAthlete;
+      state.athleteTeam = el.dataset.athleteTeam;
+      state.athleteQuery = '';
+      navigateTo('Atletas');
+      $('#athlete-profile')?.scrollIntoView({block:'start'});
+    };
+  });
+  document.querySelectorAll('[data-load-lineups]').forEach(el => {
+    el.onclick = () => loadTacticalLineups(el.dataset.loadLineups);
+  });
+  const retryAthletes = $('#retry-athletes');
+  if (retryAthletes) retryAthletes.onclick = () => loadAllAthletes();
+
   // Match filters
   document.querySelectorAll('[data-match-filter]').forEach(btn => {
     btn.onclick = () => {
@@ -1539,6 +1591,7 @@ function bindInteractions() {
   if (athSearch) {
     athSearch.oninput = e => {
       state.athleteQuery = e.target.value;
+      state.athleteName = null; state.athleteTeam = null;
       const pos = e.target.selectionStart;
       render();
       const cur = $('#athlete-live-search');
