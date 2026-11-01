@@ -5,6 +5,9 @@ on:
     # 06:00 UTC corresponds to 03:00 BRT (Brasília Standard Time UTC-3)
     - cron: '0 6 * * *'
   workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/daily_sync.yml
 
 env:
   OPENBLAS_NUM_THREADS: 1
@@ -63,13 +66,13 @@ jobs:
         run: |
           if [ -f exports/sync_health.json ]; then
             python -c "
-import json
-from pathlib import Path
-from cbv.pipeline_health import SyncHealthTracker
-data = json.loads(Path('exports/sync_health.json').read_text(encoding='utf-8'))
-summary = SyncHealthTracker.generate_github_summary(data, data.get('database_match_count', 0) - data.get('new_matches', 0))
-Path('${{ github.step_summary }}').write_text(summary, encoding='utf-8')
-"
+          import json
+          from pathlib import Path
+          from cbv.pipeline_health import SyncHealthTracker
+          data = json.loads(Path('exports/sync_health.json').read_text(encoding='utf-8'))
+          summary = SyncHealthTracker.generate_github_summary(data, data.get('database_match_count', 0) - data.get('new_matches', 0))
+          Path('${{ github.step_summary }}').write_text(summary, encoding='utf-8')
+          "
           fi
 
       - name: Preserve raw snapshots and validation logs
