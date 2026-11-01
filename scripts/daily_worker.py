@@ -52,7 +52,7 @@ def run_full_daily_pipeline() -> bool:
     now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     console.print(f"[bold cyan]🏐 CBV VOLLEY DATA — PIPELINE DIÁRIO AUTOMATIZADO [{now_str}][/bold cyan]")
 
-    from cbv.pipeline_health import SyncHealthTracker, STATUS_FAILED
+    from cbv.pipeline_health import SyncHealthTracker, STATUS_FAILED, available_source_counts
     publish_dir = Path(os.environ.get('CBV_PUBLISH_DIR', BASE_DIR))
     tracker = SyncHealthTracker(exports_dir=publish_dir / 'exports')
 
@@ -124,9 +124,8 @@ def run_full_daily_pipeline() -> bool:
         try:
             snapshot = collector.collect(mid)
             if snapshot:
-                for k in source_stats:
-                    if k in snapshot or (k.rstrip('s') in snapshot):
-                        source_stats[k] += 1
+                for k, available in available_source_counts(snapshot).items():
+                    source_stats[k] += available
         except Exception as exc:
             logger.warning(f'Fontes {mid}: {exc}')
 

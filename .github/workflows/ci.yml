@@ -19,6 +19,10 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: pip install -r requirements.txt playwright ruff
+      - name: Browser dependencies
+        run: python -m playwright install --with-deps chromium
+      - name: JavaScript navigation, health and rotation tests
+        run: node --test tests/test_match_navigation.cjs
       - name: Syntax and undefined names
         run: ruff check cbv scripts --select E9,F63,F7,F82
       - name: Parser, reconstruction, model leakage, registry and application tests
@@ -27,7 +31,5 @@ jobs:
         run: |
           python -m cbv.metrics.methodology
           git diff --exit-code -- docs/CADERNO_METODOLOGICO.md
-      - name: Browser dependencies
-        run: python -m playwright install --with-deps chromium
       - name: Static Atlas browser smoke
         run: python scripts/check_atlas_ui.py

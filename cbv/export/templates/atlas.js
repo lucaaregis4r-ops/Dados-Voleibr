@@ -208,16 +208,15 @@ Object.assign(state, {
   page: 'Início',
   teamSection: 'Visão geral',
   athleteSection: 'Ataque',
-  setterFront: false, // false = Fundo (3 atacantes na rede), true = Rede (2 atacantes na rede)
   rotation: 1,
   matchFilter: 'Todas',
   positionFilter: 'Todas',
 });
 
 // Navigation router
-function navigateTo(pageName) {
+function navigateTo(pageName, matchId = null) {
   state.page = pageName;
-  state.matchId = null;
+  state.matchId = matchId;
   document.querySelectorAll('[data-nav]').forEach(btn => {
     const isAct = btn.dataset.nav === pageName;
     btn.classList.toggle('active', isAct);
@@ -280,14 +279,23 @@ function openMetricSheet(metricKey, contextVal = null) {
   });
 }
 
+function effectiveSyncStatus(h, now = Date.now()) {
+  if (!h || !h.finished_at || !Number.isFinite(Date.parse(h.finished_at))) return 'UNKNOWN';
+  if (now - Date.parse(h.finished_at) > 36 * 60 * 60 * 1000) return 'STALE';
+  if (h.status === 'FAILED' || h.status === 'DEGRADED') return h.status;
+  const critical = Object.values(h.sources || {}).filter(s => s.severity === 'CRITICAL');
+  if (!critical.length || critical.some(s => s.status === 'PENDING' || (s.attempted > 0 && s.successful === 0))) return 'UNKNOWN';
+  return h.status === 'HEALTHY' ? 'HEALTHY' : 'UNKNOWN';
+}
+
 // SYNC HEALTH BOTTOM SHEET
 function openSyncHealthSheet() {
   const h = DATA.sync_health || {};
-  const status = h.status || 'HEALTHY';
+  const status = effectiveSyncStatus(h);
   const sources = h.sources || {};
   const val = h.validation || {};
 
-  const statusLabel = status === 'HEALTHY' ? 'Atualizado e Íntegro' : (status === 'DEGRADED' ? 'Atualização Parcial' : (status === 'STALE' ? 'Dados Estáveis (36h+)' : 'Falha Crítica'));
+  const statusLabel = ({HEALTHY: 'Coleta recente', DEGRADED: 'Coleta parcial', STALE: 'Coleta atrasada (mais de 36h)', FAILED: 'Falha na coleta', UNKNOWN: 'Cobertura não confirmada'})[status];
   const dotClass = status.toLowerCase();
 
   const sourceRows = Object.entries(sources).map(([k, s]) => `
@@ -296,8 +304,8 @@ function openSyncHealthSheet() {
         <strong style="font-size:13px;display:block;">${esc(s.description || k)}</strong>
         <span style="font-size:11px;color:var(--text-muted);">${esc(s.message || '')}</span>
       </div>
-      <span class="source-tag ${s.status === 'HEALTHY' ? 'observado' : (s.status === 'FAILED' ? 'experimental' : 'derivado')}">
-        ${esc(s.status)}
+      <span class="source-tag ${s.status === 'HEALTHY' && !(s.attempted > 0 && s.successful === 0) ? 'observado' : (s.status === 'FAILED' ? 'experimental' : 'derivado')}">
+        ${esc(s.attempted > 0 && s.successful === 0 && s.status === 'HEALTHY' ? 'NÃO CONFIRMADO' : s.status)}
       </span>
     </div>
   `).join('');
@@ -768,15 +776,15 @@ function VolleyballCourt({ rotations = [], layer = 'so', homeLabel = '', selecte
     1: { x: 285, y: 152 }
   };
 
-  const isFrontSetter = Boolean(state.setterFront);
+  const isFrontSetter = [2, 3, 4].includes(selected);
 
   let circles = '';
   for (let p = 1; p <= 6; p++) {
     const coords = posCoords[p];
     const isSel = p === selected;
     const rData = (rotations || []).find(r => r.position === p);
-    const metricVal = rData?.[layer]?.value != null ? `${pct(rData[layer].value)}` : '';
-    const isSetterPos = isFrontSetter ? (p === 2) : (p === 1);
+    const metricVal = ''; // As zonas representam a posição da levantadora, não valores espaciais de ataque.
+    const isSetterPos = isSel;
 
     circles += `
       <g class="court-position ${isSel ? 'selected' : ''}" onclick="state.rotation=${p};render();" style="cursor:pointer;" role="button" aria-label="Posição P${p}">
@@ -815,7 +823,7 @@ function VolleyballCourt({ rotations = [], layer = 'so', homeLabel = '', selecte
       <text x="340" y="93" text-anchor="end" fill="rgba(255,255,255,0.7)" font-family="var(--mono)" font-size="8.5" font-weight="700">LINHA DOS 3M</text>
       <text x="25" y="190" text-anchor="start" fill="rgba(255,255,255,0.85)" font-family="var(--cond)" font-size="11" font-weight="800">${esc(homeLabel)}</text>
       <text x="180" y="208" text-anchor="middle" fill="var(--text-muted)" font-family="var(--mono)" font-size="8.5" font-weight="700">
-        ${isFrontSetter ? 'Levantadora na REDE (2 atacantes de rede)' : 'Levantadora no FUNDO (3 atacantes de rede)'}
+        Levantadora na zona ${selected} · ${isFrontSetter ? 'rede' : 'fundo'}
       </text>
       ${circles}
     </svg>
@@ -927,7 +935,6 @@ function renderTeamSubSection(t, at, section) {
 // ROTAÇÕES P1–P6 COM LEVANTADORA FUNDO/REDE
 function renderTeamRotations(t, at) {
   const p = state.rotation || 1;
-  const isFront = state.setterFront;
   const rot = at?.rotations?.find(r => r.position === p);
 
   return `
@@ -943,16 +950,9 @@ function renderTeamRotations(t, at) {
           </div>
         </div>
 
-        <!-- Setter Position Switch: FUNDO vs REDE -->
-        <div class="setter-toggle-control">
-          <span>Levantadora:</span>
-          <div class="setter-switch">
-            <button type="button" id="setter-fundo" class="${!isFront ? 'active' : ''}" onclick="state.setterFront=false;render();">FUNDO (3 Atacantes)</button>
-            <button type="button" id="setter-rede" class="${isFront ? 'active' : ''}" onclick="state.setterFront=true;render();">REDE (2 Atacantes)</button>
-          </div>
-        </div>
       </div>
 
+      <p class="note">P1 a P6 indicam a zona da levantadora no momento da rotação. P1, P6 e P5 ficam no fundo; P2, P3 e P4, na rede. A quadra é esquemática e não mostra a formação completa.</p>
       <!-- Court Visualizer -->
       <div class="court-frame">
         ${VolleyballCourt({
@@ -966,12 +966,12 @@ function renderTeamRotations(t, at) {
       <!-- Rotation Metrics -->
       ${rot ? `
         <div class="athlete-big-stats" style="grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));">
-          <div class="stat-box" onclick="openMetricSheet('so', rot.so);">
+          <div class="stat-box" onclick="openMetricSheet('so');">
             <span class="lbl">Side-Out</span>
             <span class="val">${pct(rot.so?.value)}</span>
             <span class="pct-pill">${signed(rot.so_delta_team)} pp vs time</span>
           </div>
-          <div class="stat-box" onclick="openMetricSheet('bp', rot.bp);">
+          <div class="stat-box" onclick="openMetricSheet('bp');">
             <span class="lbl">Break Point</span>
             <span class="val">${pct(rot.bp?.value)}</span>
             <span class="pct-pill">${signed(rot.bp_delta_team)} pp vs time</span>
@@ -1363,8 +1363,7 @@ function setupGlobalSearch() {
             state.athleteQuery = id;
             navigateTo('Atletas');
           } else if (type === 'match') {
-            state.matchId = id;
-            navigateTo('Jogos');
+            navigateTo('Jogos', id);
           }
         };
       });
@@ -1407,7 +1406,12 @@ function render() {
   const statusSub = $('#sync-status-sub');
   if (statusBadge && statusSub) {
     const h = DATA.sync_health || {};
-    const count = h.database_match_count || (c.matches || []).length || 583;
+    const count = h.database_match_count ?? (c.matches || []).length;
+    const status = effectiveSyncStatus(h);
+    const label = $('#sync-status-label');
+    const dot = $('#sync-status-dot');
+    if (label) label.textContent = ({HEALTHY:'Coleta recente', DEGRADED:'Coleta parcial', STALE:'Coleta atrasada', FAILED:'Falha na coleta', UNKNOWN:'Não confirmado'})[status];
+    if (dot) dot.className = `status-dot ${status === 'UNKNOWN' ? 'degraded' : status.toLowerCase()}`;
     statusSub.textContent = `${count} jogos`;
     statusBadge.onclick = openSyncHealthSheet;
   }
@@ -1441,8 +1445,7 @@ function bindInteractions() {
   // Match links
   document.querySelectorAll('[data-match]').forEach(el => {
     el.onclick = () => {
-      state.matchId = el.dataset.match;
-      navigateTo('Jogos');
+      navigateTo('Jogos', el.dataset.match);
     };
   });
 

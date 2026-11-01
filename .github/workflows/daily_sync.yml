@@ -8,6 +8,9 @@ on:
   push:
     paths:
       - .github/workflows/daily_sync.yml
+      - cbv/export/templates/**
+      - cbv/pipeline_health.py
+      - scripts/daily_worker.py
 
 env:
   OPENBLAS_NUM_THREADS: 1

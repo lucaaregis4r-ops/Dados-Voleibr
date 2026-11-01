@@ -85,8 +85,8 @@ def test_sync_health_bottom_sheet(browser_context):
     page.close()
 
 
-def test_team_profile_rotations_and_setter_toggle(browser_context):
-    """Verifies P1-P6 court rotation selector and FUNDO vs REDE setter toggle."""
+def test_team_profile_rotations_follow_setter_position(browser_context):
+    """The selected rotation determines the setter zone and front/back row."""
     page = browser_context.new_page()
     page.set_viewport_size({"width": 390, "height": 844})
     page.goto(INDEX_HTML.as_uri(), wait_until="domcontentloaded")
@@ -109,15 +109,12 @@ def test_team_profile_rotations_and_setter_toggle(browser_context):
     page.wait_for_timeout(50)
     assert p4.evaluate("el => el.classList.contains('active')")
 
-    # Check Setter switch FUNDO vs REDE
-    setter_fundo = page.locator('#setter-fundo')
-    setter_rede = page.locator('#setter-rede')
-    assert setter_fundo.is_visible()
-    assert setter_rede.is_visible()
-
-    setter_rede.click()
-    page.wait_for_timeout(50)
-    assert setter_rede.evaluate("el => el.classList.contains('active')")
+    assert 'Levantadora na zona 4' in page.locator('.court-svg').inner_text()
+    assert 'rede' in page.locator('.court-svg').inner_text()
+    assert page.locator('#setter-fundo, #setter-rede').count() == 0
+    page.locator('.p-selector .p-btn:has-text("P1")').click()
+    assert 'Levantadora na zona 1' in page.locator('.court-svg').inner_text()
+    assert 'fundo' in page.locator('.court-svg').inner_text()
 
     page.close()
 

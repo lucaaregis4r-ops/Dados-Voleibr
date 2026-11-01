@@ -34,6 +34,13 @@ SOURCE_SPECS = {
 }
 
 
+def available_source_counts(manifest):
+    """Count available documents in the collector manifest, including cached copies."""
+    sources = (manifest or {}).get("sources", {})
+    mapping = {"scoresheets": "scoresheet", "match_reports": "match_report", "libero_reports": "libero_report", "play_by_play": "play_by_play"}
+    return {label: int(sources.get(kind, {}).get("status") == "AVAILABLE") for label, kind in mapping.items()}
+
+
 class SyncHealthTracker:
     def __init__(self, exports_dir: Optional[Path] = None):
         self.started_at = datetime.now(TZ)
