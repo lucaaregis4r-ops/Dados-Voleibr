@@ -291,6 +291,12 @@ def build_compact_shell(data):
                 'bp': summary.get('bp', {}),
                 'expected': summary.get('expected', {}),
                 'rotations': summary.get('rotations', []),
+                'matrix': [
+                    {'own': cell.get('own'), 'other': cell.get('other'),
+                     'so': {'value': cell.get('so', {}).get('value'), 'n': cell.get('so', {}).get('n')},
+                     'bp': {'value': cell.get('bp', {}).get('value'), 'n': cell.get('bp', {}).get('n')}}
+                    for cell in summary.get('matrix', [])
+                ],
                 'serve_runs': {
                     'mean': summary.get('serve_runs', {}).get('mean'),
                     'median': summary.get('serve_runs', {}).get('median'),

@@ -22,7 +22,7 @@ jobs:
       - name: Browser dependencies
         run: python -m playwright install --with-deps chromium
       - name: JavaScript navigation, health and rotation tests
-        run: node --test tests/test_match_navigation.cjs
+        run: node --test tests/test_match_navigation.cjs tests/test_mobile_navigation.cjs
       - name: Syntax and undefined names
         run: ruff check cbv scripts --select E9,F63,F7,F82
       - name: Parser, reconstruction, model leakage, registry and application tests
