@@ -25,6 +25,17 @@ class RotationAllocationTests(unittest.TestCase):
         self.assertEqual(out[1]['games'],2)
         self.assertEqual(out[1]['phase_games'],2)
 
+    def test_one_game_phase_composition_is_an_assumption_not_a_learned_effect(self):
+        names=['Ana','Bia','C','D','E','F']; jerseys=list(range(1,7))
+        rows=[make_row(1,1,names,jerseys)] * 10
+        players=[{'match_id':1,'team':'A','player_name':name,'player_number':i+1,'attack_attempts':value}
+                 for i,(name,value) in enumerate(zip(names,[80,20,0,0,0,0]))]
+        tactical=[{'match_id':1,'team':'A','pos_rec_att_attempts':75,'neg_rec_att_attempts':25,'trans_att_attempts':0}]
+        allocation=allocate_scenarios(rows,players,'A',tactical)[1]
+        positive=allocation['positive']; negative=allocation['negative']
+        self.assertAlmostEqual(positive['Ana']/sum(positive.values()), .8)
+        self.assertAlmostEqual(negative['Ana']/sum(negative.values()), .8)
+
     def test_duplicate_names_are_distinct_by_jersey(self):
         rows=[make_row(1,1,['Miguel','Miguel','C','D','E','F'],[5,10,3,4,7,8])]
         players=[{'match_id':1,'team':'A','player_name':'Miguel','player_number':i,'attack_attempts':v} for i,v in [(5,7),(10,5)]]
