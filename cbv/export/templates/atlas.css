@@ -1165,3 +1165,7 @@ h3 {
 .activation-support { border-left:3px solid var(--primary); background:var(--surface, #f5f6f8); padding:.8rem 1rem; margin:.8rem 0; }
 .activation-support span { display:block; font-size:.85rem; margin-top:.25rem; }
 .activation-support p { margin-bottom:0; }
+@media (max-width: 480px) {
+  .activation-rotation > summary { align-items: flex-start; }
+  .activation-support { padding: .7rem; }
+}
