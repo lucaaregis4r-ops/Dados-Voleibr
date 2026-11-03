@@ -4,10 +4,8 @@ The model never invents observed setter contacts. It combines three things that
 are available in Atlas: player attack totals by match, reconstructed lineup /
 rotation exposure, and team attack-phase totals (K1+, K1-, transition).
 
-Pass-conditioned values are latent ecological estimates. They are not observed
-frequencies and are only activated when match-to-match phase variation is large
-enough to identify a signal. Otherwise the model falls back to the rotation /
-availability prior.
+Phase-conditioned player contacts are unobserved. Phase scenarios therefore
+fall back to the rotation / availability reference and are not predictions.
 """
 from collections import Counter, defaultdict
 import math
@@ -22,8 +20,6 @@ PHASE_FIELDS = {
     'transition': 'trans_att_attempts',
 }
 DEFAULT_PRIOR_STRENGTH = 8.0
-MIN_PHASE_GAMES = 6
-MIN_POSITIVE_SHARE_SD = 0.05
 
 
 def _team_side(row, team):
