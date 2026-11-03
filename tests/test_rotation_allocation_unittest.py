@@ -43,6 +43,12 @@ class RotationAllocationTests(unittest.TestCase):
         self.assertNotEqual(pp[0]['player_name'],pp[1]['player_name'])
         self.assertEqual(rr[0]['home_lineup_names'][:2],[pp[0]['player_name'],pp[1]['player_name']])
 
+    def test_jersey_change_alone_does_not_split_an_athlete(self):
+        players=[{'match_id':mid,'team':'A','player_name':'Ana','player_number':number,'attack_attempts':5}
+                 for mid,number in [(1,5),(2,10)]]
+        _, adjusted = disambiguate_players([],players,'A')
+        self.assertEqual([p['player_name'] for p in adjusted], ['Ana','Ana'])
+
     def test_missing_lineup_excludes_match_and_does_not_invent_allocation(self):
         names=['A1','B1','C1','D1','E1','F1']; jerseys=list(range(1,7))
         rows=[make_row(1,1,names,jerseys)] + [dict(make_row(1,1,names,jerseys),home_lineup_confidence='LOW')]*9
