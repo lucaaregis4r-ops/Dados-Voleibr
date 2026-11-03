@@ -1169,3 +1169,32 @@ h3 {
   .activation-rotation > summary { align-items: flex-start; }
   .activation-support { padding: .7rem; }
 }
+
+
+/* Mapa de leitura por formação: números seguem acessíveis sem depender da cor. */
+.activation-map { margin:1.25rem 0 1.75rem; padding:1.15rem; background:#f2f6fb; border-top:3px solid var(--navy); }
+.activation-map-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+.activation-map-heading h4 { color:var(--navy); font-size:1.18rem; line-height:1.2; margin:.25rem 0 0; }
+.activation-eyebrow { color:var(--red); font-size:.68rem; font-weight:800; letter-spacing:.09em; }
+.activation-map-count { color:var(--text-muted); font-family:var(--mono); font-size:.72rem; white-space:nowrap; }
+.activation-map > p { color:var(--text-soft); font-size:.86rem; }
+.activation-map-scroll { overflow-x:auto; overscroll-behavior-inline:contain; -webkit-overflow-scrolling:touch; }
+.activation-map-scroll:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+.activation-map-table { width:100%; min-width:520px; border-collapse:collapse; font-size:.8rem; }
+.activation-map-table caption { text-align:left; font-weight:700; padding:.45rem 0; color:var(--text-soft); }
+.activation-map-table th, .activation-map-table td { border-bottom:1px solid #dce5f0; padding:.35rem .22rem; text-align:center; }
+.activation-map-table th:first-child { min-width:140px; max-width:210px; text-align:left; overflow-wrap:anywhere; }
+.activation-map-table thead th { color:var(--text-muted); font-family:var(--mono); font-size:.72rem; }
+.activation-cell { display:block; min-width:50px; padding:.52rem .18rem; color:var(--navy); font-family:var(--mono); font-size:.72rem; font-weight:700; }
+.activation-cell-light { color:#fff; }
+.activation-map-missing { color:var(--text-muted); }
+.activation-map-key { display:flex; align-items:center; justify-content:flex-end; gap:.45rem; margin:.65rem 0; color:var(--text-muted); font-size:.7rem; }
+.activation-map-key i { display:block; width:70px; height:7px; background:linear-gradient(90deg,rgba(37,99,235,.08),rgba(37,99,235,.8)); }
+.activation-detail-title { margin:1.4rem 0 .4rem; font-size:1rem; }
+.activation-track { height:9px; background:#dfe7f1; }
+.activation-track i { background:var(--blue); }
+.activation-support { border-left-color:var(--blue); background:#f1f6ff; }
+@media (max-width:480px) { .activation-map { margin-left:-.5rem; margin-right:-.5rem; padding:.85rem; } .activation-map-table { min-width:500px; } }
+
+.activation-support-gauge { height:7px; background:#dce6f5; margin:.65rem 0; }
+.activation-support-gauge i { display:block; height:100%; background:var(--blue); }
