@@ -11,6 +11,7 @@ from collections import Counter, defaultdict
 import math
 
 import numpy as np
+from cbv.analysis.rotation_allocation import allocate_scenarios, disambiguate_players
 
 VERSION = 'lineup-ecological-bayes-v2'
 PHASES = ('positive', 'negative', 'transition')
@@ -70,6 +71,7 @@ def _exposure(rows, team):
             rotation not in range(1, 7)
             or confidence != 'RECONSTRUCTED_HIGH'
             or not names
+            or not all(names)
             or len(names) != 6
             or len(set(names)) != 6
         ):
@@ -196,12 +198,14 @@ def _normalize(entries, key):
 
 def estimate_distributions(rows, players, team, tactical=None, prior_strength=DEFAULT_PRIOR_STRENGTH):
     """Estimate rotation priors and pass-conditioned activation scenarios."""
+    rows, players = disambiguate_players(rows, players, team)
     volumes, by_match, liberos, match_ids = _player_maps(players, team)
     exposures = _exposure(rows, team)
     base_rates, _ = _base_rates(by_match, exposures, liberos)
     if tactical is None:
         tactical = _load_tactical(match_ids, team)
     tactical_map = _tactical_by_match(tactical, team, match_ids)
+    allocations = allocate_scenarios(rows, players, team, tactical)
     latent_rates, model_diag = _fit_latent_phase_rates(
         by_match, exposures, tactical_map, liberos, prior_strength
     )
@@ -224,7 +228,12 @@ def estimate_distributions(rows, players, team, tactical=None, prior_strength=DE
                 attacks=float(volumes.get(name, 0.0)),
                 structural_zero=name in liberos,
             ))
-        base_probs = _normalize(base_entries, 'raw_rate')
+        estimate = allocations.get(position)
+        allocated = estimate.get('all', {}) if estimate else {}
+        for entry in base_entries:
+            entry['allocated_score'] = 0.0 if entry['structural_zero'] else allocated.get(entry['name'], 0.0)
+        allocated_probs = _normalize(base_entries, 'allocated_score')
+        base_probs = allocated_probs or _normalize(base_entries, 'raw_rate')
         if base_probs is None:
             continue
         distribution = []
@@ -239,42 +248,41 @@ def estimate_distributions(rows, players, team, tactical=None, prior_strength=DE
         )
 
         scenarios = {}
-        for phase_index, phase in enumerate(PHASES):
-            scenario_entries = []
-            for item in distribution:
-                name = item['name']
-                if item['structural_zero']:
-                    score = 0.0
-                elif model_diag.get('identified') and name in latent_rates:
-                    score = float(latent_rates[name][position - 1, phase_index])
-                else:
-                    score = float(item['weight'])
-                scenario_entries.append(dict(
-                    name=name,
-                    number=item['number'],
-                    zone=item['zone'],
-                    score=max(0.0, score),
-                    structural_zero=item['structural_zero'],
-                ))
-            probs = _normalize(scenario_entries, 'score') or base_probs
-            for entry in scenario_entries:
-                entry['probability'] = 0.0 if entry['structural_zero'] else float(probs.get(entry['name'], 0.0))
-            scenarios[phase] = dict(
-                distribution=scenario_entries,
-                identified=bool(model_diag.get('identified')),
-                support_games=int(model_diag.get('support_games', 0)),
-                method=model_diag.get('method') if model_diag.get('identified') else 'rotation_availability_prior',
-            )
+        game_allocations = estimate.get('game_allocations', {}) if estimate else {}
+        def sensitivity(name, phase, totals):
+            eligible_games = [game for game in game_allocations.values()
+                              if sum(game.get(phase, {}).values()) > 0]
+            if len(eligible_games) < 3:
+                return None
+            values = []
+            for game in eligible_games:
+                remaining = {key: max(0.0, totals.get(key, 0.0) - game.get(phase, {}).get(key, 0.0))
+                             for key in names}
+                denominator = sum(remaining.values())
+                if denominator > 0:
+                    values.append(remaining.get(name, 0.0) / denominator)
+            return dict(min=min(values), max=max(values), method='leave_one_game_out') if len(values) >= 3 else None
+
+        for item in distribution:
+            item['sensitivity'] = sensitivity(item['name'], 'all', allocated) if allocated_probs else None
+
+        for phase in PHASES:
+            phase_totals = estimate.get(phase, {}) if estimate else {}
+            phase_entries = [dict(name=item['name'], number=item['number'], zone=item['zone'],
+                                  score=0.0 if item['structural_zero'] else phase_totals.get(item['name'], 0.0),
+                                  structural_zero=item['structural_zero']) for item in distribution]
+            probs = _normalize(phase_entries, 'score')
+            if probs is None:
+                scenarios[phase] = dict(distribution=[], identified=False, support_games=int((estimate or {}).get('phase_games', 0)), method='insufficient_data')
+                continue
+            for entry in phase_entries:
+                entry['probability'] = float(probs.get(entry['name'], 0.0))
+                entry['sensitivity'] = sensitivity(entry['name'], phase, phase_totals)
+            scenarios[phase] = dict(distribution=phase_entries, identified=False,
+                support_games=int(estimate['phase_games']), method='proportional_match_allocation',
+                interpretation='Cenário proporcional; não estima efeito do passe observado ou validado.')
 
         effect = None
-        if model_diag.get('identified'):
-            effect = dict(
-                method=model_diag['method'],
-                support_games=model_diag['support_games'],
-                positive_share_sd=model_diag['positive_share_sd'],
-                prior_strength=model_diag['prior_strength'],
-                interpretation='Associação ecológica regularizada; não é vínculo observado passe→atacante.',
-            )
 
         results.append(dict(
             position=position,
@@ -284,6 +292,8 @@ def estimate_distributions(rows, players, team, tactical=None, prior_strength=DE
             availability_rallies=len(eligible),
             source_match_count=len(exposures['source_matches'].get(position, set())),
             volume_match_count=len(match_ids),
+            allocation_method='proportional_match_allocation' if allocated_probs else 'overall_fallback',
+            allocation_match_count=int(estimate['games']) if allocated_probs else 0,
             confidence=dict(
                 status='NOT_VALIDATED', prediction_score=None,
                 lineup_rallies=counts[(names, numbers)],
@@ -298,7 +308,8 @@ def estimate_distributions(rows, players, team, tactical=None, prior_strength=DE
             model_version=VERSION,
             pass_condition_effect=effect,
             pass_scenarios=scenarios,
-            definition='Referência de uso ofensivo corrigida por exposição e formação; efeito de passe indisponível até validação com contatos observados.',
-            limitation='Não há contatos observados por fase e atleta. A referência por rotação é exploratória, não foi validada como previsão e usa a formação reconstruída mais frequente.',
+            definition='Cenário proporcional: os ataques de cada partida são distribuídos segundo a exposição reconstruída e as fases agregadas daquela partida.',
+            limitation='Não há contatos observados por fase e atleta. A alocação supõe uso constante em cada jogo ao longo das rotações e mesma distribuição por fase; não é previsão validada.',
         ))
     return results
+

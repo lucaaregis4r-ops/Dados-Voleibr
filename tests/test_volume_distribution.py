@@ -45,7 +45,8 @@ def test_aggregate_variation_alone_does_not_identify_pass_effect():
     assert p1['pass_condition_effect'] is None
     positive={x['name']:x['probability'] for x in p1['pass_scenarios']['positive']['distribution']}
     negative={x['name']:x['probability'] for x in p1['pass_scenarios']['negative']['distribution']}
-    assert positive == pytest.approx(negative)
+    assert positive != pytest.approx(negative)
+    assert p1['pass_scenarios']['positive']['method'] == 'proportional_match_allocation'
     assert not p1['pass_scenarios']['positive']['identified']
     assert sum(positive.values()) == pytest.approx(1.0)
 
@@ -103,3 +104,4 @@ def test_volume_prior_is_scoped_normalized_and_never_invents_pass_condition_with
     assert result['pass_condition_effect'] is None
     assert result['metric_class']=='EXPERIMENTAL'
     assert not estimate_distributions([dict(row,home_lineup_confidence='RECONSTRUCTED_PARTIAL')],players,'A',tactical=[])
+
