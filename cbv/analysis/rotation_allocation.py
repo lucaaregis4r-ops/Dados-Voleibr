@@ -25,11 +25,12 @@ def _side(row, team):
 
 
 def disambiguate_players(rows, players, team):
-    jerseys = defaultdict(set)
+    jerseys_by_game = defaultdict(set)
     for player in players:
         if player.get('team') == team and player.get('player_name') and _jersey(player.get('player_number')) is not None:
-            jerseys[player['player_name']].add(_jersey(player['player_number']))
-    collisions = {name for name, values in jerseys.items() if len(values) > 1}
+            jerseys_by_game[player.get('match_id'), player['player_name']].add(_jersey(player['player_number']))
+    # A jersey change across games alone does not establish two people.
+    collisions = {name for (_, name), values in jerseys_by_game.items() if len(values) > 1}
 
     def label(name, number):
         if name in collisions:

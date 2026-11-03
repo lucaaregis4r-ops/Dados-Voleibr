@@ -81,12 +81,17 @@ def generate_dashboard_data(competition=None,include_atlas=True):
         scheduled=[u for u in upcoming if tuple(u.get(k) for k in ('competition','category','gender','season'))==key]
         c=aggregate_cohort(mm,rr,pp,{u[side+'_team'] for u in scheduled for side in ('home','away')})
         from cbv.analysis.presumed_distribution import build_distribution, calibrate, build_phase_scenarios
-        calibration = calibrate(mm, pp, key)
+        from cbv.analysis.rotation_allocation import disambiguate_players
+        # Keep homonyms separate in the season summary, calibration and phases.
+        summary_players = pp
         for team_data in c['teams']:
-            prediction = build_distribution(mm, pp, key, team_data['team'], calibration['strength'])
+            _, summary_players = disambiguate_players([], summary_players, team_data['team'])
+        calibration = calibrate(mm, summary_players, key)
+        for team_data in c['teams']:
+            prediction = build_distribution(mm, summary_players, key, team_data['team'], calibration['strength'])
             if prediction is not None:
                 prediction['calibration'] = calibration
-                prediction['phase_scenarios'] = build_phase_scenarios(mm, pp, rr, key, team_data['team'])
+                prediction['phase_scenarios'] = build_phase_scenarios(mm, summary_players, rr, key, team_data['team'])
             team_data['presumed_distribution'] = prediction
         from cbv.seasons import edition_status
         edition=next((e for e in edition_rows if tuple(e.get(k) for k in ('competition','category','gender'))==key[:3]),None)
