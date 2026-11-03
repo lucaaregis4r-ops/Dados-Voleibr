@@ -1186,7 +1186,6 @@ h3 {
 .activation-map-table th:first-child { min-width:140px; max-width:210px; text-align:left; overflow-wrap:anywhere; }
 .activation-map-table thead th { color:var(--text-muted); font-family:var(--mono); font-size:.72rem; }
 .activation-cell { display:block; min-width:50px; padding:.52rem .18rem; color:var(--navy); font-family:var(--mono); font-size:.72rem; font-weight:700; }
-.activation-cell-light { color:#fff; }
 .activation-map-missing { color:var(--text-muted); }
 .activation-map-key { display:flex; align-items:center; justify-content:flex-end; gap:.45rem; margin:.65rem 0; color:var(--text-muted); font-size:.7rem; }
 .activation-map-key i { display:block; width:70px; height:7px; background:linear-gradient(90deg,rgba(37,99,235,.08),rgba(37,99,235,.8)); }
