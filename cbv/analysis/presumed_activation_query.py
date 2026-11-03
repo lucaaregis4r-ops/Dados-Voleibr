@@ -80,6 +80,7 @@ def activation_from_distributions(distributions, rotation, pass_quality, *, team
         availability_rallies=cell.get('availability_rallies'),
         source_match_count=cell.get('source_match_count'),
         pass_condition_effect=cell.get('pass_condition_effect'),
+        confidence=cell.get('confidence'),
         limitation=cell.get('limitation'),
     )
 

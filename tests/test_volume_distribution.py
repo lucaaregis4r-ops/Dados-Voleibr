@@ -23,7 +23,7 @@ def _tactical(mid, pos, neg, trans=0):
     return dict(match_id=mid, team='A', pos_rec_att_attempts=pos, neg_rec_att_attempts=neg, trans_att_attempts=trans)
 
 
-def test_pass_condition_is_learned_from_match_level_variation_not_fixed_multiplier():
+def test_aggregate_variation_alone_does_not_identify_pass_effect():
     lineup=['middle','wing','opp','setter','oh2','libero']
     rows=[]; players=[]; tactical=[]
     for mid, pos, neg, middle, wing in [
@@ -42,13 +42,12 @@ def test_pass_condition_is_learned_from_match_level_variation_not_fixed_multipli
 
     result=estimate_distributions(rows,players,'A',tactical=tactical)
     p1=next(r for r in result if r['position']==1)
-    assert p1['pass_condition_effect'] is not None
+    assert p1['pass_condition_effect'] is None
     positive={x['name']:x['probability'] for x in p1['pass_scenarios']['positive']['distribution']}
     negative={x['name']:x['probability'] for x in p1['pass_scenarios']['negative']['distribution']}
-    assert positive['middle'] > negative['middle']
-    assert negative['wing'] > positive['wing']
+    assert positive == pytest.approx(negative)
+    assert not p1['pass_scenarios']['positive']['identified']
     assert sum(positive.values()) == pytest.approx(1.0)
-    assert sum(negative.values()) == pytest.approx(1.0)
 
 
 def test_structural_availability_comes_from_reconstructed_lineup_and_libero_is_zero():
