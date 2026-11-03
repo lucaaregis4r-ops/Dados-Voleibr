@@ -1148,3 +1148,24 @@ h3 {
   .section-tab-btn { min-width:0; min-height:44px; padding:7px 3px; font-size:11px; white-space:normal; line-height:1.15; }
   .card-action-bar { flex-wrap:wrap; gap:8px; }
 }
+
+
+/* Cenários de acionamento: leitura compacta para celular e desktop. */
+.activation-rotation { border-top: 1px solid var(--border); }
+.activation-rotation > summary { display:flex; justify-content:space-between; gap:1rem; padding:1rem 0; cursor:pointer; }
+.activation-rotation > summary span { font-size:.83rem; color:var(--text-muted, #64748b); text-align:right; }
+.activation-body { padding:0 0 1rem; }
+.activation-body h4 { margin:1rem 0 .6rem; }
+.activation-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:.3rem .75rem; margin:.65rem 0; }
+.activation-track { grid-column:1 / -1; height:5px; background:var(--border); overflow:hidden; }
+.activation-track i { display:block; height:100%; background:var(--primary); }
+.activation-phase { border-top:1px solid var(--border); padding:.7rem 0; }
+.activation-phase summary { cursor:pointer; font-weight:600; }
+
+.activation-support { border-left:3px solid var(--primary); background:var(--surface, #f5f6f8); padding:.8rem 1rem; margin:.8rem 0; }
+.activation-support span { display:block; font-size:.85rem; margin-top:.25rem; }
+.activation-support p { margin-bottom:0; }
+@media (max-width: 480px) {
+  .activation-rotation > summary { align-items: flex-start; }
+  .activation-support { padding: .7rem; }
+}

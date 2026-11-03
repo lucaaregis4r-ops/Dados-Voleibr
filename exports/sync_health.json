@@ -1,10 +1,10 @@
 {
   "status": "HEALTHY",
-  "started_at": "2026-11-02T11:26:18.626750-03:00",
-  "finished_at": "2026-11-02T11:26:58.260742-03:00",
-  "last_full_success": "2026-11-02T11:26:58.260742-03:00",
-  "database_match_count": 601,
-  "new_matches": 0,
+  "started_at": "2026-11-03T09:55:19.625690-03:00",
+  "finished_at": "2026-11-03T09:55:51.045962-03:00",
+  "last_full_success": "2026-11-03T09:55:51.045962-03:00",
+  "database_match_count": 604,
+  "new_matches": 3,
   "updated_matches": 0,
   "sources": {
     "calendar": {
@@ -61,49 +61,49 @@
       "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "Official match scoresheets",
-      "attempted": 601,
-      "successful": 589,
+      "attempted": 604,
+      "successful": 592,
       "failed": 0,
       "latest_source_date": null,
-      "message": "589/601 snapshots"
+      "message": "592/604 snapshots"
     },
     "match_reports": {
       "status": "HEALTHY",
       "severity": "CRITICAL",
       "description": "Official technical match reports",
-      "attempted": 601,
-      "successful": 601,
+      "attempted": 604,
+      "successful": 604,
       "failed": 0,
       "latest_source_date": null,
-      "message": "601/601 snapshots"
+      "message": "604/604 snapshots"
     },
     "libero_reports": {
       "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "Libero control sheets",
-      "attempted": 601,
-      "successful": 347,
+      "attempted": 604,
+      "successful": 350,
       "failed": 0,
       "latest_source_date": null,
-      "message": "347/601 snapshots"
+      "message": "350/604 snapshots"
     },
     "play_by_play": {
       "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "Play-by-play live sequence",
-      "attempted": 601,
+      "attempted": 604,
       "successful": 0,
       "failed": 0,
       "latest_source_date": null,
-      "message": "0/601 snapshots"
+      "message": "0/604 snapshots"
     }
   },
   "validation": {
-    "valid_matches": 556,
+    "valid_matches": 559,
     "valid_with_warnings": 45,
     "failed": 0,
-    "rallies": 71034,
-    "high_confidence_rotations": 21185,
-    "high_confidence_lineups": 28678
+    "rallies": 71552,
+    "high_confidence_rotations": 21377,
+    "high_confidence_lineups": 29085
   }
 }

@@ -16,7 +16,7 @@ from cbv.database.repository import default_repo
 from cbv.export.html_dashboard import generate_dashboard_data, build_dashboard_html
 from cbv.scraper.sync import run_daily_sync
 from cbv.analysis.predictions import predict_matchup, evaluate_prediction_model
-from cbv.analysis.setter_distribution import compute_setter_distribution
+from cbv.analysis.presumed_activation_query import compute_presumed_activation
 from cbv.export.csv_export import export_all_to_csv
 from cbv.export.json_export import export_all_to_json
 from cbv.export.html_dashboard import export_dashboard_html
@@ -125,7 +125,7 @@ def api_simulated_fixtures(competition: Optional[str] = None):
 
 @app.get("/experimental", response_class=HTMLResponse)
 def experimental():
-    return """<!DOCTYPE html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vôlei BR · Experimental</title><body style="background:#F7F7F5;color:#171717;font:14px/1.5 Inter,Arial,sans-serif;max-width:800px;margin:48px auto;padding:18px"><a href="/">Voltar ao scouting</a><p>MODELO · EXPERIMENTAL</p><h1>Distribuição estimada</h1><p>Estimativa baseada no modelo atual. Não representa frequência observada de levantamentos.</p><p>Combina volume de ataques agregado e multiplicadores por passe e rotação. Não há sequência de levantamentos para validar frequências, entropia observada ou intervalos.</p><p>Para inspeção técnica, consulte <a href="/docs#/default/api_setter_distribution_api_setter_distribution_get">a API experimental</a>.</p></body></html>"""
+    return """<!DOCTYPE html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vôlei BR · Experimental</title><body style="background:#F7F7F5;color:#171717;font:14px/1.5 Inter,Arial,sans-serif;max-width:800px;margin:48px auto;padding:18px"><a href="/">Voltar ao scouting</a><p>MODELO · EXPERIMENTAL</p><h1>Acionamento ofensivo presumido</h1><p>Estimativa baseada em ataques agregados, exposição por rotação e formações reconstruídas. Não representa frequência observada de levantamentos.</p><p>O efeito de K1+/K1−/K2 é aprendido por uma mistura ecológica regularizada por prior Bayesiano; quando a variação entre partidas é insuficiente, o modelo volta ao prior de rotação/formação em vez de inventar um efeito.</p><p>Para inspeção técnica, consulte <a href="/docs#/default/api_setter_distribution_api_setter_distribution_get">a API experimental</a>.</p></body></html>"""
 
 
 @app.get("/api/setter-distribution")
@@ -133,11 +133,26 @@ def api_setter_distribution(
     team: str = Query(...),
     rotation: str = Query("P1"),
     pass_quality: str = Query("positive"),
+    season: Optional[str] = Query(None),
+    competition: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    gender: Optional[str] = Query(None),
 ):
-    """Computes setter distribution and tactical advice for a specific team, rotation and pass quality."""
-    dist = compute_setter_distribution(team, rotation=rotation, pass_quality=pass_quality)
+    """Returns the experimental presumed activation for one rotation and pass phase."""
+    try:
+        dist = compute_presumed_activation(
+            team,
+            rotation=rotation,
+            pass_quality=pass_quality,
+            season=season,
+            competition=competition,
+            category=category,
+            gender=gender,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
     if not dist:
-        raise HTTPException(status_code=404, detail=f"Equipe '{team}' não encontrada ou sem dados táticos.")
+        raise HTTPException(status_code=404, detail=f"Equipe '{team}' não encontrada ou sem exposição reconciliada suficiente.")
     return dist
 
 
@@ -181,7 +196,6 @@ def index_page():
 
 def start_app(host: str = "127.0.0.1", port: int = 8000, open_browser: bool = True):
     """Launches the unified web server and opens the browser."""
-    # Find free port if 8000 is occupied
     import socket
     for p in range(port, port + 20):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
