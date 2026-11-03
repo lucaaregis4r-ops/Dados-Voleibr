@@ -39137,22 +39137,6 @@
         "bp_rate": 4.73
       },
       {
-        "competition": "SUPERLIGA",
-        "category": "A",
-        "gender": "feminino",
-        "season": "2025-2026",
-        "team": "SESI VÔLEI BAURU",
-        "matches": 13,
-        "so_points": 429,
-        "so_receptions": 818,
-        "so_pct": 52.4,
-        "so_rate": 1.91,
-        "bp_points": 309,
-        "bp_serves": 956,
-        "bp_pct": 32.3,
-        "bp_rate": 3.09
-      },
-      {
         "competition": "CBS",
         "category": "sub18",
         "gender": "masculino",
@@ -39167,6 +39151,22 @@
         "bp_serves": 401,
         "bp_pct": 26.9,
         "bp_rate": 3.71
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "feminino",
+        "season": "2025-2026",
+        "team": "SESI VÔLEI BAURU",
+        "matches": 13,
+        "so_points": 429,
+        "so_receptions": 818,
+        "so_pct": 52.4,
+        "so_rate": 1.91,
+        "bp_points": 309,
+        "bp_serves": 956,
+        "bp_pct": 32.3,
+        "bp_rate": 3.09
       },
       {
         "competition": "SUPERLIGA",
@@ -40023,16 +40023,16 @@
         "category": "A",
         "gender": "feminino",
         "season": "2026-2027",
-        "team": "DENTIL PRAIA CLUBE",
-        "k1_pos_att": 25,
-        "k1_pos_kill_pct": 48.0,
+        "team": "OSASCO SÃO CRISTÓVÃO SAÚDE",
+        "k1_pos_att": 160,
+        "k1_pos_kill_pct": 52.5,
         "k1_pos_eff_pct": 40.0,
-        "k1_neg_att": 17,
-        "k1_neg_kill_pct": 35.3,
-        "k1_neg_eff_pct": 17.6,
-        "k2_att": 57,
-        "k2_kill_pct": 43.9,
-        "k2_eff_pct": 31.6
+        "k1_neg_att": 75,
+        "k1_neg_kill_pct": 34.7,
+        "k1_neg_eff_pct": 21.3,
+        "k2_att": 275,
+        "k2_kill_pct": 36.4,
+        "k2_eff_pct": 19.3
       },
       {
         "competition": "SUPERLIGA",
@@ -40055,16 +40055,16 @@
         "category": "A",
         "gender": "feminino",
         "season": "2026-2027",
-        "team": "OSASCO SÃO CRISTÓVÃO SAÚDE",
-        "k1_pos_att": 160,
-        "k1_pos_kill_pct": 52.5,
+        "team": "DENTIL PRAIA CLUBE",
+        "k1_pos_att": 25,
+        "k1_pos_kill_pct": 48.0,
         "k1_pos_eff_pct": 40.0,
-        "k1_neg_att": 75,
-        "k1_neg_kill_pct": 34.7,
-        "k1_neg_eff_pct": 21.3,
-        "k2_att": 275,
-        "k2_kill_pct": 36.4,
-        "k2_eff_pct": 19.3
+        "k1_neg_att": 17,
+        "k1_neg_kill_pct": 35.3,
+        "k1_neg_eff_pct": 17.6,
+        "k2_att": 57,
+        "k2_kill_pct": 43.9,
+        "k2_eff_pct": 31.6
       },
       {
         "competition": "SUPERLIGA",
@@ -40259,22 +40259,6 @@
         "k2_eff_pct": 26.5
       },
       {
-        "competition": "CBS",
-        "category": "sub18",
-        "gender": "masculino",
-        "season": "2026",
-        "team": "PARANÁ",
-        "k1_pos_att": 167,
-        "k1_pos_kill_pct": 51.5,
-        "k1_pos_eff_pct": 35.9,
-        "k1_neg_att": 99,
-        "k1_neg_kill_pct": 40.4,
-        "k1_neg_eff_pct": 22.2,
-        "k2_att": 200,
-        "k2_kill_pct": 42.0,
-        "k2_eff_pct": 26.0
-      },
-      {
         "competition": "SUPERLIGA",
         "category": "A",
         "gender": "feminino",
@@ -40289,6 +40273,22 @@
         "k2_att": 473,
         "k2_kill_pct": 42.9,
         "k2_eff_pct": 29.2
+      },
+      {
+        "competition": "CBS",
+        "category": "sub18",
+        "gender": "masculino",
+        "season": "2026",
+        "team": "PARANÁ",
+        "k1_pos_att": 167,
+        "k1_pos_kill_pct": 51.5,
+        "k1_pos_eff_pct": 35.9,
+        "k1_neg_att": 99,
+        "k1_neg_kill_pct": 40.4,
+        "k1_neg_eff_pct": 22.2,
+        "k2_att": 200,
+        "k2_kill_pct": 42.0,
+        "k2_eff_pct": 26.0
       },
       {
         "competition": "SUPERLIGA",
