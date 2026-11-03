@@ -19,3 +19,15 @@ assert.match(out,/não a chance de acerto/);
 const empty=ctx.renderTeamAttack({}, {distribution_model:[]});
 assert.doesNotMatch(empty,/Mapa de participação presumida/);
 console.log('activation visualizations: OK');
+
+const exp = rot(1,[{name:'Ana',weight:.6,sensitivity:{min:.4,max:.8}},{name:'Bia',weight:.4}]);
+exp.allocation_method='proportional_match_allocation';exp.allocation_match_count=4;
+exp.pass_scenarios={positive:{identified:false,method:'proportional_match_allocation',support_games:4,distribution:[{name:'Ana',probability:.7,sensitivity:{min:.5,max:.9}},{name:'Bia',probability:.3}]},negative:{identified:false,method:'proportional_match_allocation',support_games:4,distribution:[{name:'Ana',probability:.3},{name:'Bia',probability:.7}]}};
+const updated=ctx.renderTeamAttack({}, {distribution_model:[exp]});
+assert.match(updated,/Cenário proporcional/);
+assert.match(updated,/70\.0%/);
+assert.match(updated,/30\.0%/);
+assert.match(updated,/sensibilidade/iu);
+assert.match(updated,/não é intervalo de confiança/iu);
+assert.doesNotMatch(updated,/Efeito de fase ainda não validado; usa-se a hipótese de referência acima/);
+console.log('phase scenarios: OK');

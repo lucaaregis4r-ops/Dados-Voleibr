@@ -55,6 +55,7 @@ def activation_from_distributions(distributions, rotation, pass_quality, *, team
             structural_zero=bool(row.get('structural_zero')),
             margin_error_pct=None,
             ci_95=None,
+            sensitivity=row.get('sensitivity'),
         ))
     items.sort(key=lambda x: (x['probability'], x.get('player_name') or ''), reverse=True)
 
@@ -75,6 +76,8 @@ def activation_from_distributions(distributions, rotation, pass_quality, *, team
         identified=bool(scenario.get('identified')),
         support_games=int(scenario.get('support_games') or 0),
         method=scenario.get('method'),
+        interpretation=scenario.get('interpretation'),
+        allocation_match_count=cell.get('allocation_match_count'),
         metric_class=cell.get('metric_class', 'EXPERIMENTAL'),
         model_version=cell.get('model_version'),
         availability_rallies=cell.get('availability_rallies'),
@@ -153,3 +156,4 @@ def compute_presumed_activation(team, rotation='P1', pass_quality='positive', *,
     return activation_from_distributions(
         distributions, rotation, pass_quality, team=actual_team, cohort=cohort
     )
+

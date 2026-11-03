@@ -102,7 +102,7 @@ def generate_dashboard_data(competition=None,include_atlas=True):
             c['expected_attack']=walk_forward_attack(mm,rr)
             c['atlas_teams']={t['team']:summarize_team(rally_rows,t['team']) for t in c['teams']}
             from cbv.analysis.volume_distribution import estimate_distributions
-            for name,summary in c['atlas_teams'].items():summary['distribution_model']=estimate_distributions(rally_rows,pp,name)
+            for name,summary in c['atlas_teams'].items():summary['distribution_model']=estimate_distributions(rally_rows,pp,name,tactical=rr)
             # Pre-compute competition rotation averages once per cohort (O(N) instead of O(teams * N))
             comp_rotation_avgs = {}
             for pos in range(1, 7):
@@ -296,11 +296,17 @@ def build_compact_shell(data):
             compact_c['atlas_teams'][tname] = {
                 'team': summary.get('team', tname),
                 'coverage': summary.get('coverage', {}),
-                # Fallback phases all equal the base; avoid embedding three
-                # duplicate player distributions in the initial HTML shell.
+                # Keep scenario payload compact; full audit fields remain in exports.
                 'distribution_model': [dict(r, pass_scenarios={
-                    key: (scenario if scenario.get('identified') else
-                          {k: v for k, v in scenario.items() if k != 'distribution'})
+                    key: dict(scenario, distribution=[{
+                        'name': item.get('name'),
+                        'probability': round(item.get('probability', 0), 4),
+                        'sensitivity': ({'min': round(item['sensitivity']['min'], 4),
+                                         'max': round(item['sensitivity']['max'], 4)}
+                                        if item.get('sensitivity') else None),
+                    } for item in scenario.get('distribution', [])])
+                    if scenario.get('method') == 'proportional_match_allocation'
+                    else {k: v for k, v in scenario.items() if k != 'distribution'}
                     for key, scenario in (r.get('pass_scenarios') or {}).items()
                 }) for r in summary.get('distribution_model', [])],
                 'so': summary.get('so', {}),
@@ -449,3 +455,4 @@ def export_dashboard_html(target_file=DEFAULT_HTML_PATH, data=None):
         for f in exports_dir.glob('*.json'):
             shutil.copy2(f, docs_exports / f.name)
     return target_file
+
