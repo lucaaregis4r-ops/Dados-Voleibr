@@ -296,7 +296,13 @@ def build_compact_shell(data):
             compact_c['atlas_teams'][tname] = {
                 'team': summary.get('team', tname),
                 'coverage': summary.get('coverage', {}),
-                'distribution_model': summary.get('distribution_model', []),
+                # Fallback phases all equal the base; avoid embedding three
+                # duplicate player distributions in the initial HTML shell.
+                'distribution_model': [dict(r, pass_scenarios={
+                    key: (scenario if scenario.get('identified') else
+                          {k: v for k, v in scenario.items() if k != 'distribution'})
+                    for key, scenario in (r.get('pass_scenarios') or {}).items()
+                }) for r in summary.get('distribution_model', [])],
                 'so': summary.get('so', {}),
                 'bp': summary.get('bp', {}),
                 'expected': summary.get('expected', {}),
@@ -340,7 +346,7 @@ def build_dashboard_html(data):
 
     compact = build_compact_shell(data)
     template = (Path(__file__).parent / 'templates' / 'scouting.html').read_text(encoding='utf-8')
-    payload = json.dumps(compact, ensure_ascii=False, allow_nan=False).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
+    payload = json.dumps(compact, ensure_ascii=False, allow_nan=False, separators=(',', ':')).replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
     fonts = []
     for font in sorted((Path(__file__).parent / 'templates' / 'fonts').glob('*.woff2')):
         if not font.name.startswith(('inter-', 'roboto-mono-')):
