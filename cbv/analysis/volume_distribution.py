@@ -180,74 +180,15 @@ def _fit_latent_phase_rates(by_match, exposures, tactical_by_match, liberos, pri
 
     support_games = len(usable)
     positive_sd = float(np.std(positive_shares)) if positive_shares else 0.0
-    identified = support_games >= MIN_PHASE_GAMES and positive_sd >= MIN_POSITIVE_SHARE_SD
-    if not usable:
-        return {}, dict(identified=False, support_games=0, positive_share_sd=0.0)
+    # Aggregated match totals do not observe phase-to-player contacts. Variation
+    # alone cannot identify 18 rotation/phase effects or validate predictions.
+    # Keep phase-specific output gated until independent contact data validate it.
+    identified = False
+    # No phase-conditioned player outcomes are observed: even a well-fitting
+    # ecological model cannot establish the requested conditional probabilities.
+    return {}, dict(identified=False, support_games=support_games,
+                    positive_share_sd=positive_sd, reason='phase_player_contacts_unobserved')
 
-    names = sorted({name for mid, _, _ in usable for name in by_match[mid] if name not in liberos})
-    rates = {}
-    diagnostics = {}
-    dim = 6 * len(PHASES)
-
-    for name in names:
-        x_rows = []
-        y = []
-        weights = []
-        opportunity_den = 0.0
-        attack_num = 0.0
-        for mid, team_total, phase_share in usable:
-            reliable = exposures['match_total'].get(mid, 0)
-            if reliable <= 0:
-                continue
-            row = []
-            overall_presence = 0.0
-            for rotation in range(1, 7):
-                present = exposures['player_rotation'].get((mid, name, rotation), 0)
-                exposure_share = present / reliable
-                overall_presence += exposure_share
-                for phase in PHASES:
-                    row.append(exposure_share * phase_share[phase])
-            x_rows.append(row)
-            y.append(by_match[mid].get(name, 0.0) / team_total)
-            weights.append(max(1.0, team_total))
-            opportunity_den += team_total * min(1.0, overall_presence)
-            attack_num += by_match[mid].get(name, 0.0)
-
-        if not x_rows:
-            continue
-        X = np.asarray(x_rows, dtype=float)
-        yv = np.asarray(y, dtype=float)
-        w = np.asarray(weights, dtype=float)
-        w = w / max(float(np.mean(w)), 1.0)
-        prior_mean = attack_num / opportunity_den if opportunity_den > 0 else 0.0
-        beta0 = np.full(dim, prior_mean, dtype=float)
-
-        WX = X * w[:, None]
-        A = X.T @ WX + float(prior_strength) * np.eye(dim)
-        b = X.T @ (w * yv) + float(prior_strength) * beta0
-        try:
-            beta = np.linalg.solve(A, b)
-        except np.linalg.LinAlgError:
-            beta = np.linalg.lstsq(A, b, rcond=None)[0]
-        beta = np.maximum(beta, 0.0)
-        rates[name] = beta.reshape(6, len(PHASES))
-
-        fitted = X @ beta
-        residual = yv - fitted
-        diagnostics[name] = dict(
-            games=len(yv),
-            prior_mean=float(prior_mean),
-            rmse=float(np.sqrt(np.mean(residual ** 2))) if len(residual) else None,
-        )
-
-    return rates, dict(
-        identified=identified,
-        support_games=support_games,
-        positive_share_sd=positive_sd,
-        prior_strength=float(prior_strength),
-        method='bayesian_ridge_ecological_mixture',
-        diagnostics=diagnostics,
-    )
 
 
 def _normalize(entries, key):
@@ -347,11 +288,21 @@ def estimate_distributions(rows, players, team, tactical=None, prior_strength=DE
             availability_rallies=len(eligible),
             source_match_count=len(exposures['source_matches'].get(position, set())),
             volume_match_count=len(match_ids),
+            confidence=dict(
+                status='NOT_VALIDATED', prediction_score=None,
+                lineup_rallies=counts[(names, numbers)],
+                lineup_share=counts[(names, numbers)] / len(eligible),
+                source_games=len(exposures['source_matches'].get(position, set())),
+                support_index=round(100 * counts[(names, numbers)] / len(eligible)
+                                    * min(1, len(eligible) / 100)
+                                    * min(1, len(exposures['source_matches'].get(position, set())) / 5)),
+                description='Indicador heurístico de suporte da formação, não probabilidade de acerto nem validação do modelo.',
+            ),
             metric_class='EXPERIMENTAL',
             model_version=VERSION,
             pass_condition_effect=effect,
             pass_scenarios=scenarios,
-            definition='Prior de uso ofensivo corrigido por exposição e formação; cenários de passe vêm de mistura ecológica Bayesiana regularizada quando identificável.',
-            limitation='Não há contatos observados. Probabilidades por passe/rotação são latentes e dependem da hipótese ecológica de mistura dentro do jogo; formação RECONSTRUCTED_HIGH define disponibilidade estrutural. Não interpretar como frequência observada da levantadora.',
+            definition='Referência de uso ofensivo corrigida por exposição e formação; efeito de passe indisponível até validação com contatos observados.',
+            limitation='Não há contatos observados por fase e atleta. A referência por rotação é exploratória, não foi validada como previsão e usa a formação reconstruída mais frequente.',
         ))
     return results
