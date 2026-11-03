@@ -1034,8 +1034,28 @@ function renderTeamAttack(t, at) {
     const items = phase?.distribution || [];
     return `<details class="block"><summary>${esc(label)} · ${num(phase?.attempts || 0)} ataques</summary>${items.length ? `<p class="note">Cenário proporcional dentro de cada partida; não há registros de quem atacou em cada fase.</p><div class="table-wrap"><table><thead><tr><th>Atleta</th><th>Cenário</th><th>Faixa possível</th></tr></thead><tbody>${items.map(x=>`<tr><td>${esc(teamName(x.name))}</td><td>${pct(100*x.scenario)}</td><td>${pct(100*x.minimum)}–${pct(100*x.maximum)}</td></tr>`).join('')}</tbody></table></div><p class="note">${num(phase.games)} partidas reconciliadas · ${num(phase.excluded_games)} excluídas por dados incompletos ou totais divergentes. A faixa mostra os valores possíveis com os totais disponíveis; não é intervalo de confiança. Extremos das atletas podem não ocorrer simultaneamente.</p>`:'<p class="empty">Sem dados reconciliados suficientes nesta fase.</p>'}</details>`;
   }).join('');
-  const rotations = at?.distribution_model || [];
-  const rotationHtml = rotations.length ? rotations.map(r => {
+  const rotations = [...(at?.distribution_model || [])].sort((a,b) => a.position-b.position);
+  // A map compares the conditional estimates; missing players are not zeros.
+  const playerPeaks = new Map();
+  rotations.forEach(r => (r.distribution || []).forEach(x => {
+    if (x.name && Number.isFinite(x.weight) && x.weight > 0)
+      playerPeaks.set(x.name, Math.max(playerPeaks.get(x.name) || 0, x.weight));
+  }));
+  const players = [...playerPeaks.keys()].sort((a,b) => playerPeaks.get(b)-playerPeaks.get(a) || a.localeCompare(b));
+  const heatmap = rotations.length && players.length ? `<section class="activation-map" aria-labelledby="activation-map-heading">
+    <div class="activation-map-heading"><div><span class="activation-eyebrow">LEITURA TÁTICA · EXPERIMENTAL</span><h4 id="activation-map-heading">Comparação entre rotações</h4></div><span class="activation-map-count">P1 — P6</span></div>
+    <p>Participação presumida das atletas na formação histórica mais frequente de cada passagem.</p>
+    <div class="activation-map-scroll" role="region" aria-label="Mapa de participação presumida por atleta e rotação" tabindex="0"><table class="activation-map-table"><caption>Mapa de participação presumida: atleta por rotação</caption><thead><tr><th scope="col">Atleta</th>${rotations.map(r=>`<th scope="col">P${num(r.position)}</th>`).join('')}</tr></thead><tbody>${players.map(name=>`<tr><th scope="row">${esc(teamName(name))}</th>${rotations.map(r=>{
+      const entry = (r.distribution || []).find(x => x.name === name);
+      if (!entry || !Number.isFinite(entry.weight)) return '<td class="activation-map-missing" aria-label="Sem dado na formação">—</td>';
+      const value = Math.max(0, Math.min(1, entry.weight));
+      const shade = (0.08 + 0.72 * value).toFixed(3);
+      return `<td><span class="activation-cell${value >= .50 ? ' activation-cell-light' : ''}" style="background-color:rgba(37,99,235,${shade})">${pct(value*100)}</span></td>`;
+    }).join('')}</tr>`).join('')}</tbody></table></div>
+    <div class="activation-map-key"><span>Menor</span><i aria-hidden="true"></i><span>Maior participação</span></div>
+    <p class="note">Cada coluna representa uma formação histórica, que pode mudar entre rotações. O traço significa que a atleta não está nessa formação; não significa que ela nunca ataca nessa passagem. As estimativas não são levantamentos observados e não distinguem a qualidade do passe.</p>
+  </section>` : '';
+  const rotationHtml = rotations.length ? rotations.map((r, index) => {
     const phaseNames = {positive: 'Passe positivo · K1+', negative: 'Passe negativo · K1−', transition: 'Transição · K2'};
     const base = [...(r.distribution || [])].filter(x => x.weight > 0).sort((a,b) => b.weight-a.weight);
     const bars = (items, key) => items.map(x => `<div class="activation-row"><span>${esc(teamName(x.name))}</span><strong>${pct(100*x[key])}</strong><div class="activation-track" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,100*x[key]))}%"></i></div></div>`).join('');
@@ -1046,13 +1066,13 @@ function renderTeamAttack(t, at) {
       const items = [...(phase.distribution || [])].filter(x => x.probability > 0).sort((a,b) => b.probability-a.probability);
       return `<details class="activation-phase"><summary>${label} · hipótese experimental</summary><p class="note">Estimativa indireta a partir de totais por jogo. A associação pode refletir outras diferenças entre partidas; não há validação preditiva e não são ações observadas.</p>${bars(items, 'probability')}<p class="note">${num(phase.support_games)} jogos reconciliados · sem intervalo de incerteza validado.</p></details>`;
     }).join('');
-    return `<details class="activation-rotation"><summary><strong>P${num(r.position)}</strong><span>${num(r.availability_rallies)} rallies · ${num(r.source_match_count)} jogos</span></summary><div class="activation-body"><p class="note">Formação histórica mais frequente: ${num(r.n_lineup)} rallies. A presença é reconstruída e não representa necessariamente a formação atual.</p>${r.confidence ? `<div class="activation-support"><strong>Índice de suporte: ${num(r.confidence.support_index)}/100</strong><span>${pct(100*r.confidence.lineup_share)} das formações válidas nesta passagem · ${num(r.confidence.source_games)} jogos</span><p class="note">Combina frequência da formação, até 100 rallies e até 5 jogos. É uma medida heurística de suporte, não a chance de acerto. Confiança preditiva: não validada.</p></div>` : ''}<h4>Referência por exposição</h4>${bars(base, 'weight')}<p class="note">Pesos estimados a partir dos ataques e da exposição das atletas da formação. Não são levantamentos observados nesta rotação.</p>${scenarios ? `<h4>Passe e rotação</h4>${scenarios}` : ''}</div></details>`;
+    return `<details class="activation-rotation" ${index === 0 ? 'open' : ''}><summary><strong>P${num(r.position)}</strong><span>${num(r.availability_rallies)} rallies · ${num(r.source_match_count)} jogos</span></summary><div class="activation-body"><p class="note">Formação histórica mais frequente: ${num(r.n_lineup)} rallies. A presença é reconstruída e não representa necessariamente a formação atual.</p>${r.confidence ? `<div class="activation-support"><strong>Índice de suporte: ${num(r.confidence.support_index)}/100</strong><div class="activation-support-gauge" role="meter" aria-label="Índice de suporte da formação" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.max(0,Math.min(100,Number(r.confidence.support_index) || 0))}"><i style="width:${Math.max(0,Math.min(100,Number(r.confidence.support_index) || 0))}%"></i></div><span>${pct(100*r.confidence.lineup_share)} das formações válidas nesta passagem · ${num(r.confidence.source_games)} jogos</span><p class="note">Combina frequência da formação, até 100 rallies e até 5 jogos. É uma medida heurística de suporte, não a chance de acerto. Confiança preditiva: não validada.</p></div>` : ''}<h4>Referência por exposição</h4>${bars(base, 'weight')}<p class="note">Pesos estimados a partir dos ataques e da exposição das atletas da formação. Não são levantamentos observados nesta rotação.</p>${scenarios ? `<h4>Passe e rotação</h4>${scenarios}` : ''}</div></details>`;
   }).join('') : '<p class="empty">Sem formação reconciliada suficiente para uma hipótese por rotação.</p>';
   return `<div class="rotation-widget-box">
       <h3>Distribuição presumida <span class="pct-pill">Experimental</span></h3>
       ${model ? `<p>Participação ofensiva estimada para a equipe nesta temporada.</p><div class="probabilities">${lines}</div><p class="note">${num(model.attempts)} ataques individuais · ${num(model.games)} partidas. Prior simétrico: ${fmt(model.strength,1)} ataques equivalentes. Concentração: ${fmt(model.predictability,1)}/100, entre atletas registradas; não é certeza sobre a próxima bola.</p><p class="note">${cal?.calibrated ? `Força da suavização escolhida em ${num(cal.evaluated_games)} jogos do mesmo recorte (${num(cal.evaluated_attempts)} ataques avaliáveis). Ainda requer avaliação independente.` : 'Força da suavização provisória: amostra insuficiente para calibrar.'}</p>` : '<p class="empty">Sem pelo menos duas atacantes com ataques registrados neste recorte.</p>'}
       <h3>Cenários por fase</h3><p class="note">Os relatórios trazem totais por atleta e por fase em cada jogo. O cenário supõe que a participação de cada atleta foi igual nas três fases dentro de cada partida. É uma hipótese, não um efeito de passe aprendido; os limites mostram a incerteza dos dados agregados.</p>${phasesHtml}
-      <h3>Hipóteses por rotação</h3><p class="note">Modelo exploratório baseado em dados agregados. A base não liga diretamente passe, levantadora e atacante; não há validação que permita tratar esses cenários como previsões confiáveis.</p>${rotationHtml}
+      <h3>Hipóteses por rotação</h3><p class="note">Modelo exploratório baseado em dados agregados. A base não liga diretamente passe, levantadora e atacante; não há validação que permita tratar esses cenários como previsões confiáveis.</p>${heatmap}<h4 class="activation-detail-title">Explore cada passagem</h4>${rotationHtml}
       <p class="note">A base não identifica a levantadora que fez cada distribuição nem a atacante em cada fase. As opções acima não equivalem à presença atual em quadra.</p>
       <h3>Eficiência e kills por fase de jogo</h3>${phases(t)}</div>`;
 }
@@ -1641,4 +1661,5 @@ document.addEventListener('DOMContentLoaded', () => {
   setupGlobalSearch();
   render();
 });
+
 
