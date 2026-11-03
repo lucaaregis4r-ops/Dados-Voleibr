@@ -1044,13 +1044,13 @@ function renderTeamAttack(t, at) {
   const players = [...playerPeaks.keys()].sort((a,b) => playerPeaks.get(b)-playerPeaks.get(a) || a.localeCompare(b));
   const heatmap = rotations.length && players.length ? `<section class="activation-map" aria-labelledby="activation-map-heading">
     <div class="activation-map-heading"><div><span class="activation-eyebrow">LEITURA TÁTICA · EXPERIMENTAL</span><h4 id="activation-map-heading">Comparação entre rotações</h4></div><span class="activation-map-count">P1 — P6</span></div>
-    <p>Participação presumida das atletas na formação histórica mais frequente de cada passagem.</p>
+    <p>Participação presumida das atletas na formação histórica mais frequente de cada passagem. Deslize para o lado para ver todas as rotações.</p>
     <div class="activation-map-scroll" role="region" aria-label="Mapa de participação presumida por atleta e rotação" tabindex="0"><table class="activation-map-table"><caption>Mapa de participação presumida: atleta por rotação</caption><thead><tr><th scope="col">Atleta</th>${rotations.map(r=>`<th scope="col">P${num(r.position)}</th>`).join('')}</tr></thead><tbody>${players.map(name=>`<tr><th scope="row">${esc(teamName(name))}</th>${rotations.map(r=>{
       const entry = (r.distribution || []).find(x => x.name === name);
       if (!entry || !Number.isFinite(entry.weight)) return '<td class="activation-map-missing" aria-label="Sem dado na formação">—</td>';
       const value = Math.max(0, Math.min(1, entry.weight));
       const shade = (0.08 + 0.72 * value).toFixed(3);
-      return `<td><span class="activation-cell${value >= .50 ? ' activation-cell-light' : ''}" style="background-color:rgba(37,99,235,${shade})">${pct(value*100)}</span></td>`;
+      return `<td><span class="activation-cell" style="background-color:rgba(37,99,235,${shade})">${pct(value*100)}</span></td>`;
     }).join('')}</tr>`).join('')}</tbody></table></div>
     <div class="activation-map-key"><span>Menor</span><i aria-hidden="true"></i><span>Maior participação</span></div>
     <p class="note">Cada coluna representa uma formação histórica, que pode mudar entre rotações. O traço significa que a atleta não está nessa formação; não significa que ela nunca ataca nessa passagem. As estimativas não são levantamentos observados e não distinguem a qualidade do passe.</p>
