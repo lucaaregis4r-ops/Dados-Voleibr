@@ -102,7 +102,7 @@ def compute_presumed_activation(team, rotation='P1', pass_quality='positive', *,
         ('m.category', category), ('m.gender', gender),
     ):
         if value is not None:
-            filters.append(f'{column} = ?')
+            filters.append(f'{column} IS NOT DISTINCT FROM ?')
             params.append(value)
     where = ' AND '.join(filters)
 
@@ -123,8 +123,12 @@ def compute_presumed_activation(team, rotation='P1', pass_quality='positive', *,
             r[0] for r in conn.execute(
                 '''SELECT DISTINCT m.match_id FROM matches m
                    JOIN player_match_stats p USING(match_id)
-                   WHERE p.team = ? AND m.competition = ? AND m.category = ?
-                     AND m.gender = ? AND m.season = ? AND m.validation_status = 'VALID' ''',
+                   WHERE p.team = ?
+                     AND m.competition IS NOT DISTINCT FROM ?
+                     AND m.category IS NOT DISTINCT FROM ?
+                     AND m.gender IS NOT DISTINCT FROM ?
+                     AND m.season IS NOT DISTINCT FROM ?
+                     AND m.validation_status = 'VALID' ''',
                 [actual_team, comp, cat, gen, sea],
             ).fetchall()
         }
