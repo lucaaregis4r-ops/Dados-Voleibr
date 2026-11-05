@@ -8295,6 +8295,36 @@
     "season": "2026-2027"
   },
   {
+    "match_id": 2584873,
+    "date": "2026-11-03T00:00:00",
+    "time_str": "20:39",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "VIAPOL VÔLEI SÃO JOSÉ",
+    "away_team": "VÔLEI RENATA",
+    "home_sets": 2,
+    "away_sets": 3,
+    "validation_status": "VALID",
+    "created_at": "2026-11-05T13:49:24.582194",
+    "season": "2026-2027"
+  },
+  {
+    "match_id": 2584874,
+    "date": "2026-11-03T00:00:00",
+    "time_str": "21:00",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "AZULIM/SICOOB/MONTE",
+    "away_team": "SUZANO VÔLEI",
+    "home_sets": 3,
+    "away_sets": 1,
+    "validation_status": "VALID",
+    "created_at": "2026-11-05T13:49:22.937566",
+    "season": "2026-2027"
+  },
+  {
     "match_id": 2584920,
     "date": "2026-10-29T00:00:00",
     "time_str": "19:00",
