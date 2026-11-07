@@ -8595,6 +8595,36 @@
     "season": "2026-2027"
   },
   {
+    "match_id": 2585014,
+    "date": "2026-11-06T00:00:00",
+    "time_str": "20:31",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "feminino",
+    "home_team": "FLUMINENSE",
+    "away_team": "OSASCO SÃO CRISTÓVÃO SAÚDE",
+    "home_sets": 2,
+    "away_sets": 3,
+    "validation_status": "VALID",
+    "created_at": "2026-11-07T12:13:56.002980",
+    "season": "2026-2027"
+  },
+  {
+    "match_id": 2585015,
+    "date": "2026-11-06T00:00:00",
+    "time_str": "17:50",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "feminino",
+    "home_team": "SANCOR SEGUROS VÔLEI",
+    "away_team": "SESC RJ FLAMENGO",
+    "home_sets": 0,
+    "away_sets": 3,
+    "validation_status": "VALID",
+    "created_at": "2026-11-07T12:13:56.184808",
+    "season": "2026-2027"
+  },
+  {
     "match_id": 2585016,
     "date": "2026-11-05T00:00:00",
     "time_str": "17:50",
