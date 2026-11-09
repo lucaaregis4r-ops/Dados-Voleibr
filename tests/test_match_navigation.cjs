@@ -26,6 +26,44 @@ test('health is stale after 36h and unknown when critical sources are pending', 
   assert.equal(context.effectiveSyncStatus({status:'HEALTHY', finished_at:'2026-11-01T11:00:00Z', sources:{report:{severity:'CRITICAL',status:'HEALTHY',attempted:1,successful:1}}}, now), 'HEALTHY');
 });
 
+test('health sheet labels unavailable play-by-play and leaves unknown counts blank', () => {
+  const source = fs.readFileSync('cbv/export/templates/atlas.js', 'utf8');
+  const code = source.slice(source.indexOf('function effectiveSyncStatus('), source.indexOf('function availableFilterChoices('));
+  let sheet;
+  const context = {
+    DATA: {sync_health: {sources: {play_by_play: {status: 'HEALTHY', attempted: 613, successful: 0}}}},
+    BottomSheet: {open(data) { sheet = data; }},
+    esc: value => value, dateText: () => '—', num: value => String(value ?? '—')
+  };
+  vm.createContext(context);
+  vm.runInContext(code, context);
+  context.openSyncHealthSheet();
+  assert.match(sheet.contentHtml, /Indisponível/);
+  assert.doesNotMatch(sheet.contentHtml, /583|68543|19669/);
+  context.DATA.sync_health.validation = {rallies: 0};
+  context.openSyncHealthSheet();
+  assert.match(sheet.contentHtml, /Rallies<\/span>\s*<span class="val">0/);
+});
+
+test('upcoming games exclude past and completed matches and show the nearest first in Brasília time', () => {
+  const source = fs.readFileSync('cbv/export/templates/atlas.js', 'utf8');
+  const code = source.slice(source.indexOf('// 5. SCREEN 1'), source.indexOf('function renderHomeFeed('));
+  const context = {};
+  vm.createContext(context);
+  vm.runInContext(code, context);
+  const upcoming = [
+    {match_id: 1, match_date: '2026-11-08'},
+    {match_id: 2, match_date: '2026-11-10'},
+    {match_id: 3, match_date: '2026-11-09', match_time: '21:00'},
+    {match_id: 4, match_date: '2026-11-09', match_time: '19:00'},
+    {match_id: 5, match_date: '2026-11-09', match_time: '23:30'},
+    {match_id: 6, match_date: null}
+  ];
+  const matches = [{match_id: '4', home_sets: 3, away_sets: 0}];
+  const fixtures = context.upcomingMatches({upcoming, matches}, new Date('2026-11-10T00:10:00Z'));
+  assert.deepEqual(Array.from(fixtures, game => game.match_id), [3, 5, 2]);
+});
+
 test('rotation identifies the setter in the selected zone with no independent front/back toggle', () => {
   const source = fs.readFileSync('cbv/export/templates/atlas.js', 'utf8');
   const code = source.slice(source.indexOf('function VolleyballCourt('), source.indexOf('function renderTeamsPage('));

@@ -54,7 +54,7 @@ def run_full_daily_pipeline() -> bool:
 
     from cbv.pipeline_health import SyncHealthTracker, STATUS_FAILED, available_source_counts
     publish_dir = Path(os.environ.get('CBV_PUBLISH_DIR', BASE_DIR))
-    tracker = SyncHealthTracker(exports_dir=publish_dir / 'exports')
+    tracker = SyncHealthTracker(exports_dir=BASE_DIR / 'exports')
 
     with default_repo.get_connection() as conn:
         initial_match_count = conn.execute("SELECT count(*) FROM matches").fetchone()[0]
@@ -120,17 +120,23 @@ def run_full_daily_pipeline() -> bool:
     collector = SourceCollector(RAW_DIR / 'matches', RAW_DIR, gate=gate)
     
     source_stats = {"scoresheets": 0, "match_reports": 0, "libero_reports": 0, "play_by_play": 0}
+    widget_blocked = False
     for mid in match_ids:
         try:
             snapshot = collector.collect(mid)
             if snapshot:
                 for k, available in available_source_counts(snapshot).items():
                     source_stats[k] += available
+                widget_status = snapshot.get('sources', {}).get('play_by_play', {}).get('status')
+                widget_blocked |= widget_status in {'BLOCKED', 'DEFERRED_PROVIDER_BLOCK'}
         except Exception as exc:
             logger.warning(f'Fontes {mid}: {exc}')
 
     for k, count in source_stats.items():
-        tracker.record_source(k, attempted=len(match_ids), successful=count, message=f"{count}/{len(match_ids)} snapshots")
+        message = f"{count}/{len(match_ids)} registros"
+        if k == 'play_by_play' and not count and widget_blocked:
+            message += " · Provedor bloqueou o acesso ao lance a lance"
+        tracker.record_source(k, attempted=len(match_ids), successful=count, message=message)
 
     with default_repo.get_connection() as conn:
         summary = rebuild_all(conn, RAW_DIR / 'matches')

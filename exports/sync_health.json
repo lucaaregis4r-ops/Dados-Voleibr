@@ -88,14 +88,14 @@
       "message": "358/613 snapshots"
     },
     "play_by_play": {
-      "status": "HEALTHY",
+      "status": "UNAVAILABLE",
       "severity": "OPTIONAL",
-      "description": "Play-by-play live sequence",
+      "description": "Play-by-play (sequência lance a lance)",
       "attempted": 613,
       "successful": 0,
       "failed": 0,
       "latest_source_date": null,
-      "message": "0/613 snapshots"
+      "message": "0/613 registros · Provedor bloqueou o acesso ao lance a lance"
     }
   },
   "validation": {

@@ -302,17 +302,23 @@ function openSyncHealthSheet() {
   const statusLabel = ({HEALTHY: 'Coleta recente', DEGRADED: 'Coleta parcial', STALE: 'Coleta atrasada (mais de 36h)', FAILED: 'Falha na coleta', UNKNOWN: 'Cobertura não confirmada'})[status];
   const dotClass = status.toLowerCase();
 
-  const sourceRows = Object.entries(sources).map(([k, s]) => `
+  const sourceRows = Object.entries(sources).map(([k, s]) => {
+    const sourceStatus = s.status === 'HEALTHY' && s.attempted > 0 && s.successful === 0
+      ? 'UNAVAILABLE' : s.status;
+    const label = ({HEALTHY: 'Disponível', DEGRADED: 'Parcial', FAILED: 'Falha', UNAVAILABLE: 'Indisponível', PENDING: 'Pendente'})[sourceStatus];
+    const badgeClass = ({HEALTHY: 'observado', FAILED: 'experimental'})[sourceStatus] || 'derivado';
+    return `
     <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
       <div>
         <strong style="font-size:13px;display:block;">${esc(s.description || k)}</strong>
         <span style="font-size:11px;color:var(--text-muted);">${esc(s.message || '')}</span>
       </div>
-      <span class="source-tag ${s.status === 'HEALTHY' && !(s.attempted > 0 && s.successful === 0) ? 'observado' : (s.status === 'FAILED' ? 'experimental' : 'derivado')}">
-        ${esc(s.attempted > 0 && s.successful === 0 && s.status === 'HEALTHY' ? 'NÃO CONFIRMADO' : s.status)}
+      <span class="source-tag ${badgeClass}">
+        ${esc(label || sourceStatus)}
       </span>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   const html = `
     <div>
@@ -327,20 +333,21 @@ function openSyncHealthSheet() {
       <div class="athlete-big-stats" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:20px;">
         <div class="stat-box">
           <span class="lbl">Partidas</span>
-          <span class="val">${num(h.database_match_count || val.valid_matches || 583)}</span>
+          <span class="val">${num(h.database_match_count)}</span>
         </div>
         <div class="stat-box">
           <span class="lbl">Rallies</span>
-          <span class="val">${num(val.rallies || 68543)}</span>
+          <span class="val">${num(val.rallies)}</span>
         </div>
         <div class="stat-box">
           <span class="lbl">Rotações</span>
-          <span class="val">${num(val.high_confidence_rotations || 19669)}</span>
+          <span class="val">${num(val.high_confidence_rotations)}</span>
         </div>
       </div>
 
       <h3>Fontes de Dados CBV</h3>
       <div style="margin-bottom:20px;">${sourceRows || '<p class="note">Nenhuma fonte reportada.</p>'}</div>
+      <p class="note">Os rallies e as rotações desta base são reconstruídos das súmulas oficiais.</p>
 
       <div class="note">
         Pipeline com isolamento staging, travas de concorrência e rollback automático. Partidas passam por quality gate antes da publicação.
@@ -433,11 +440,20 @@ function openFiltersSheet() {
 }
 
 // 5. SCREEN 1: HOME FEED (FEED EXPLORÁVEL)
+function upcomingMatches(cohort, now = new Date()) {
+  const today = new Intl.DateTimeFormat('sv-SE', {timeZone: 'America/Sao_Paulo', dateStyle: 'short'}).format(now);
+  const completed = new Set((cohort.matches || [])
+    .filter(match => match.home_sets != null && match.away_sets != null)
+    .map(match => String(match.match_id)));
+  return (cohort.upcoming || [])
+    .filter(match => match.match_date?.slice(0, 10) >= today && !completed.has(String(match.match_id)))
+    .sort((a, b) => a.match_date.localeCompare(b.match_date) || (a.match_time || '').localeCompare(b.match_time || ''));
+}
+
 function renderHomeFeed() {
   const c = C();
   if (!c) return '<p class="empty">Nenhuma coorte disponível.</p>';
   const matches = c.matches || [];
-  const upcoming = c.upcoming || [];
   const teams = c.teams || [];
 
   // Recent matches for rail
@@ -447,7 +463,7 @@ function renderHomeFeed() {
     .slice(0, 8);
 
   // Upcoming matches for rail
-  const upcomingList = [...upcoming].slice(0, 8);
+  const upcomingList = upcomingMatches(c).slice(0, 8);
 
   // Featured Athletes highlights
   const topAthletes = [];
@@ -632,10 +648,12 @@ function renderMatchesPage() {
 
   const filter = state.matchFilter || 'Todas';
   let matches = [...(c.matches || [])];
-  if (filter === 'Encerradas') matches = matches.filter(m => m.home_sets != null);
-  else if (filter === 'Próximas') matches = [...(c.upcoming || [])];
-
-  matches.sort((a,b) => String(b.date||b.match_date||'').localeCompare(String(a.date||a.match_date||'')) || (b.match_id - a.match_id));
+  if (filter === 'Próximas') {
+    matches = upcomingMatches(c);
+  } else {
+    if (filter === 'Encerradas') matches = matches.filter(m => m.home_sets != null && m.away_sets != null);
+    matches.sort((a,b) => String(b.date||b.match_date||'').localeCompare(String(a.date||a.match_date||'')) || (b.match_id - a.match_id));
+  }
 
   return `
     <div>

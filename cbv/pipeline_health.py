@@ -20,6 +20,7 @@ STATUS_HEALTHY = "HEALTHY"
 STATUS_DEGRADED = "DEGRADED"
 STATUS_FAILED = "FAILED"
 STATUS_STALE = "STALE"
+STATUS_UNAVAILABLE = "UNAVAILABLE"
 
 SOURCE_SPECS = {
     "calendar": {"severity": SEVERITY_OPTIONAL, "description": "CBV public match schedule"},
@@ -30,7 +31,7 @@ SOURCE_SPECS = {
     "scoresheets": {"severity": SEVERITY_OPTIONAL, "description": "Official match scoresheets"},
     "match_reports": {"severity": SEVERITY_CRITICAL, "description": "Official technical match reports"},
     "libero_reports": {"severity": SEVERITY_OPTIONAL, "description": "Libero control sheets"},
-    "play_by_play": {"severity": SEVERITY_OPTIONAL, "description": "Play-by-play live sequence"},
+    "play_by_play": {"severity": SEVERITY_OPTIONAL, "description": "Play-by-play (sequência lance a lance)"},
 }
 
 
@@ -101,6 +102,9 @@ class SyncHealthTracker:
         elif failed > 0:
             status = STATUS_FAILED
             msg = message or "Todas as tentativas falharam"
+        elif attempted > 0 and successful == 0:
+            status = STATUS_FAILED if severity == SEVERITY_CRITICAL else STATUS_UNAVAILABLE
+            msg = message or "Nenhum registro disponível na coleta"
         else:
             status = STATUS_HEALTHY
             msg = message or "Coletado com sucesso"
@@ -187,14 +191,14 @@ class SyncHealthTracker:
 
         if overall_status == STATUS_HEALTHY:
             last_full_success = self.finished_at.isoformat()
-        elif last_full_success:
+        elif overall_status == STATUS_DEGRADED and last_full_success:
             try:
                 prior_dt = datetime.fromisoformat(last_full_success)
                 if (self.finished_at - prior_dt) > timedelta(hours=36):
                     overall_status = STATUS_STALE
             except Exception:
                 pass
-        else:
+        elif overall_status == STATUS_DEGRADED:
             # No record of prior success and not healthy today
             overall_status = STATUS_STALE
 
