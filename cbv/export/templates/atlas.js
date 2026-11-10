@@ -1531,7 +1531,7 @@ function selectQuickCompetition(competition, gender) {
   const notice = $('#filter-notice');
   if (!candidates.length) {
     if (notice) {
-      notice.textContent = `${competition === 'CBS' ? 'CBS' : 'Superliga'} ${gender} não está disponível na base ainda.`;
+      notice.textContent = `${competition === 'SUPERLIGA' ? 'Superliga' : competition} ${gender} não está disponível na base ainda.`;
       notice.hidden = false;
     }
     return false;
@@ -1563,6 +1563,8 @@ function render() {
       <button type="button" class="chip-btn ${c.competition === 'SUPERLIGA' && c.gender === 'feminino' ? 'active' : ''}" onclick="selectQuickCompetition('SUPERLIGA', 'feminino');">Superliga Fem</button>
       <button type="button" class="chip-btn ${c.competition === 'CBS' && c.gender === 'masculino' ? 'active' : ''}" onclick="selectQuickCompetition('CBS', 'masculino');">CBS Masc</button>
       <button type="button" class="chip-btn ${c.competition === 'CBS' && c.gender === 'feminino' ? 'active' : ''}" onclick="selectQuickCompetition('CBS', 'feminino');">CBS Fem</button>
+      <button type="button" class="chip-btn ${c.competition === 'CBI' && c.gender === 'masculino' ? 'active' : ''}" onclick="selectQuickCompetition('CBI', 'masculino');">CBI Masc</button>
+      <button type="button" class="chip-btn ${c.competition === 'CBI' && c.gender === 'feminino' ? 'active' : ''}" onclick="selectQuickCompetition('CBI', 'feminino');">CBI Fem</button>
       <button type="button" class="chip-btn more-filters" onclick="openFiltersSheet();">+ Filtros (${esc(seasonLabel(c.season))})</button>
     `;
   }
