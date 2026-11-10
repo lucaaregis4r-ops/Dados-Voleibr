@@ -9238,5 +9238,20 @@
     "validation_status": "VALID",
     "created_at": "2026-10-20T17:25:32.841133",
     "season": "2026"
+  },
+  {
+    "match_id": 2601633,
+    "date": "2026-11-10T00:00:00",
+    "time_str": "08:13",
+    "competition": "CBI",
+    "category": "sub16",
+    "gender": "masculino",
+    "home_team": "MINAS T.C.",
+    "away_team": "CENTRO OLÍMPICO",
+    "home_sets": 0,
+    "away_sets": 3,
+    "validation_status": "VALID",
+    "created_at": "2026-11-10T14:19:54.690316",
+    "season": "2026"
   }
 ]
