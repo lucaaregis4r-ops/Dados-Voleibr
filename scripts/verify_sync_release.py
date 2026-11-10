@@ -48,10 +48,20 @@ def verify_all(root_dir: Path = BASE_DIR) -> bool:
         print("❌ Token __SCOUTING_DATA__ não foi substituído no index.html!")
         return False
     size_mb = (root_dir / "index.html").stat().st_size / (1024 * 1024)
-    if size_mb > 5.0:
-        print(f"❌ index.html excessivamente grande ({size_mb:.2f} MB)! Esperado < 2.0 MB com payload compacto.")
+    if size_mb > 2.0:
+        print(f"❌ index.html excessivamente grande ({size_mb:.2f} MB)! Limite: 2.0 MB (dados externos em exports/atlas-bootstrap.js).")
         return False
-    print(f"✓ index.html compacto: {size_mb:.2f} MB (redução progressiva ativa).")
+    bootstrap = root_dir / 'exports' / 'atlas-bootstrap.js'
+    if not bootstrap.exists() or bootstrap.stat().st_size == 0:
+        print('❌ Payload externo do Atlas ausente!')
+        return False
+    if 'src="./exports/atlas-bootstrap.js"' not in index_html:
+        print('❌ Dashboard não referencia o payload externo!')
+        return False
+    if not (root_dir / 'docs' / 'exports' / 'atlas-bootstrap.js').exists():
+        print('❌ Payload externo não foi publicado em docs/exports!')
+        return False
+    print(f"✓ index.html compacto: {size_mb:.2f} MB; dados externos disponíveis.")
 
     print("🩺 [Gate 4/5] Verificando relatório formal de saúde (sync_health.json)...")
     health = json.loads((root_dir / "exports" / "sync_health.json").read_text(encoding="utf-8"))
