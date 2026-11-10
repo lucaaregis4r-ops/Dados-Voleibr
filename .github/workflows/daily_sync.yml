@@ -2,8 +2,9 @@ name: CBV Daily Sync & Push
 
 on:
   schedule:
-    # 06:00 UTC corresponds to 03:00 BRT (Brasília Standard Time UTC-3)
-    - cron: '0 6 * * *'
+    # During the championship, sync every hour at minute 17 (UTC).
+    # GitHub scheduled jobs may start late during high demand.
+    - cron: '17 * * * *'
   workflow_dispatch:
   push:
     paths:
@@ -19,7 +20,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: cbv-daily-publication
+  group: cbv-hourly-publication
   cancel-in-progress: false
 
 jobs:
@@ -56,7 +57,7 @@ jobs:
           key: cbv-raw-${{ runner.os }}-${{ github.run_id }}
           restore-keys: cbv-raw-${{ runner.os }}-
 
-      - name: Run Daily Synchronization Pipeline
+      - name: Run Hourly Synchronization Pipeline
         run: |
           python scripts/daily_update.py
 
@@ -97,6 +98,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "Nenhuma alteração detectada. Repositório já está atualizado."
           else
-            git commit -m "chore(sync): atualização diária automatizada CBV [03:00 BRT] [skip ci]"
+            git commit -m "chore(sync): atualização horária automatizada CBV [skip ci]"
             git push
           fi
