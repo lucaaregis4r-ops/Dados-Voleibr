@@ -462,7 +462,8 @@ def export_dashboard_html(target_file=DEFAULT_HTML_PATH, data=None):
     (exports_dir / 'atlas-bootstrap.js').write_text(
         'window.__ATLAS_DATA__=' + bootstrap_json + ';', encoding='utf-8'
     )
-    html = build_dashboard_html(data, external_data=True)
+    # Preserve standalone HTML exports for callers that request a custom file.
+    html = build_dashboard_html(data, external_data=(target_file.resolve() == DEFAULT_HTML_PATH.resolve()))
     from cbv.export.atlas_export import export_atlas
     with default_repo.get_connection() as conn:
         export_atlas(data, exports_dir, conn)
