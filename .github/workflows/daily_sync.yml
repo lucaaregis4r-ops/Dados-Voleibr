@@ -1,4 +1,4 @@
-name: CBV Daily Sync & Push
+name: CBV Hourly Sync & Push
 
 on:
   schedule:
@@ -12,6 +12,8 @@ on:
       - cbv/export/templates/**
       - cbv/pipeline_health.py
       - scripts/daily_worker.py
+      - cbv/export/html_dashboard.py
+      - scripts/verify_sync_release.py
 
 env:
   OPENBLAS_NUM_THREADS: 1
@@ -50,12 +52,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Restore source archive
+      - name: Determine daily source cache key
+        id: source-cache-key
+        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore source archive (maximum one new cache per day)
         uses: actions/cache@v4
         with:
           path: data/raw
-          key: cbv-raw-${{ runner.os }}-${{ github.run_id }}
-          restore-keys: cbv-raw-${{ runner.os }}-
+          key: cbv-raw-${{ runner.os }}-${{ steps.source-cache-key.outputs.date }}
+          restore-keys: |
+            cbv-raw-${{ runner.os }}-
 
       - name: Run Hourly Synchronization Pipeline
         run: |
@@ -79,16 +86,14 @@ jobs:
           "
           fi
 
-      - name: Preserve raw snapshots and validation logs
-        if: always()
+      - name: Preserve diagnostic logs only on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: cbv-source-archive-${{ github.run_id }}
-          path: |
-            data/raw/matches/
-            logs/
+          name: cbv-diagnostics-${{ github.run_id }}
+          path: logs/
           if-no-files-found: ignore
-          retention-days: 30
+          retention-days: 7
 
       - name: Commit and Push Changes
         run: |
