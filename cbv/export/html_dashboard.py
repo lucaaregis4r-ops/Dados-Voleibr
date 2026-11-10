@@ -339,7 +339,7 @@ def build_compact_shell(data):
     return compact
 
 
-def build_dashboard_html(data):
+def build_dashboard_html(data, external_data=False):
     from cbv.metrics.registry import REGISTRY, catalog
     data['metric_registry'] = catalog()
     from cbv.metrics.glossary import glossary
@@ -365,7 +365,19 @@ def build_dashboard_html(data):
         weight = font.stem.rsplit('-', 1)[1]
         encoded = base64.b64encode(font.read_bytes()).decode('ascii')
         fonts.append(f"@font-face{{font-family:'{family}';font-style:normal;font-weight:{weight};font-display:swap;src:url(data:font/woff2;base64,{encoded}) format('woff2')}}")
-    return template.replace('__SCOUTING_DATA__', payload).replace('__FONT_CSS__', ''.join(fonts)).replace('__ATLAS_CSS__', (Path(__file__).parent / 'templates/atlas.css').read_text()).replace('__ATLAS_JS__', (Path(__file__).parent / 'templates/atlas.js').read_text())
+    if external_data:
+        # Keep the interactive shell small; data is published alongside the page.
+        # The JSON-to-JS serialization uses the same escaping as the inline mode.
+        template = template.replace(
+            '<script type="application/json" id="dataset">__SCOUTING_DATA__</script>',
+            '<script src="./exports/atlas-bootstrap.js"></script>'
+        ).replace(
+            "const DATA=JSON.parse(document.getElementById('dataset').textContent);",
+            "const DATA=window.__ATLAS_DATA__;"
+        )
+    else:
+        template = template.replace('__SCOUTING_DATA__', payload)
+    return template.replace('__FONT_CSS__', ''.join(fonts)).replace('__ATLAS_CSS__', (Path(__file__).parent / 'templates/atlas.css').read_text()).replace('__ATLAS_JS__', (Path(__file__).parent / 'templates/atlas.js').read_text())
 
 
 def export_dashboard_html(target_file=DEFAULT_HTML_PATH, data=None):
@@ -442,11 +454,20 @@ def export_dashboard_html(target_file=DEFAULT_HTML_PATH, data=None):
         except Exception:
             pass
 
-    html = build_dashboard_html(data)
+    # One payload is shared by the root page and GitHub Pages docs page.
+    # Export dashboard.html lives inside exports/, so its asset path differs.
+    compact = build_compact_shell(data)
+    bootstrap_json = json.dumps(compact, ensure_ascii=False, allow_nan=False, separators=(',', ':'))
+    bootstrap_json = bootstrap_json.replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
+    (exports_dir / 'atlas-bootstrap.js').write_text(
+        'window.__ATLAS_DATA__=' + bootstrap_json + ';\\n', encoding='utf-8'
+    )
+    html = build_dashboard_html(data, external_data=True)
     from cbv.export.atlas_export import export_atlas
     with default_repo.get_connection() as conn:
         export_atlas(data, exports_dir, conn)
-    target_file.write_text(html, encoding='utf-8')
+    dashboard_html = html.replace('src="./exports/atlas-bootstrap.js"', 'src="./atlas-bootstrap.js"') if target_file.resolve() == (exports_dir / 'dashboard.html').resolve() else html
+    target_file.write_text(dashboard_html, encoding='utf-8')
     if target_file.resolve() == DEFAULT_HTML_PATH.resolve():
         for p in (PUBLISH_DIR / 'index.html', PUBLISH_DIR / 'docs' / 'index.html'):
             p.parent.mkdir(parents=True, exist_ok=True)
@@ -456,7 +477,7 @@ def export_dashboard_html(target_file=DEFAULT_HTML_PATH, data=None):
         docs_exports = PUBLISH_DIR / 'docs' / 'exports'
         docs_exports.mkdir(parents=True, exist_ok=True)
         import shutil
-        for f in exports_dir.glob('*.json'):
+        for f in list(exports_dir.glob('*.json')) + list(exports_dir.glob('atlas-bootstrap.js')):
             shutil.copy2(f, docs_exports / f.name)
     return target_file
 
