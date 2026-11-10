@@ -219,7 +219,6 @@ def build_compact_shell(data):
         'legacy_data_version': data.get('legacy_data_version'),
         'generated_at': data.get('generated_at'),
         'kpis': data.get('kpis', {}),
-        'summary': data.get('summary', {}),
         'dossiers': data.get('dossiers', {}),
         'metric_registry': data.get('metric_registry', {}),
         'glossary': data.get('glossary', {}),

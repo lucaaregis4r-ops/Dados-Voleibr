@@ -105,6 +105,21 @@ def run_full_daily_pipeline() -> bool:
             logger.warning(f'Descoberta CBS {gender} (fonte opcional): {exc}')
             tracker.record_source(key, attempted=1, successful=0, failed=1, error=exc)
 
+    # CBI Sub-16 finals: only completed games with an official report are imported.
+    from cbv.scraper.cbi import sync_cbi_final
+    for gender in ('feminino', 'masculino'):
+        try:
+            result = sync_cbi_final(gender, season=2026)
+            failed = len(result['failed'])
+            tracker.record_source(f'cbi_sub16_{gender}', attempted=max(1, len(result['found'])),
+                successful=len(result['imported']) + len(result['skipped']), failed=failed,
+                message=f"{len(result['imported'])} importadas; {len(result['pending'])} aguardam relatório; {failed} falharam")
+            if failed:
+                logger.warning(f"CBI {gender}: falhas {result['failed']}")
+        except Exception as exc:
+            logger.warning(f'CBI sub-16 {gender}: {exc}')
+            tracker.record_source(f'cbi_sub16_{gender}', attempted=1, successful=0, failed=1, error=exc)
+
     # 3. Canonical team name hygiene
     console.print("\n[yellow]3/4. Higienização e unificação canônica de equipes no banco...[/yellow]")
     normalize_all_teams_in_db()
