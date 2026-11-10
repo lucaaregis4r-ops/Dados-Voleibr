@@ -460,7 +460,7 @@ def export_dashboard_html(target_file=DEFAULT_HTML_PATH, data=None):
     bootstrap_json = json.dumps(compact, ensure_ascii=False, allow_nan=False, separators=(',', ':'))
     bootstrap_json = bootstrap_json.replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
     (exports_dir / 'atlas-bootstrap.js').write_text(
-        'window.__ATLAS_DATA__=' + bootstrap_json + ';\\n', encoding='utf-8'
+        'window.__ATLAS_DATA__=' + bootstrap_json + ';', encoding='utf-8'
     )
     html = build_dashboard_html(data, external_data=True)
     from cbv.export.atlas_export import export_atlas
