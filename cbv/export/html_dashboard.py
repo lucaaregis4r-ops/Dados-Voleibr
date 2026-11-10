@@ -454,16 +454,17 @@ def export_dashboard_html(target_file=DEFAULT_HTML_PATH, data=None):
         except Exception:
             pass
 
-    # One payload is shared by the root page and GitHub Pages docs page.
-    # Export dashboard.html lives inside exports/, so its asset path differs.
-    compact = build_compact_shell(data)
-    bootstrap_json = json.dumps(compact, ensure_ascii=False, allow_nan=False, separators=(',', ':'))
-    bootstrap_json = bootstrap_json.replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
-    (exports_dir / 'atlas-bootstrap.js').write_text(
-        'window.__ATLAS_DATA__=' + bootstrap_json + ';', encoding='utf-8'
-    )
     # Preserve standalone HTML exports for callers that request a custom file.
-    html = build_dashboard_html(data, external_data=(target_file.resolve() == DEFAULT_HTML_PATH.resolve()))
+    external_data = target_file.resolve() == DEFAULT_HTML_PATH.resolve()
+    html = build_dashboard_html(data, external_data=external_data)
+    if external_data:
+        # Generate the external payload after the builder enriches metadata and formulas.
+        compact = build_compact_shell(data)
+        bootstrap_json = json.dumps(compact, ensure_ascii=False, allow_nan=False, separators=(',', ':'))
+        bootstrap_json = bootstrap_json.replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026')
+        (exports_dir / 'atlas-bootstrap.js').write_text(
+            'window.__ATLAS_DATA__=' + bootstrap_json + ';', encoding='utf-8'
+        )
     from cbv.export.atlas_export import export_atlas
     with default_repo.get_connection() as conn:
         export_atlas(data, exports_dir, conn)
