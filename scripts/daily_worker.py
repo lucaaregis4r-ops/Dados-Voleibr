@@ -97,7 +97,9 @@ def run_full_daily_pipeline() -> bool:
 
     # CBS discovery (OPTIONAL)
     from cbv.scraper.competition import scrape_competition
-    for gender, key in (('feminino', 'cbs_f'), ('masculino', 'cbs_m')):
+    # Historical CBS discovery runs daily; hourly cycles prioritize active games.
+    full_source_sweep = datetime.datetime.now(datetime.timezone.utc).hour == 6
+    for gender, key in ((('feminino', 'cbs_f'), ('masculino', 'cbs_m')) if full_source_sweep else ()):
         try:
             scrape_competition(competition='cbs', category='sub18', gender=gender, division='especial', season=datetime.date.today().year)
             tracker.record_source(key, attempted=1, successful=1, message="Sincronizada")
@@ -131,7 +133,17 @@ def run_full_daily_pipeline() -> bool:
     from cbv.reconstruction.store import rebuild_all, validate_official
     gate = RequestGate(.6)
     with default_repo.get_connection() as conn:
-        match_ids = [r[0] for r in conn.execute('SELECT match_id FROM matches').fetchall()]
+        if full_source_sweep:
+            # Once a day, revisit older source records and cached archive status.
+            match_ids = [r[0] for r in conn.execute('SELECT match_id FROM matches').fetchall()]
+        else:
+            # Avoid hammering hundreds of historical games on every hourly run.
+            match_ids = [r[0] for r in conn.execute("""
+                SELECT match_id FROM matches
+                WHERE TRY_CAST(date AS DATE) >= CURRENT_DATE - INTERVAL '21 days'
+                   OR competition = 'CBI'
+            """).fetchall()]
+    console.print(f"[cyan]Fontes a verificar: {len(match_ids)} ({'varredura completa' if full_source_sweep else 'janela recente/CBI'}).[/cyan]")
     collector = SourceCollector(RAW_DIR / 'matches', RAW_DIR, gate=gate)
     
     source_stats = {"scoresheets": 0, "match_reports": 0, "libero_reports": 0, "play_by_play": 0}
