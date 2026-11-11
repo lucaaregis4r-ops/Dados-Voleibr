@@ -8355,6 +8355,21 @@
     "season": "2026-2027"
   },
   {
+    "match_id": 2584878,
+    "date": "2026-11-10T00:00:00",
+    "time_str": "21:00",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "NORDE VÔLEI",
+    "away_team": "SADA CRUZEIRO VOLEI",
+    "home_sets": 0,
+    "away_sets": 3,
+    "validation_status": "VALID",
+    "created_at": "2026-11-11T06:09:39.454997",
+    "season": "2026-2027"
+  },
+  {
     "match_id": 2584880,
     "date": "2026-11-09T00:00:00",
     "time_str": "17:56",
@@ -9252,6 +9267,21 @@
     "away_sets": 3,
     "validation_status": "VALID",
     "created_at": "2026-10-20T17:25:32.841133",
+    "season": "2026"
+  },
+  {
+    "match_id": 2601622,
+    "date": "2026-11-10T00:00:00",
+    "time_str": "13:21",
+    "competition": "CBI",
+    "category": "sub16",
+    "gender": "feminino",
+    "home_team": "CLUB ATHLETICO PAULISTANO",
+    "away_team": "CÍRCULO MILITAR DO PARANÁ",
+    "home_sets": 3,
+    "away_sets": 1,
+    "validation_status": "VALID",
+    "created_at": "2026-11-11T06:09:45.695636",
     "season": "2026"
   },
   {

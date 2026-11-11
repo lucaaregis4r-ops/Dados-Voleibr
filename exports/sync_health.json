@@ -1,9 +1,9 @@
 {
   "status": "HEALTHY",
-  "started_at": "2026-11-10T21:03:00.997080-03:00",
-  "finished_at": "2026-11-10T21:03:35.972186-03:00",
-  "last_full_success": "2026-11-10T21:03:35.972186-03:00",
-  "database_match_count": 622,
+  "started_at": "2026-11-11T03:09:37.028677-03:00",
+  "finished_at": "2026-11-11T03:10:22.367384-03:00",
+  "last_full_success": "2026-11-11T03:10:22.367384-03:00",
+  "database_match_count": 624,
   "new_matches": 2,
   "updated_matches": 0,
   "sources": {
@@ -38,71 +38,71 @@
       "message": "Sincronizada com sucesso"
     },
     "cbs_m": {
-      "status": "PENDING",
+      "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "CBS Masculino tournament matches",
-      "attempted": 0,
-      "successful": 0,
+      "attempted": 1,
+      "successful": 1,
       "failed": 0,
       "latest_source_date": null,
-      "message": "Aguardando execução"
+      "message": "Sincronizada"
     },
     "cbs_f": {
-      "status": "PENDING",
+      "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "CBS Feminino tournament matches",
-      "attempted": 0,
-      "successful": 0,
+      "attempted": 1,
+      "successful": 1,
       "failed": 0,
       "latest_source_date": null,
-      "message": "Aguardando execução"
+      "message": "Sincronizada"
     },
     "scoresheets": {
       "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "Official match scoresheets",
-      "attempted": 39,
-      "successful": 39,
+      "attempted": 624,
+      "successful": 612,
       "failed": 0,
       "latest_source_date": null,
-      "message": "39/39 registros"
+      "message": "612/624 registros"
     },
     "match_reports": {
       "status": "HEALTHY",
       "severity": "CRITICAL",
       "description": "Official technical match reports",
-      "attempted": 39,
-      "successful": 37,
+      "attempted": 624,
+      "successful": 622,
       "failed": 0,
       "latest_source_date": null,
-      "message": "37/39 registros"
+      "message": "622/624 registros"
     },
     "libero_reports": {
       "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "Libero control sheets",
-      "attempted": 39,
-      "successful": 37,
+      "attempted": 624,
+      "successful": 368,
       "failed": 0,
       "latest_source_date": null,
-      "message": "37/39 registros"
+      "message": "368/624 registros"
     },
     "play_by_play": {
       "status": "UNAVAILABLE",
       "severity": "OPTIONAL",
       "description": "Play-by-play (sequência lance a lance)",
-      "attempted": 39,
+      "attempted": 624,
       "successful": 0,
       "failed": 0,
       "latest_source_date": null,
-      "message": "0/39 registros · Provedor bloqueou o acesso ao lance a lance"
+      "message": "0/624 registros · Provedor bloqueou o acesso ao lance a lance"
     },
     "cbi_sub16_feminino": {
       "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "cbi_sub16_feminino",
-      "attempted": 2,
-      "successful": 2,
+      "attempted": 3,
+      "successful": 3,
       "failed": 0,
       "latest_source_date": null,
       "message": "1 importadas; 0 aguardam relatório; 0 falharam"
@@ -119,11 +119,11 @@
     }
   },
   "validation": {
-    "valid_matches": 577,
+    "valid_matches": 579,
     "valid_with_warnings": 45,
     "failed": 0,
-    "rallies": 73699,
-    "high_confidence_rotations": 23317,
-    "high_confidence_lineups": 30433
+    "rallies": 74009,
+    "high_confidence_rotations": 23454,
+    "high_confidence_lineups": 30661
   }
 }
