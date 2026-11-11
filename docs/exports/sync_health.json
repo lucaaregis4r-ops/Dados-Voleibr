@@ -1,10 +1,10 @@
 {
   "status": "HEALTHY",
-  "started_at": "2026-11-10T16:49:46.892296-03:00",
-  "finished_at": "2026-11-10T16:50:25.844446-03:00",
-  "last_full_success": "2026-11-10T16:50:25.844446-03:00",
-  "database_match_count": 620,
-  "new_matches": 3,
+  "started_at": "2026-11-10T21:03:00.997080-03:00",
+  "finished_at": "2026-11-10T21:03:35.972186-03:00",
+  "last_full_success": "2026-11-10T21:03:35.972186-03:00",
+  "database_match_count": 622,
+  "new_matches": 2,
   "updated_matches": 0,
   "sources": {
     "calendar": {
@@ -82,10 +82,10 @@
       "severity": "OPTIONAL",
       "description": "Libero control sheets",
       "attempted": 39,
-      "successful": 38,
+      "successful": 37,
       "failed": 0,
       "latest_source_date": null,
-      "message": "38/39 registros"
+      "message": "37/39 registros"
     },
     "play_by_play": {
       "status": "UNAVAILABLE",
@@ -101,8 +101,8 @@
       "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "cbi_sub16_feminino",
-      "attempted": 1,
-      "successful": 1,
+      "attempted": 2,
+      "successful": 2,
       "failed": 0,
       "latest_source_date": null,
       "message": "1 importadas; 0 aguardam relatório; 0 falharam"
@@ -115,15 +115,15 @@
       "successful": 3,
       "failed": 0,
       "latest_source_date": null,
-      "message": "2 importadas; 0 aguardam relatório; 0 falharam"
+      "message": "0 importadas; 0 aguardam relatório; 0 falharam"
     }
   },
   "validation": {
-    "valid_matches": 575,
+    "valid_matches": 577,
     "valid_with_warnings": 45,
     "failed": 0,
-    "rallies": 73344,
-    "high_confidence_rotations": 22962,
-    "high_confidence_lineups": 30276
+    "rallies": 73699,
+    "high_confidence_rotations": 23317,
+    "high_confidence_lineups": 30433
   }
 }

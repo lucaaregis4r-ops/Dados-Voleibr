@@ -8340,6 +8340,21 @@
     "season": "2026-2027"
   },
   {
+    "match_id": 2584877,
+    "date": "2026-11-10T00:00:00",
+    "time_str": "18:30",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "VIAPOL VÔLEI SÃO JOSÉ",
+    "away_team": "MONTES CLAROS VOLEI",
+    "home_sets": 3,
+    "away_sets": 1,
+    "validation_status": "VALID",
+    "created_at": "2026-11-11T00:03:06.213008",
+    "season": "2026-2027"
+  },
+  {
     "match_id": 2584880,
     "date": "2026-11-09T00:00:00",
     "time_str": "17:56",
@@ -9237,6 +9252,21 @@
     "away_sets": 3,
     "validation_status": "VALID",
     "created_at": "2026-10-20T17:25:32.841133",
+    "season": "2026"
+  },
+  {
+    "match_id": 2601623,
+    "date": "2026-11-10T00:00:00",
+    "time_str": "13:18",
+    "competition": "CBI",
+    "category": "sub16",
+    "gender": "feminino",
+    "home_team": "MINAS T.C.",
+    "away_team": "C.R. DO FLAMENGO",
+    "home_sets": 3,
+    "away_sets": 1,
+    "validation_status": "VALID",
+    "created_at": "2026-11-11T00:03:10.764944",
     "season": "2026"
   },
   {
