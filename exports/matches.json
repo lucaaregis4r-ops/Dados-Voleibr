@@ -9315,6 +9315,21 @@
     "season": "2026"
   },
   {
+    "match_id": 2601626,
+    "date": "2026-11-11T00:00:00",
+    "time_str": "14:38",
+    "competition": "CBI",
+    "category": "sub16",
+    "gender": "feminino",
+    "home_team": "MINAS T.C.",
+    "away_team": "MACKENZIE",
+    "home_sets": 3,
+    "away_sets": 1,
+    "validation_status": "VALID",
+    "created_at": "2026-11-11T21:26:34.273218",
+    "season": "2026"
+  },
+  {
     "match_id": 2601631,
     "date": "2026-11-10T00:00:00",
     "time_str": "13:06",
@@ -9357,6 +9372,36 @@
     "away_sets": 3,
     "validation_status": "VALID",
     "created_at": "2026-11-10T14:19:54.690316",
+    "season": "2026"
+  },
+  {
+    "match_id": 2601634,
+    "date": "2026-11-11T00:00:00",
+    "time_str": "14:11",
+    "competition": "CBI",
+    "category": "sub16",
+    "gender": "masculino",
+    "home_team": "TIJUCA T.C.",
+    "away_team": "CENTRO OLÍMPICO",
+    "home_sets": 0,
+    "away_sets": 3,
+    "validation_status": "VALID",
+    "created_at": "2026-11-11T21:26:39.331898",
+    "season": "2026"
+  },
+  {
+    "match_id": 2601635,
+    "date": "2026-11-11T00:00:00",
+    "time_str": "11:18",
+    "competition": "CBI",
+    "category": "sub16",
+    "gender": "masculino",
+    "home_team": "VÔLEI RENATA",
+    "away_team": "MINAS T.C.",
+    "home_sets": 2,
+    "away_sets": 3,
+    "validation_status": "VALID",
+    "created_at": "2026-11-11T21:26:37.334901",
     "season": "2026"
   },
   {
