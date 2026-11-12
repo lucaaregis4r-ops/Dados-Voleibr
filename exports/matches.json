@@ -8325,6 +8325,21 @@
     "season": "2026-2027"
   },
   {
+    "match_id": 2584875,
+    "date": "2026-11-11T00:00:00",
+    "time_str": "21:00",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "SUZANO VÔLEI",
+    "away_team": "SIL VÔLEI GUARULHOS",
+    "home_sets": 3,
+    "away_sets": 0,
+    "validation_status": "VALID",
+    "created_at": "2026-11-12T02:57:46.988901",
+    "season": "2026-2027"
+  },
+  {
     "match_id": 2584876,
     "date": "2026-11-09T00:00:00",
     "time_str": "20:24",
@@ -8367,6 +8382,21 @@
     "away_sets": 3,
     "validation_status": "VALID",
     "created_at": "2026-11-11T06:09:39.454997",
+    "season": "2026-2027"
+  },
+  {
+    "match_id": 2584879,
+    "date": "2026-11-11T00:00:00",
+    "time_str": "17:55",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "PRAIA CLUBE UBERLANDIA VOLEI",
+    "away_team": "SANEAGO GOIÁS VÔLEI",
+    "home_sets": 3,
+    "away_sets": 0,
+    "validation_status": "VALID",
+    "created_at": "2026-11-12T02:57:47.047002",
     "season": "2026-2027"
   },
   {
@@ -9315,6 +9345,21 @@
     "season": "2026"
   },
   {
+    "match_id": 2601625,
+    "date": "2026-11-11T00:00:00",
+    "time_str": "19:12",
+    "competition": "CBI",
+    "category": "sub16",
+    "gender": "feminino",
+    "home_team": "CLUB ATHLETICO PAULISTANO",
+    "away_team": "DENTIL PRAIA CLUBE",
+    "home_sets": 3,
+    "away_sets": 1,
+    "validation_status": "VALID",
+    "created_at": "2026-11-12T02:57:52.975920",
+    "season": "2026"
+  },
+  {
     "match_id": 2601626,
     "date": "2026-11-11T00:00:00",
     "time_str": "14:38",
@@ -9327,6 +9372,21 @@
     "away_sets": 1,
     "validation_status": "VALID",
     "created_at": "2026-11-11T21:26:34.273218",
+    "season": "2026"
+  },
+  {
+    "match_id": 2601627,
+    "date": "2026-11-11T00:00:00",
+    "time_str": "17:02",
+    "competition": "CBI",
+    "category": "sub16",
+    "gender": "feminino",
+    "home_team": "C.R. DO FLAMENGO",
+    "away_team": "CÍRCULO MILITAR DO PARANÁ",
+    "home_sets": 3,
+    "away_sets": 0,
+    "validation_status": "VALID",
+    "created_at": "2026-11-12T02:57:50.771172",
     "season": "2026"
   },
   {
