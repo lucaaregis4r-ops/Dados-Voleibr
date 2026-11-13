@@ -8775,6 +8775,21 @@
     "season": "2026-2027"
   },
   {
+    "match_id": 2585019,
+    "date": "2026-11-12T00:00:00",
+    "time_str": "17:55",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "feminino",
+    "home_team": "E.C. PINHEIROS",
+    "away_team": "FLOR DE YPÊ PAULISTANO BARUERI",
+    "home_sets": 3,
+    "away_sets": 2,
+    "validation_status": "VALID",
+    "created_at": "2026-11-13T07:54:51.291806",
+    "season": "2026-2027"
+  },
+  {
     "match_id": 2585022,
     "date": "2026-11-12T00:00:00",
     "time_str": "18:07",
@@ -8787,6 +8802,21 @@
     "away_sets": 0,
     "validation_status": "VALID",
     "created_at": "2026-11-13T00:19:34.435039",
+    "season": "2026-2027"
+  },
+  {
+    "match_id": 2585023,
+    "date": "2026-11-12T00:00:00",
+    "time_str": "21:00",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "feminino",
+    "home_team": "SESC RJ FLAMENGO",
+    "away_team": "FLUMINENSE",
+    "home_sets": 3,
+    "away_sets": 0,
+    "validation_status": "VALID",
+    "created_at": "2026-11-13T07:54:51.342400",
     "season": "2026-2027"
   },
   {
