@@ -7,6 +7,7 @@ on:
     - cron: '17 * * * *'
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - .github/workflows/daily_sync.yml
       - cbv/export/templates/**

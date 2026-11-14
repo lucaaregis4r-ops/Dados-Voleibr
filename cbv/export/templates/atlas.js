@@ -214,6 +214,8 @@ Object.assign(state, {
   rotation: 1,
   matchFilter: 'Todas',
   positionFilter: 'Todas',
+  analysisSection: 'Rotações',
+  compareSeasonId: null,
 });
 
 // Navigation router
@@ -252,7 +254,7 @@ function openMetricSheet(metricKey, contextVal = null) {
       <p style="font-size:14px;color:var(--text-soft);line-height:1.5;">${esc(desc)}</p>
       
       <div style="background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;padding:12px;margin:16px 0;">
-        <span style="font:800 10px var(--mono);color:var(--text-muted);text-transform:uppercase;">Fórmula Canônica</span>
+        <span style="font:700 11px var(--sans);color:var(--text-muted);">Fórmula canônica</span>
         <div style="font:700 13px var(--mono);color:var(--navy);margin-top:4px;">${esc(formula)}</div>
       </div>
 
@@ -268,9 +270,9 @@ function openMetricSheet(metricKey, contextVal = null) {
       </dl>
 
       <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:12px;">
-        <h4 style="margin:0 0 6px 0;font:800 11px var(--mono);text-transform:uppercase;color:var(--text-muted);">Limitações Metodológicas</h4>
+        <h3 style="margin:0 0 8px 0;font:700 14px var(--sans);color:var(--text-muted);">Limitações metodológicas</h3>
         <p style="font-size:12px;color:var(--text-soft);margin:0 0 12px 0;">${esc(limitations)}</p>
-        <h4 style="margin:0 0 6px 0;font:800 11px var(--mono);text-transform:uppercase;color:var(--text-muted);">Base Científica</h4>
+        <h3 style="margin:0 0 8px 0;font:700 14px var(--sans);color:var(--text-muted);">Base científica</h3>
         <p style="font-size:12px;color:var(--text-soft);margin:0;">${esc(literature)}</p>
       </div>
     </div>
@@ -382,21 +384,21 @@ function openFiltersSheet() {
   const html = `
     <div style="display:flex;flex-direction:column;gap:16px;">
       <div>
-        <label style="font:800 11px var(--mono);text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:6px;">Competição</label>
+        <label style="font:700 12px var(--sans);color:var(--text-muted);display:block;margin-bottom:8px;">Competição</label>
         <select id="sheet-filter-comp" style="width:100%;height:44px;border:1px solid var(--border);border-radius:6px;padding:0 12px;background:var(--surface);">
           ${comps.map(v => `<option value="${esc(v)}" ${compKey(c) === v ? 'selected' : ''}>${esc(v)}</option>`).join('')}
         </select>
       </div>
 
       <div>
-        <label style="font:800 11px var(--mono);text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:6px;">Gênero</label>
+        <label style="font:700 12px var(--sans);color:var(--text-muted);display:block;margin-bottom:8px;">Gênero</label>
         <select id="sheet-filter-gender" style="width:100%;height:44px;border:1px solid var(--border);border-radius:6px;padding:0 12px;background:var(--surface);">
           ${choices.genders.map(v => `<option value="${esc(v)}" ${choices.gender === v ? 'selected' : ''}>${esc(v)}</option>`).join('')}
         </select>
       </div>
 
       <div>
-        <label style="font:800 11px var(--mono);text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:6px;">Temporada</label>
+        <label style="font:700 12px var(--sans);color:var(--text-muted);display:block;margin-bottom:8px;">Temporada</label>
         <select id="sheet-filter-season" style="width:100%;height:44px;border:1px solid var(--border);border-radius:6px;padding:0 12px;background:var(--surface);">
           ${choices.seasons.map(v => `<option value="${esc(v)}" ${choices.season === v ? 'selected' : ''}>${esc(seasonLabel(v))}</option>`).join('')}
         </select>
@@ -718,7 +720,7 @@ function renderSingleMatchPage() {
       <div class="team-hero-card" style="margin-bottom:16px;">
         <div class="hero-top">
           <div>
-            <span style="font:800 11px var(--mono);color:#94A3B8;text-transform:uppercase;">${matchDate(m.date || m.match_date)} · Jogo #${m.match_id}</span>
+            <span style="font:800 11px var(--mono);color:var(--palette-ff4540bf);">${matchDate(m.date || m.match_date)}, jogo #${m.match_id}</span>
             <h1 style="margin:4px 0;">${esc(teamName(m.home_team))} × ${esc(teamName(m.away_team))}</h1>
           </div>
           <div class="record-badge">${m.home_sets != null ? `${m.home_sets} × ${m.away_sets}` : 'VS'}</div>
@@ -728,7 +730,7 @@ function renderSingleMatchPage() {
       ${detail ? `
         <!-- Sets Table -->
         <div class="rotation-widget-box">
-          <h3>Placar por Set</h3>
+          <h2>Placar por set</h2>
           <div class="table-wrap">
             <table>
               <thead>
@@ -840,25 +842,25 @@ function VolleyballCourt({ rotations = [], layer = 'so', homeLabel = '', selecte
     circles += `
       <g class="court-position ${isSel ? 'selected' : ''}" onclick="state.rotation=${p};render();" style="cursor:pointer;" role="button" aria-label="Posição P${p}">
         <circle cx="${coords.x}" cy="${coords.y}" r="${isSel ? 24 : 20}"
-          fill="${isSel ? 'var(--navy)' : '#FFFFFF'}"
+          fill="${isSel ? 'var(--navy)' : 'var(--surface)'}"
           stroke="${isSel ? 'var(--red)' : 'var(--navy)'}"
           stroke-width="${isSel ? 3 : 2}"
         />
         <text x="${coords.x}" y="${coords.y - (metricVal ? 2 : -5)}" text-anchor="middle"
-          fill="${isSel ? '#FFFFFF' : 'var(--navy)'}"
+          fill="${isSel ? 'var(--surface)' : 'var(--navy)'}"
           font-family="var(--cond)" font-size="${isSel ? 14 : 12}" font-weight="900">
           P${p}
         </text>
         ${metricVal ? `
           <text x="${coords.x}" y="${coords.y + 10}" text-anchor="middle"
-            fill="${isSel ? '#FFD21A' : 'var(--blue)'}"
+            fill="${isSel ? 'var(--palette-311bed83)' : 'var(--blue)'}"
             font-family="var(--mono)" font-size="9" font-weight="700">
             ${metricVal}
           </text>
         ` : ''}
         ${isSetterPos ? `
           <rect x="${coords.x - 13}" y="${coords.y - 30}" width="26" height="11" rx="3" fill="var(--red)"/>
-          <text x="${coords.x}" y="${coords.y - 21}" text-anchor="middle" fill="#FFFFFF" font-family="var(--mono)" font-size="7.5" font-weight="800">LEV</text>
+          <text x="${coords.x}" y="${coords.y - 21}" text-anchor="middle" fill="var(--surface)" font-family="var(--mono)" font-size="7.5" font-weight="800">LEV</text>
         ` : ''}
       </g>
     `;
@@ -866,13 +868,13 @@ function VolleyballCourt({ rotations = [], layer = 'so', homeLabel = '', selecte
 
   return `
     <svg class="court-svg" viewBox="0 0 360 215" role="img" aria-label="Quadra tática de voleibol - Posicionamento P1 a P6">
-      <rect x="15" y="15" width="330" height="185" rx="6" fill="var(--court)" stroke="#FFFFFF" stroke-width="3"/>
-      <line x1="15" y1="18" x2="345" y2="18" stroke="#FFFFFF" stroke-width="4"/>
-      <line x1="15" y1="20" x2="345" y2="20" stroke="rgba(0,0,0,0.25)" stroke-width="2" stroke-dasharray="4 2"/>
-      <line x1="15" y1="98" x2="345" y2="98" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="6 4"/>
+      <rect x="15" y="15" width="330" height="185" rx="6" fill="var(--court)" stroke="var(--surface)" stroke-width="3"/>
+      <line x1="15" y1="18" x2="345" y2="18" stroke="var(--surface)" stroke-width="4"/>
+      <line x1="15" y1="20" x2="345" y2="20" stroke="var(--palette-d4d2ee1e)" stroke-width="2" stroke-dasharray="4 2"/>
+      <line x1="15" y1="98" x2="345" y2="98" stroke="var(--surface)" stroke-width="2" stroke-dasharray="6 4"/>
       <text x="180" y="12" text-anchor="middle" fill="var(--text-muted)" font-family="var(--mono)" font-size="9" font-weight="800">▲ REDE / BLOQUEIO ▲</text>
-      <text x="340" y="93" text-anchor="end" fill="rgba(255,255,255,0.7)" font-family="var(--mono)" font-size="8.5" font-weight="700">LINHA DOS 3M</text>
-      <text x="25" y="190" text-anchor="start" fill="rgba(255,255,255,0.85)" font-family="var(--cond)" font-size="11" font-weight="800">${esc(homeLabel)}</text>
+      <text x="340" y="93" text-anchor="end" fill="var(--palette-58cb260b)" font-family="var(--mono)" font-size="8.5" font-weight="700">LINHA DOS 3M</text>
+      <text x="25" y="190" text-anchor="start" fill="var(--palette-8d4c4766)" font-family="var(--cond)" font-size="11" font-weight="800">${esc(homeLabel)}</text>
       <text x="180" y="208" text-anchor="middle" fill="var(--text-muted)" font-family="var(--mono)" font-size="8.5" font-weight="700">
         Levantadora na zona ${selected} · ${isFrontSetter ? 'rede' : 'fundo'}
       </text>
@@ -905,7 +907,7 @@ function renderTeamsPage() {
         <div class="hero-top">
           <div>
             <h1 style="margin:0;">${esc(teamName(t.team))}</h1>
-            <span style="font-size:12px;color:#94A3B8;">${esc(competitionLabel(c))} · ${esc(seasonLabel(c.season))}</span>
+            <span style="font-size:12px;color:var(--palette-ff4540bf);">${esc(competitionLabel(c))} · ${esc(seasonLabel(c.season))}</span>
           </div>
           <div class="record-badge">${t.wins}V – ${t.losses}D</div>
         </div>
@@ -960,6 +962,120 @@ function renderTeamsPage() {
   `;
 }
 
+const TEAM_ANALYSIS_SECTIONS = [
+  ['Rotações', 'Rotações P1–P6'],
+  ['Ataque', 'Ataque'],
+  ['Passe', 'Recepção'],
+  ['Atletas', 'Atletas'],
+  ['Avançado', 'Avançado'],
+  ['Temporadas', 'Comparar edições'],
+];
+
+function renderSeasonComparison(team, cohort) {
+  const comparable = DATA.cohorts
+    .filter(item => item.competition === cohort.competition
+      && item.category === cohort.category
+      && item.gender === cohort.gender
+      && item.season !== cohort.season
+      && item.teams?.some(candidate => candidate.team === team.team))
+    .sort((a, b) => String(b.season).localeCompare(String(a.season)));
+
+  if (!comparable.length) {
+    return `<section class="season-comparison"><h2>Comparar edições</h2>
+      <p class="empty">Não há outra temporada desta equipe na mesma competição, categoria e gênero.</p>
+      <p class="note">Troque a equipe ou o recorte para consultar edições com dados compatíveis.</p></section>`;
+  }
+
+  const previous = comparable.find(item => item.id === state.compareSeasonId) || comparable[0];
+  state.compareSeasonId = previous.id;
+  const otherTeam = previous.teams.find(candidate => candidate.team === team.team);
+  const metricRows = [
+    ['so', 'Side-Out'],
+    ['bp', 'Break Point'],
+    ['eff', 'Eficiência de ataque'],
+    ['pos_rec', 'Ataque após passe positivo'],
+    ['neg_rec', 'Ataque fora do sistema'],
+    ['trans', 'Ataque em transição'],
+  ].map(([key, label]) => {
+    const current = team.metrics?.[key] || {};
+    const comparison = otherTeam.metrics?.[key] || {};
+    const difference = current.value == null || comparison.value == null
+      ? '—'
+      : `${signed(comparison.value - current.value)} pp`;
+    const sample = metric => metric.n == null ? 'amostra n/d' : `n=${num(metric.n)}`;
+    return row([
+      `<button type="button" class="text-button metric-definition-link" data-analysis-metric="${esc(key)}">${esc(label)}</button>`,
+      `${pct(current.value)} <small>${sample(current)}</small>`,
+      `${pct(comparison.value)} <small>${sample(comparison)}</small>`,
+      difference,
+    ]);
+  });
+
+  return `<section class="season-comparison" aria-labelledby="season-comparison-title">
+    <h2 id="season-comparison-title">Comparar edições</h2>
+    <p class="season-comparison-copy">${esc(teamName(team.team))} na ${esc(competitionLabel(cohort))}, categoria ${esc(cohort.gender === 'feminino' ? 'Feminino' : 'Masculino')}.</p>
+    <label class="season-compare-picker">Temporada de comparação
+      <select id="analysis-compare-cohort" aria-label="Selecionar temporada para comparação">
+        ${comparable.map(item => `<option value="${esc(item.id)}" ${item.id === previous.id ? 'selected' : ''}>${esc(seasonLabel(item.season))}</option>`).join('')}
+      </select>
+    </label>
+    <div class="table-wrap season-comparison-table" role="region" tabindex="0" aria-label="Tabela de comparação por temporada; percorra horizontalmente para ver todas as colunas">
+      ${table([
+      'Indicador',
+        `Recorte selecionado: ${esc(seasonLabel(cohort.season))}`,
+        `Edição comparada: ${esc(seasonLabel(previous.season))}`,
+        'Diferença: pp',
+      ], metricRows)}
+    </div>
+    <p class="note season-comparison-note">Cada coluna usa apenas partidas da edição indicada. n é o denominador do indicador conforme o catálogo; a diferença é edição comparada menos o recorte selecionado, em pontos percentuais. Dados ausentes permanecem indisponíveis.</p>
+  </section>`;
+}
+
+function renderAnalysesPage() {
+  const c = C();
+  if (!c) return '<p class="empty">Sem dados para este recorte.</p>';
+
+  const teams = c.teams || [];
+  if (!teams.some(t => t.team === state.team)) state.team = teams[0]?.team || '';
+  const t = teams.find(team => team.team === state.team);
+  if (!t) return '<h1>Análises</h1><p class="empty">Não há equipes disponíveis nesta edição.</p>';
+
+  const activeSection = TEAM_ANALYSIS_SECTIONS.some(([section]) => section === state.analysisSection)
+    ? state.analysisSection
+    : 'Rotações';
+  state.analysisSection = activeSection;
+  const at = atlasTeam(t.team);
+
+  return `
+    <div class="analysis-workspace">
+      <header class="analysis-workspace-header">
+        <div>
+          <h1>Análises</h1>
+          <p>Explore o desempenho tático da equipe na edição selecionada.</p>
+          <p class="analysis-context">${esc(competitionLabel(c))}, ${esc(seasonLabel(c.season))}. Os dados permanecem restritos a este recorte.</p>
+        </div>
+        <label class="team-picker">Equipe
+          <select id="analysis-team-picker" aria-label="Selecionar equipe para análise">
+            ${teams.map(x => `<option value="${esc(x.team)}" ${x.team === t.team ? 'selected' : ''}>${esc(teamName(x.team))}</option>`).join('')}
+          </select>
+        </label>
+      </header>
+
+      <nav class="analysis-section-nav" aria-label="Seções de análise">
+        ${TEAM_ANALYSIS_SECTIONS.map(([section, label]) => `
+          <button type="button" class="analysis-section-tab ${activeSection === section ? 'active' : ''}"
+            data-analysis-section="${esc(section)}" aria-current="${activeSection === section ? 'page' : 'false'}">
+            ${esc(label)}
+          </button>`).join('')}
+      </nav>
+
+      <section id="analysis-section" aria-label="${esc(TEAM_ANALYSIS_SECTIONS.find(([section]) => section === activeSection)?.[1] || 'Análise da equipe')}">
+        ${activeSection === 'Temporadas' ? renderSeasonComparison(t, c) : renderTeamSubSection(t, at, activeSection)}
+      </section>
+    </div>
+  `;
+}
+
 function renderTeamSubSection(t, at, section) {
   if (section === 'Rotações') return renderTeamRotations(t, at);
   if (section === 'Atletas') return renderTeamAthletes(t);
@@ -971,7 +1087,7 @@ function renderTeamSubSection(t, at, section) {
   return `
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;">
       <div class="rotation-widget-box">
-        <h3>Perfil Ofensivo</h3>
+        <h2>Perfil ofensivo</h2>
         ${profile(t)}
       </div>
       <div class="rotation-widget-box">
@@ -992,7 +1108,7 @@ function renderTeamRotations(t, at) {
       <div class="rotation-controls">
         <!-- P1-P6 Horizontal Selector -->
         <div>
-          <span style="font:800 11px var(--mono);text-transform:uppercase;color:var(--text-muted);display:block;margin-bottom:6px;">Passagem</span>
+          <span style="font:700 12px var(--sans);color:var(--text-muted);display:block;margin-bottom:8px;">Passagem</span>
           <div class="p-selector">
             ${[1, 2, 3, 4, 5, 6].map(num => `
               <button type="button" class="p-btn ${p === num ? 'active' : ''}" onclick="state.rotation=${num};render();">P${num}</button>
@@ -1061,7 +1177,7 @@ function renderTeamAttack(t, at) {
   }));
   const players = [...playerPeaks.keys()].sort((a,b) => playerPeaks.get(b)-playerPeaks.get(a) || a.localeCompare(b));
   const heatmap = rotations.length && players.length ? `<section class="activation-map" aria-labelledby="activation-map-heading">
-    <div class="activation-map-heading"><div><span class="activation-eyebrow">LEITURA TÁTICA · EXPERIMENTAL</span><h4 id="activation-map-heading">Comparação entre rotações</h4></div><span class="activation-map-count">P1 — P6</span></div>
+    <div class="activation-map-heading"><div><span class="activation-eyebrow">Leitura tática: experimental</span><h4 id="activation-map-heading">Comparação entre rotações</h4></div><span class="activation-map-count">P1 — P6</span></div>
     <p>Cenário estimado pela exposição em cada jogo, para a formação histórica mais frequente de cada passagem. Deslize para ver todas as rotações.</p>
     <div class="activation-map-scroll" role="region" aria-label="Mapa de participação presumida por atleta e rotação" tabindex="0"><table class="activation-map-table"><caption>Mapa de participação presumida: atleta por rotação</caption><thead><tr><th scope="col">Atleta</th>${rotations.map(r=>`<th scope="col">P${num(r.position)}</th>`).join('')}</tr></thead><tbody>${players.map(name=>`<tr><th scope="row">${esc(teamName(name))}</th>${rotations.map(r=>{
       if (r.allocation_method === 'overall_fallback') return '<td class="activation-map-missing" aria-label="Sem dados suficientes para estimar esta rotação">?</td>';
@@ -1069,7 +1185,7 @@ function renderTeamAttack(t, at) {
       if (!entry || !Number.isFinite(entry.weight)) return '<td class="activation-map-missing" aria-label="Sem dado na formação">—</td>';
       const value = Math.max(0, Math.min(1, entry.weight));
       const shade = (0.08 + 0.72 * value).toFixed(3);
-      return `<td><span class="activation-cell" style="background-color:rgba(37,99,235,${shade})">${pct(value*100)}</span></td>`;
+      return `<td><span class="activation-cell" style="--activation-opacity:${shade};background-color:color-mix(in srgb,var(--blue) calc(${shade} * 100%),transparent)">${pct(value*100)}</span></td>`;
     }).join('')}</tr>`).join('')}</tbody></table></div>
     <div class="activation-map-key"><span>Menor</span><i aria-hidden="true"></i><span>Maior participação</span></div>
     <p class="note">Cada coluna representa uma formação histórica, que pode mudar entre rotações. O traço indica atleta fora da formação histórica e não significa que nunca ataque nessa passagem. O símbolo ? indica dados insuficientes para calcular a rotação. Estimativa proporcional aos rallies em que cada atleta esteve presente, jogo a jogo. Zero indica ausência de alocação no cenário, não impossibilidade. Não é frequência observada nem previsão validada.</p>
@@ -1089,7 +1205,7 @@ function renderTeamAttack(t, at) {
         const item = (scenario.distribution || []).find(x => x.name === name);
         if (!item || !Number.isFinite(item.probability)) return '<td class="activation-map-missing" aria-label="Atleta fora da formação">—</td>';
         const value = Math.max(0, Math.min(1, item.probability));
-        return `<td><span class="activation-cell" style="background-color:rgba(37,99,235,${(0.08 + 0.72 * value).toFixed(3)})">${pct(100*value)}</span></td>`;
+        return `<td><span class="activation-cell" style="--activation-opacity:${(0.08 + 0.72 * value).toFixed(3)};background-color:color-mix(in srgb,var(--blue) calc(var(--activation-opacity) * 100%),transparent)">${pct(100*value)}</span></td>`;
       }).join('')}</tr>`).join('')}</tbody></table></div><p class="note">Os resultados variam com os jogos incluídos; não são frequências observadas. —: atleta fora da formação; ?: dados insuficientes. A sensibilidade está detalhada em cada passagem abaixo.</p></details>`;
   }).join('');
   const rotationHtml = rotations.length ? rotations.map((r, index) => {
@@ -1223,7 +1339,7 @@ function renderAthletesPage() {
 
       <!-- Athlete Roster Table / Cards -->
       <div class="rotation-widget-box">
-        <h3>Atletas e rankings</h3>
+        <h2>Atletas e rankings</h2>
         <p class="note" id="athlete-loading-status">${athleteLoadState.get(c.id) === 'loading' ? 'Carregando todas as atletas…' : athleteLoadState.get(c.id) === 'failed' ? 'Não foi possível carregar todos os perfis. ' : ''}${athleteLoadState.get(c.id) === 'failed' ? '<button type="button" id="retry-athletes">Tentar novamente</button>' : ''}</p>
         <div class="table-wrap">
           <table class="responsive-table">
@@ -1594,6 +1710,8 @@ function render() {
     main.innerHTML = renderTeamsPage();
   } else if (state.page === 'Atletas') {
     main.innerHTML = renderAthletesPage();
+  } else if (state.page === 'Análises') {
+    main.innerHTML = renderAnalysesPage();
   } else if (state.page === 'Confrontos') {
     main.innerHTML = confrontation();
   } else {
@@ -1629,6 +1747,22 @@ function bindInteractions() {
 
   const picker = $('#team-picker');
   if (picker) picker.onchange = e => { state.team = e.target.value; render(); };
+  const analysisPicker = $('#analysis-team-picker');
+  if (analysisPicker) analysisPicker.onchange = e => { state.team = e.target.value; render(); };
+  const comparisonPicker = $('#analysis-compare-cohort');
+  if (comparisonPicker) comparisonPicker.onchange = e => {
+    state.compareSeasonId = e.target.value;
+    render();
+  };
+  document.querySelectorAll('[data-analysis-section]').forEach(button => {
+    button.onclick = () => {
+      state.analysisSection = button.dataset.analysisSection;
+      render();
+    };
+  });
+  document.querySelectorAll('[data-analysis-metric]').forEach(button => {
+    button.onclick = () => openMetricSheet(button.dataset.analysisMetric);
+  });
   document.querySelectorAll('[data-open-athlete]').forEach(el => {
     el.onclick = e => {
       e.stopPropagation();
@@ -1703,6 +1837,3 @@ document.addEventListener('DOMContentLoaded', () => {
   setupGlobalSearch();
   render();
 });
-
-
-

@@ -39,3 +39,7 @@ pythonpath = ["."]
 
 [tool.setuptools.package-data]
 cbv = ["database/schema.sql", "export/templates/*.html", "export/templates/*.css", "export/templates/*.js", "export/templates/fonts/*"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cbv*"]

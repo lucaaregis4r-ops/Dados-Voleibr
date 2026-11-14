@@ -15,10 +15,14 @@ with sync_playwright() as p:
     page.wait_for_selector('#main')
     for width in (1440, 1024, 768, 390):
         page.set_viewport_size({'width': width, 'height': 1000})
-        for label in ('Início', 'Jogos', 'Times', 'Atletas'):
+        for label in ('Início', 'Jogos', 'Times', 'Atletas', 'Análises'):
             page.locator(f'[data-nav="{label}"]:visible').first.click()
             assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), (label, width, 'overflow')
             assert 'NaN' not in page.locator('#main').inner_text(), (label, width, 'NaN')
+        page.locator('[data-nav="Análises"]:visible').first.click()
+        assert page.locator('#analysis-team-picker').is_visible()
+        page.locator('[data-analysis-section="Avançado"]').click()
+        assert page.get_by_role('heading', name='Análise avançada').is_visible()
         page.locator('[data-nav="Jogos"]:visible').first.click()
         match = page.locator('#main [data-match]').first
         if match.count():
