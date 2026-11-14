@@ -18,19 +18,27 @@ python -m cbv app
 
 ## Navegação
 
-- **Visão geral:** mapa SO × BP do Match Report, rankings, cobertura e leituras por regra.
-- **Equipes:** quadra compartilhada, ciclo P1→P6→P5→P4→P3→P2, SO/BP por rotação,
-  matriz 6×6 com jogos de origem, fases, passagens de saque, formações e on/off.
-- **Confrontos:** quadras comparativas, contexto histórico de rotações, fases e
-  projeção pré-jogo recolhida ao final.
-- **Partidas:** timeline experimental de WP, ponto a ponto reconstruído, navegação
-  de rally e atualização de placar, saque, rotações e formação na quadra.
-- **Atletas:** tabela pesquisável e ordenável, perfil e amostra.
-- **Dados:** fontes, hashes, tentativas, estados de validação, modelos e avaliações.
+- **Início:** partidas recentes e agendadas, atletas em destaque e equipes da edição.
+- **Jogos:** partidas encerradas e calendário; detalhe com placar, sets, fases,
+  atletas e saldo de rotação conforme os dados disponíveis.
+- **Times:** perfil da equipe e áreas de visão geral, rotações P1–P6, ataque,
+  recepção, atletas e análises avançadas.
+- **Atletas:** busca, elenco da temporada, perfil e comparação.
+- **Análises:** entrada direta para rotações, ataque, recepção, atletas e análises
+  avançadas. “Comparar edições” coloca lado a lado temporadas da mesma competição,
+  categoria, gênero e equipe; cada coluna mantém sua própria amostra.
+- **Filtros:** Superliga, CBS e CBI, com categoria, gênero e temporada no contexto
+  selecionado. Agregados e modelos não combinam temporadas.
+- **Confrontos e comparações:** dock para comparar duas equipes ou dois atletas;
+  projeções permanecem identificadas pela classificação e avaliação do modelo.
+- **Fontes e métodos:** o selo de coleta abre a saúde das fontes; cada indicador
+  abre fórmula, classe, amostra, intervalo e limitações. O caderno metodológico e
+  os documentos de auditoria detalham definições e proveniência.
 
-O HTML incorpora dados, fontes Inter/Roboto Mono e os componentes de visualização;
-não depende de scripts, fontes ou endpoints externos para navegar. As licenças SIL
-OFL estão preservadas. Layout verificado em 1440, 1024, 768 e 390 px.
+O site usa o HTML gerado pelo exportador e fatias JSON locais para carregar dados
+detalhados sob demanda. Não depende de scripts, fontes ou endpoints de terceiros
+para navegar. As fontes Inter/Roboto Mono são locais, e as licenças SIL OFL estão
+preservadas. Layout verificado em 1440, 1024, 768, 390 e 320 px.
 
 ## Definições e limites
 

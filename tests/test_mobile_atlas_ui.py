@@ -25,7 +25,7 @@ def test_responsive_zero_overflow_all_breakpoints(browser_context):
     page.wait_for_selector('[data-nav="Início"]:visible')
 
     breakpoints = [320, 360, 375, 390, 412, 768, 1024, 1280, 1440]
-    tabs = ["Início", "Jogos", "Times", "Atletas"]
+    tabs = ["Início", "Jogos", "Times", "Atletas", "Análises"]
 
     for width in breakpoints:
         page.set_viewport_size({"width": width, "height": 844})
@@ -41,23 +41,74 @@ def test_responsive_zero_overflow_all_breakpoints(browser_context):
     page.close()
 
 
-def test_four_primary_destinations_and_search(browser_context):
-    """Verifies exact 4 main navigation tabs and permanently visible search bar."""
+def test_primary_destinations_and_search(browser_context):
+    """The five main destinations stay reachable alongside global search."""
     page = browser_context.new_page()
     page.set_viewport_size({"width": 390, "height": 844})
     page.goto(INDEX_HTML.as_uri(), wait_until="domcontentloaded")
 
-    # Bottom nav has exactly 4 items on mobile
+    # Bottom nav exposes every primary workflow, including analysis.
     nav_items = page.locator("#bottom-nav .nav-item")
-    assert nav_items.count() == 4
-    labels = [nav_items.nth(i).inner_text().strip().upper() for i in range(4)]
-    assert labels == ["INÍCIO", "JOGOS", "TIMES", "ATLETAS"]
+    assert nav_items.count() == 5
+    labels = [nav_items.nth(i).inner_text().strip().upper() for i in range(5)]
+    assert labels == ["INÍCIO", "JOGOS", "TIMES", "ATLETAS", "ANÁLISES"]
 
     # Search bar permanently visible in header
     search_bar = page.locator("#global-search")
     assert search_bar.is_visible()
     assert search_bar.get_attribute("placeholder") is not None
 
+    page.close()
+
+
+def test_analysis_destination_opens_existing_team_analysis(browser_context):
+    """Analysis is a primary destination and reuses all current team sections."""
+    page = browser_context.new_page()
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.goto(INDEX_HTML.as_uri(), wait_until="domcontentloaded")
+
+    page.locator('[data-nav="Análises"]:visible').first.click()
+    assert page.locator('#main h1').inner_text().strip().casefold() == 'análises'
+    assert page.locator('#analysis-team-picker').is_visible()
+
+    analysis_nav = page.get_by_role('navigation', name='Seções de análise')
+    for label in ['Rotações P1–P6', 'Ataque', 'Recepção', 'Atletas', 'Avançado', 'Comparar edições']:
+        assert analysis_nav.get_by_role('button', name=label, exact=True).is_visible()
+    assert analysis_nav.evaluate('element => element.scrollWidth <= element.clientWidth')
+
+    analysis_nav.locator('[data-analysis-section="Avançado"]').click()
+    assert page.get_by_role('heading', name='Análise avançada').is_visible()
+    assert page.locator('[data-nav="Análises"]').first.get_attribute('aria-current') == 'page'
+    page.close()
+
+
+def test_analysis_season_comparison_keeps_edition_scope(browser_context):
+    """Cross-season comparisons use matching competition/category/gender cohorts."""
+    page = browser_context.new_page()
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.goto(INDEX_HTML.as_uri(), wait_until="domcontentloaded")
+
+    page.locator('[data-nav="Análises"]:visible').first.click()
+    page.locator('#analysis-team-picker').select_option(label='Osasco São Cristóvão Saúde')
+    page.locator('[data-analysis-section="Temporadas"]').click()
+    picker = page.locator('#analysis-compare-cohort')
+    assert picker.is_visible()
+    assert picker.locator('option').count() == 2
+    picker.select_option(label='2025–26')
+
+    headers = page.locator('.season-comparison-table thead th')
+    assert headers.count() == 4
+    assert 'recorte selecionado' in headers.nth(1).inner_text().casefold()
+    assert 'edição comparada' in headers.nth(2).inner_text().casefold()
+    assert '2025–26' in headers.nth(2).inner_text()
+    assert page.locator('.season-comparison-table tbody tr').count() == 6
+    assert 'n=' in page.locator('.season-comparison-table tbody tr').first.inner_text()
+    assert 'diferença' in page.locator('.season-comparison-note').inner_text().casefold()
+    assert page.get_by_role('region', name='Tabela de comparação por temporada; percorra horizontalmente para ver todas as colunas').is_visible()
+    page.locator('[data-analysis-metric="so"]').click()
+    assert page.locator('#app-sheet.open').is_visible()
+    assert 'fórmula' in page.locator('#sheet-body').inner_text().casefold()
+    page.locator('#sheet-close').click()
     page.close()
 
 
