@@ -9613,5 +9613,20 @@
     "validation_status": "VALID",
     "created_at": "2026-11-14T16:40:49.745146",
     "season": "2026"
+  },
+  {
+    "match_id": 2605738,
+    "date": "2026-11-14T00:00:00",
+    "time_str": "16:48",
+    "competition": "CBI",
+    "category": "sub16",
+    "gender": "feminino",
+    "home_team": "MINAS T.C.",
+    "away_team": "C.R. DO FLAMENGO",
+    "home_sets": 3,
+    "away_sets": 0,
+    "validation_status": "VALID",
+    "created_at": "2026-11-14T21:27:35.978151",
+    "season": "2026"
   }
 ]
