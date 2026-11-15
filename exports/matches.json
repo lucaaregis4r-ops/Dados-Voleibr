@@ -8415,6 +8415,36 @@
     "season": "2026-2027"
   },
   {
+    "match_id": 2584881,
+    "date": "2026-11-14T00:00:00",
+    "time_str": "15:31",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "NORDE VÔLEI",
+    "away_team": "VIAPOL VÔLEI SÃO JOSÉ",
+    "home_sets": 1,
+    "away_sets": 3,
+    "validation_status": "VALID",
+    "created_at": "2026-11-15T01:52:55.348628",
+    "season": "2026-2027"
+  },
+  {
+    "match_id": 2584882,
+    "date": "2026-11-14T00:00:00",
+    "time_str": "18:30",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "MONTES CLAROS VOLEI",
+    "away_team": "SESI VÔLEI BAURU",
+    "home_sets": 1,
+    "away_sets": 3,
+    "validation_status": "VALID",
+    "created_at": "2026-11-15T01:52:55.036930",
+    "season": "2026-2027"
+  },
+  {
     "match_id": 2584920,
     "date": "2026-10-29T00:00:00",
     "time_str": "19:00",
