@@ -1,10 +1,10 @@
 {
   "status": "HEALTHY",
-  "started_at": "2026-11-15T18:47:00.851416-03:00",
-  "finished_at": "2026-11-15T18:47:28.209028-03:00",
-  "last_full_success": "2026-11-15T18:47:28.209028-03:00",
+  "started_at": "2026-11-15T23:01:10.322905-03:00",
+  "finished_at": "2026-11-15T23:01:40.692082-03:00",
+  "last_full_success": "2026-11-15T23:01:40.692082-03:00",
   "database_match_count": 646,
-  "new_matches": 1,
+  "new_matches": 0,
   "updated_matches": 0,
   "sources": {
     "calendar": {
