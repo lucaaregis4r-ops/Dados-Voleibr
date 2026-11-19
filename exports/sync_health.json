@@ -1,9 +1,9 @@
 {
   "status": "HEALTHY",
-  "started_at": "2026-11-18T18:25:17.389989-03:00",
-  "finished_at": "2026-11-18T18:25:48.101201-03:00",
-  "last_full_success": "2026-11-18T18:25:48.101201-03:00",
-  "database_match_count": 651,
+  "started_at": "2026-11-19T00:22:53.593974-03:00",
+  "finished_at": "2026-11-19T00:23:31.071777-03:00",
+  "last_full_success": "2026-11-19T00:23:31.071777-03:00",
+  "database_match_count": 652,
   "new_matches": 1,
   "updated_matches": 0,
   "sources": {
@@ -119,11 +119,11 @@
     }
   },
   "validation": {
-    "valid_matches": 606,
+    "valid_matches": 607,
     "valid_with_warnings": 45,
     "failed": 0,
-    "rallies": 77357,
-    "high_confidence_rotations": 25687,
-    "high_confidence_lineups": 32771
+    "rallies": 77511,
+    "high_confidence_rotations": 25841,
+    "high_confidence_lineups": 32913
   }
 }
