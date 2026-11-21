@@ -8520,6 +8520,21 @@
     "season": "2026-2027"
   },
   {
+    "match_id": 2584888,
+    "date": "2026-11-20T00:00:00",
+    "time_str": "21:00",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "PRAIA CLUBE UBERLANDIA VOLEI",
+    "away_team": "SIL VÔLEI GUARULHOS",
+    "home_sets": 3,
+    "away_sets": 0,
+    "validation_status": "VALID",
+    "created_at": "2026-11-21T09:45:26.679034",
+    "season": "2026-2027"
+  },
+  {
     "match_id": 2584891,
     "date": "2026-11-20T00:00:00",
     "time_str": "17:40",
