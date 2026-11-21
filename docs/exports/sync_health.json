@@ -1,10 +1,10 @@
 {
   "status": "HEALTHY",
-  "started_at": "2026-11-21T14:28:43.578850-03:00",
-  "finished_at": "2026-11-21T14:29:11.925075-03:00",
-  "last_full_success": "2026-11-21T14:29:11.925075-03:00",
-  "database_match_count": 658,
-  "new_matches": 0,
+  "started_at": "2026-11-21T20:12:41.745121-03:00",
+  "finished_at": "2026-11-21T20:13:19.424901-03:00",
+  "last_full_success": "2026-11-21T20:13:19.424901-03:00",
+  "database_match_count": 659,
+  "new_matches": 1,
   "updated_matches": 0,
   "sources": {
     "calendar": {
@@ -61,41 +61,41 @@
       "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "Official match scoresheets",
-      "attempted": 60,
-      "successful": 57,
+      "attempted": 61,
+      "successful": 58,
       "failed": 0,
       "latest_source_date": null,
-      "message": "57/60 registros"
+      "message": "58/61 registros"
     },
     "match_reports": {
       "status": "HEALTHY",
       "severity": "CRITICAL",
       "description": "Official technical match reports",
-      "attempted": 60,
-      "successful": 56,
+      "attempted": 61,
+      "successful": 57,
       "failed": 0,
       "latest_source_date": null,
-      "message": "56/60 registros"
+      "message": "57/61 registros"
     },
     "libero_reports": {
       "status": "HEALTHY",
       "severity": "OPTIONAL",
       "description": "Libero control sheets",
-      "attempted": 60,
-      "successful": 56,
+      "attempted": 61,
+      "successful": 57,
       "failed": 0,
       "latest_source_date": null,
-      "message": "56/60 registros"
+      "message": "57/61 registros"
     },
     "play_by_play": {
       "status": "UNAVAILABLE",
       "severity": "OPTIONAL",
       "description": "Play-by-play (sequência lance a lance)",
-      "attempted": 60,
+      "attempted": 61,
       "successful": 0,
       "failed": 0,
       "latest_source_date": null,
-      "message": "0/60 registros · Provedor bloqueou o acesso ao lance a lance"
+      "message": "0/61 registros · Provedor bloqueou o acesso ao lance a lance"
     },
     "cbi_sub16_feminino": {
       "status": "HEALTHY",
@@ -119,10 +119,10 @@
     }
   },
   "validation": {
-    "valid_matches": 613,
+    "valid_matches": 614,
     "valid_with_warnings": 45,
     "failed": 0,
-    "rallies": 78200,
+    "rallies": 78410,
     "high_confidence_rotations": 26259,
     "high_confidence_lineups": 33463
   }

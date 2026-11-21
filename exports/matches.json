@@ -8535,6 +8535,21 @@
     "season": "2026-2027"
   },
   {
+    "match_id": 2584890,
+    "date": "2026-11-21T00:00:00",
+    "time_str": "16:00",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "VIAPOL VÔLEI SÃO JOSÉ",
+    "away_team": "SADA CRUZEIRO VOLEI",
+    "home_sets": 3,
+    "away_sets": 2,
+    "validation_status": "VALID",
+    "created_at": "2026-11-21T23:12:44.182334",
+    "season": "2026-2027"
+  },
+  {
     "match_id": 2584891,
     "date": "2026-11-20T00:00:00",
     "time_str": "17:40",
