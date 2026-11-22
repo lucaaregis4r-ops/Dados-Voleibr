@@ -47498,22 +47498,6 @@
         "competition": "SUPERLIGA",
         "category": "A",
         "gender": "masculino",
-        "season": "2026-2027",
-        "team": "VÔLEI RENATA",
-        "matches": 4,
-        "so_points": 131,
-        "so_receptions": 211,
-        "so_pct": 62.1,
-        "so_rate": 1.61,
-        "bp_points": 94,
-        "bp_serves": 318,
-        "bp_pct": 29.6,
-        "bp_rate": 3.38
-      },
-      {
-        "competition": "SUPERLIGA",
-        "category": "A",
-        "gender": "masculino",
         "season": "2024-2025",
         "team": "SADA CRUZEIRO VÔLEI",
         "matches": 4,
@@ -47525,6 +47509,22 @@
         "bp_serves": 306,
         "bp_pct": 28.1,
         "bp_rate": 3.56
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "masculino",
+        "season": "2026-2027",
+        "team": "VÔLEI RENATA",
+        "matches": 4,
+        "so_points": 131,
+        "so_receptions": 211,
+        "so_pct": 62.1,
+        "so_rate": 1.61,
+        "bp_points": 94,
+        "bp_serves": 318,
+        "bp_pct": 29.6,
+        "bp_rate": 3.38
       },
       {
         "competition": "SUPERLIGA",
@@ -47959,22 +47959,6 @@
         "bp_rate": 5.05
       },
       {
-        "competition": "SUPERLIGA",
-        "category": "A",
-        "gender": "masculino",
-        "season": "2026-2027",
-        "team": "AZULIM/SICOOB ARACOOP/M…",
-        "matches": 1,
-        "so_points": 33,
-        "so_receptions": 60,
-        "so_pct": 55.0,
-        "so_rate": 1.82,
-        "bp_points": 11,
-        "bp_serves": 64,
-        "bp_pct": 17.2,
-        "bp_rate": 5.82
-      },
-      {
         "competition": "CBS",
         "category": "sub18",
         "gender": "masculino",
@@ -47989,6 +47973,22 @@
         "bp_serves": 330,
         "bp_pct": 23.9,
         "bp_rate": 4.18
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "masculino",
+        "season": "2026-2027",
+        "team": "AZULIM/SICOOB ARACOOP/M…",
+        "matches": 1,
+        "so_points": 33,
+        "so_receptions": 60,
+        "so_pct": 55.0,
+        "so_rate": 1.82,
+        "bp_points": 11,
+        "bp_serves": 64,
+        "bp_pct": 17.2,
+        "bp_rate": 5.82
       },
       {
         "competition": "SUPERLIGA",
@@ -48154,22 +48154,6 @@
         "competition": "SUPERLIGA",
         "category": "A",
         "gender": "masculino",
-        "season": "2024-2025",
-        "team": "NEUROLOGIA ATIVA",
-        "matches": 10,
-        "so_points": 381,
-        "so_receptions": 725,
-        "so_pct": 52.6,
-        "so_rate": 1.9,
-        "bp_points": 123,
-        "bp_serves": 721,
-        "bp_pct": 17.1,
-        "bp_rate": 5.86
-      },
-      {
-        "competition": "SUPERLIGA",
-        "category": "A",
-        "gender": "masculino",
         "season": "2025-2026",
         "team": "VEDACIT VÔLEI GUARULHOS",
         "matches": 5,
@@ -48181,6 +48165,22 @@
         "bp_serves": 346,
         "bp_pct": 19.4,
         "bp_rate": 5.16
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "masculino",
+        "season": "2024-2025",
+        "team": "NEUROLOGIA ATIVA",
+        "matches": 10,
+        "so_points": 381,
+        "so_receptions": 725,
+        "so_pct": 52.6,
+        "so_rate": 1.9,
+        "bp_points": 123,
+        "bp_serves": 721,
+        "bp_pct": 17.1,
+        "bp_rate": 5.86
       },
       {
         "competition": "SUPERLIGA",
@@ -48298,22 +48298,6 @@
         "competition": "SUPERLIGA",
         "category": "A",
         "gender": "feminino",
-        "season": "2024-2025",
-        "team": "E.C. PINHEIROS",
-        "matches": 6,
-        "so_points": 239,
-        "so_receptions": 468,
-        "so_pct": 51.1,
-        "so_rate": 1.96,
-        "bp_points": 116,
-        "bp_serves": 456,
-        "bp_pct": 25.4,
-        "bp_rate": 3.93
-      },
-      {
-        "competition": "SUPERLIGA",
-        "category": "A",
-        "gender": "feminino",
         "season": "2025-2026",
         "team": "FLUMINENSE",
         "matches": 11,
@@ -48341,6 +48325,22 @@
         "bp_serves": 572,
         "bp_pct": 30.2,
         "bp_rate": 3.31
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "feminino",
+        "season": "2024-2025",
+        "team": "E.C. PINHEIROS",
+        "matches": 6,
+        "so_points": 239,
+        "so_receptions": 468,
+        "so_pct": 51.1,
+        "so_rate": 1.96,
+        "bp_points": 116,
+        "bp_serves": 456,
+        "bp_pct": 25.4,
+        "bp_rate": 3.93
       },
       {
         "competition": "SUPERLIGA",
@@ -48487,22 +48487,6 @@
         "bp_rate": 3.47
       },
       {
-        "competition": "SUPERLIGA",
-        "category": "A",
-        "gender": "feminino",
-        "season": "2026-2027",
-        "team": "FLOR DE YPÊ PAULISTANO BARUERI",
-        "matches": 3,
-        "so_points": 98,
-        "so_receptions": 201,
-        "so_pct": 48.8,
-        "so_rate": 2.05,
-        "bp_points": 39,
-        "bp_serves": 184,
-        "bp_pct": 21.2,
-        "bp_rate": 4.72
-      },
-      {
         "competition": "CBS",
         "category": "sub18",
         "gender": "masculino",
@@ -48517,6 +48501,22 @@
         "bp_serves": 311,
         "bp_pct": 24.4,
         "bp_rate": 4.09
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "feminino",
+        "season": "2026-2027",
+        "team": "FLOR DE YPÊ PAULISTANO BARUERI",
+        "matches": 3,
+        "so_points": 98,
+        "so_receptions": 201,
+        "so_pct": 48.8,
+        "so_rate": 2.05,
+        "bp_points": 39,
+        "bp_serves": 184,
+        "bp_pct": 21.2,
+        "bp_rate": 4.72
       },
       {
         "competition": "SUPERLIGA",
@@ -48647,22 +48647,6 @@
         "bp_rate": 2.86
       },
       {
-        "competition": "CBS",
-        "category": "sub18",
-        "gender": "masculino",
-        "season": "2026",
-        "team": "AMAPÁ",
-        "matches": 5,
-        "so_points": 98,
-        "so_receptions": 224,
-        "so_pct": 43.8,
-        "so_rate": 2.29,
-        "bp_points": 38,
-        "bp_serves": 220,
-        "bp_pct": 17.3,
-        "bp_rate": 5.79
-      },
-      {
         "competition": "CBI",
         "category": "sub16",
         "gender": "masculino",
@@ -48679,20 +48663,20 @@
         "bp_rate": 3.92
       },
       {
-        "competition": "CBI",
-        "category": "sub16",
+        "competition": "CBS",
+        "category": "sub18",
         "gender": "masculino",
         "season": "2026",
-        "team": "MINAS T.C.",
-        "matches": 2,
-        "so_points": 69,
-        "so_receptions": 158,
-        "so_pct": 43.7,
+        "team": "AMAPÁ",
+        "matches": 5,
+        "so_points": 98,
+        "so_receptions": 224,
+        "so_pct": 43.8,
         "so_rate": 2.29,
-        "bp_points": 49,
-        "bp_serves": 168,
-        "bp_pct": 29.2,
-        "bp_rate": 3.43
+        "bp_points": 38,
+        "bp_serves": 220,
+        "bp_pct": 17.3,
+        "bp_rate": 5.79
       },
       {
         "competition": "SUPERLIGA",
@@ -48709,6 +48693,22 @@
         "bp_serves": 62,
         "bp_pct": 24.2,
         "bp_rate": 4.13
+      },
+      {
+        "competition": "CBI",
+        "category": "sub16",
+        "gender": "masculino",
+        "season": "2026",
+        "team": "MINAS T.C.",
+        "matches": 2,
+        "so_points": 69,
+        "so_receptions": 158,
+        "so_pct": 43.7,
+        "so_rate": 2.29,
+        "bp_points": 49,
+        "bp_serves": 168,
+        "bp_pct": 29.2,
+        "bp_rate": 3.43
       },
       {
         "competition": "SUPERLIGA",
@@ -49545,22 +49545,6 @@
         "k2_eff_pct": 26.5
       },
       {
-        "competition": "CBS",
-        "category": "sub18",
-        "gender": "masculino",
-        "season": "2026",
-        "team": "PARANÁ",
-        "k1_pos_att": 167,
-        "k1_pos_kill_pct": 51.5,
-        "k1_pos_eff_pct": 35.9,
-        "k1_neg_att": 99,
-        "k1_neg_kill_pct": 40.4,
-        "k1_neg_eff_pct": 22.2,
-        "k2_att": 200,
-        "k2_kill_pct": 42.0,
-        "k2_eff_pct": 26.0
-      },
-      {
         "competition": "SUPERLIGA",
         "category": "A",
         "gender": "feminino",
@@ -49575,6 +49559,22 @@
         "k2_att": 473,
         "k2_kill_pct": 42.9,
         "k2_eff_pct": 29.2
+      },
+      {
+        "competition": "CBS",
+        "category": "sub18",
+        "gender": "masculino",
+        "season": "2026",
+        "team": "PARANÁ",
+        "k1_pos_att": 167,
+        "k1_pos_kill_pct": 51.5,
+        "k1_pos_eff_pct": 35.9,
+        "k1_neg_att": 99,
+        "k1_neg_kill_pct": 40.4,
+        "k1_neg_eff_pct": 22.2,
+        "k2_att": 200,
+        "k2_kill_pct": 42.0,
+        "k2_eff_pct": 26.0
       },
       {
         "competition": "SUPERLIGA",
@@ -49691,22 +49691,6 @@
       {
         "competition": "SUPERLIGA",
         "category": "A",
-        "gender": "masculino",
-        "season": "2025-2026",
-        "team": "JF VÔLEI",
-        "k1_pos_att": 299,
-        "k1_pos_kill_pct": 53.2,
-        "k1_pos_eff_pct": 34.1,
-        "k1_neg_att": 153,
-        "k1_neg_kill_pct": 43.1,
-        "k1_neg_eff_pct": 27.5,
-        "k2_att": 250,
-        "k2_kill_pct": 34.8,
-        "k2_eff_pct": 16.8
-      },
-      {
-        "competition": "SUPERLIGA",
-        "category": "A",
         "gender": "feminino",
         "season": "2024-2025",
         "team": "SESC RJ FLAMENGO",
@@ -49719,6 +49703,22 @@
         "k2_att": 347,
         "k2_kill_pct": 36.6,
         "k2_eff_pct": 17.6
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "masculino",
+        "season": "2025-2026",
+        "team": "JF VÔLEI",
+        "k1_pos_att": 299,
+        "k1_pos_kill_pct": 53.2,
+        "k1_pos_eff_pct": 34.1,
+        "k1_neg_att": 153,
+        "k1_neg_kill_pct": 43.1,
+        "k1_neg_eff_pct": 27.5,
+        "k2_att": 250,
+        "k2_kill_pct": 34.8,
+        "k2_eff_pct": 16.8
       },
       {
         "competition": "SUPERLIGA",
@@ -49773,22 +49773,6 @@
         "category": "sub18",
         "gender": "masculino",
         "season": "2026",
-        "team": "AMAZONAS",
-        "k1_pos_att": 204,
-        "k1_pos_kill_pct": 51.5,
-        "k1_pos_eff_pct": 33.3,
-        "k1_neg_att": 55,
-        "k1_neg_kill_pct": 30.9,
-        "k1_neg_eff_pct": 3.6,
-        "k2_att": 157,
-        "k2_kill_pct": 40.8,
-        "k2_eff_pct": 17.8
-      },
-      {
-        "competition": "CBS",
-        "category": "sub18",
-        "gender": "masculino",
-        "season": "2026",
         "team": "RIO DE JANEIRO",
         "k1_pos_att": 159,
         "k1_pos_kill_pct": 52.8,
@@ -49799,6 +49783,22 @@
         "k2_att": 183,
         "k2_kill_pct": 36.6,
         "k2_eff_pct": 19.1
+      },
+      {
+        "competition": "CBS",
+        "category": "sub18",
+        "gender": "masculino",
+        "season": "2026",
+        "team": "AMAZONAS",
+        "k1_pos_att": 204,
+        "k1_pos_kill_pct": 51.5,
+        "k1_pos_eff_pct": 33.3,
+        "k1_neg_att": 55,
+        "k1_neg_kill_pct": 30.9,
+        "k1_neg_eff_pct": 3.6,
+        "k2_att": 157,
+        "k2_kill_pct": 40.8,
+        "k2_eff_pct": 17.8
       },
       {
         "competition": "SUPERLIGA",
@@ -50045,22 +50045,6 @@
         "category": "sub16",
         "gender": "feminino",
         "season": "2026",
-        "team": "CLUB ATHLETICO PAULISTANO",
-        "k1_pos_att": 55,
-        "k1_pos_kill_pct": 43.6,
-        "k1_pos_eff_pct": 27.3,
-        "k1_neg_att": 55,
-        "k1_neg_kill_pct": 23.6,
-        "k1_neg_eff_pct": -3.6,
-        "k2_att": 130,
-        "k2_kill_pct": 38.5,
-        "k2_eff_pct": 19.2
-      },
-      {
-        "competition": "CBI",
-        "category": "sub16",
-        "gender": "feminino",
-        "season": "2026",
         "team": "CÍRCULO MILITAR DO PARANÁ",
         "k1_pos_att": 99,
         "k1_pos_kill_pct": 44.4,
@@ -50071,6 +50055,22 @@
         "k2_att": 166,
         "k2_kill_pct": 28.9,
         "k2_eff_pct": 4.8
+      },
+      {
+        "competition": "CBI",
+        "category": "sub16",
+        "gender": "feminino",
+        "season": "2026",
+        "team": "CLUB ATHLETICO PAULISTANO",
+        "k1_pos_att": 55,
+        "k1_pos_kill_pct": 43.6,
+        "k1_pos_eff_pct": 27.3,
+        "k1_neg_att": 55,
+        "k1_neg_kill_pct": 23.6,
+        "k1_neg_eff_pct": -3.6,
+        "k2_att": 130,
+        "k2_kill_pct": 38.5,
+        "k2_eff_pct": 19.2
       },
       {
         "competition": "SUPERLIGA",
@@ -50849,20 +50849,6 @@
         "category": "A",
         "gender": "masculino",
         "season": "2026-2027",
-        "team": "MONTES CLAROS VOLEI",
-        "p1": 0,
-        "p2": -6,
-        "p3": 8,
-        "p4": -1,
-        "p5": 4,
-        "p6": 16,
-        "total_diff": 21
-      },
-      {
-        "competition": "SUPERLIGA",
-        "category": "A",
-        "gender": "masculino",
-        "season": "2026-2027",
         "team": "SADA CRUZEIRO VOLEI",
         "p1": 5,
         "p2": 4,
@@ -50870,6 +50856,20 @@
         "p4": 6,
         "p5": 3,
         "p6": -4,
+        "total_diff": 21
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "masculino",
+        "season": "2026-2027",
+        "team": "MONTES CLAROS VOLEI",
+        "p1": 0,
+        "p2": -6,
+        "p3": 8,
+        "p4": -1,
+        "p5": 4,
+        "p6": 16,
         "total_diff": 21
       },
       {
@@ -50957,20 +50957,6 @@
         "total_diff": 14
       },
       {
-        "competition": "CBI",
-        "category": "sub16",
-        "gender": "masculino",
-        "season": "2026",
-        "team": "OLYMPICO CLUB",
-        "p1": 7,
-        "p2": 0,
-        "p3": 2,
-        "p4": 1,
-        "p5": -4,
-        "p6": 6,
-        "total_diff": 12
-      },
-      {
         "competition": "SUPERLIGA",
         "category": "A",
         "gender": "masculino",
@@ -50982,6 +50968,20 @@
         "p4": 0,
         "p5": 0,
         "p6": 4,
+        "total_diff": 12
+      },
+      {
+        "competition": "CBI",
+        "category": "sub16",
+        "gender": "masculino",
+        "season": "2026",
+        "team": "OLYMPICO CLUB",
+        "p1": 7,
+        "p2": 0,
+        "p3": 2,
+        "p4": 1,
+        "p5": -4,
+        "p6": 6,
         "total_diff": 12
       },
       {
@@ -51195,20 +51195,6 @@
         "total_diff": -14
       },
       {
-        "competition": "SUPERLIGA",
-        "category": "A",
-        "gender": "masculino",
-        "season": "2026-2027",
-        "team": "SIL VÔLEI GUARULHOS",
-        "p1": -17,
-        "p2": -2,
-        "p3": 0,
-        "p4": -10,
-        "p5": -3,
-        "p6": 16,
-        "total_diff": -16
-      },
-      {
         "competition": "CBS",
         "category": "sub18",
         "gender": "masculino",
@@ -51220,6 +51206,20 @@
         "p4": -8,
         "p5": -8,
         "p6": 3,
+        "total_diff": -16
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "masculino",
+        "season": "2026-2027",
+        "team": "SIL VÔLEI GUARULHOS",
+        "p1": -17,
+        "p2": -2,
+        "p3": 0,
+        "p4": -10,
+        "p5": -3,
+        "p6": 16,
         "total_diff": -16
       },
       {
@@ -51251,20 +51251,6 @@
         "total_diff": -17
       },
       {
-        "competition": "CBS",
-        "category": "sub18",
-        "gender": "masculino",
-        "season": "2026",
-        "team": "PARAÍBA",
-        "p1": 2,
-        "p2": 0,
-        "p3": 0,
-        "p4": 1,
-        "p5": -8,
-        "p6": -15,
-        "total_diff": -20
-      },
-      {
         "competition": "SUPERLIGA",
         "category": "A",
         "gender": "masculino",
@@ -51279,18 +51265,18 @@
         "total_diff": -20
       },
       {
-        "competition": "SUPERLIGA",
-        "category": "A",
-        "gender": "feminino",
-        "season": "2025-2026",
-        "team": "SANCOR SEGUROS VÔLEI",
-        "p1": 18,
-        "p2": -26,
-        "p3": 11,
-        "p4": -25,
-        "p5": -7,
-        "p6": 5,
-        "total_diff": -24
+        "competition": "CBS",
+        "category": "sub18",
+        "gender": "masculino",
+        "season": "2026",
+        "team": "PARAÍBA",
+        "p1": 2,
+        "p2": 0,
+        "p3": 0,
+        "p4": 1,
+        "p5": -8,
+        "p6": -15,
+        "total_diff": -20
       },
       {
         "competition": "CBI",
@@ -51304,6 +51290,20 @@
         "p4": -4,
         "p5": -12,
         "p6": -8,
+        "total_diff": -24
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "feminino",
+        "season": "2025-2026",
+        "team": "SANCOR SEGUROS VÔLEI",
+        "p1": 18,
+        "p2": -26,
+        "p3": 11,
+        "p4": -25,
+        "p5": -7,
+        "p6": 5,
         "total_diff": -24
       },
       {
@@ -51381,6 +51381,20 @@
         "category": "A",
         "gender": "masculino",
         "season": "2026-2027",
+        "team": "AZULIM/SICOOB/MONTE",
+        "p1": -12,
+        "p2": -5,
+        "p3": -4,
+        "p4": -4,
+        "p5": 1,
+        "p6": -14,
+        "total_diff": -38
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "masculino",
+        "season": "2026-2027",
         "team": "NORDE VÔLEI",
         "p1": 3,
         "p2": -7,
@@ -51402,20 +51416,6 @@
         "p4": 3,
         "p5": -4,
         "p6": -15,
-        "total_diff": -38
-      },
-      {
-        "competition": "SUPERLIGA",
-        "category": "A",
-        "gender": "masculino",
-        "season": "2026-2027",
-        "team": "AZULIM/SICOOB/MONTE",
-        "p1": -12,
-        "p2": -5,
-        "p3": -4,
-        "p4": -4,
-        "p5": 1,
-        "p6": -14,
         "total_diff": -38
       },
       {
@@ -51447,20 +51447,6 @@
         "total_diff": -40
       },
       {
-        "competition": "SUPERLIGA",
-        "category": "A",
-        "gender": "masculino",
-        "season": "2024-2025",
-        "team": "APAN ROLL-ON BLUMENAU",
-        "p1": -10,
-        "p2": -3,
-        "p3": -8,
-        "p4": -9,
-        "p5": -12,
-        "p6": -1,
-        "total_diff": -43
-      },
-      {
         "competition": "CBI",
         "category": "sub16",
         "gender": "feminino",
@@ -51477,16 +51463,16 @@
       {
         "competition": "SUPERLIGA",
         "category": "A",
-        "gender": "feminino",
-        "season": "2026-2027",
-        "team": "BATAVO MACKENZIE",
-        "p1": 3,
-        "p2": -22,
-        "p3": 2,
-        "p4": -3,
-        "p5": -6,
-        "p6": -21,
-        "total_diff": -47
+        "gender": "masculino",
+        "season": "2024-2025",
+        "team": "APAN ROLL-ON BLUMENAU",
+        "p1": -10,
+        "p2": -3,
+        "p3": -8,
+        "p4": -9,
+        "p5": -12,
+        "p6": -1,
+        "total_diff": -43
       },
       {
         "competition": "CBS",
@@ -51500,6 +51486,20 @@
         "p4": 0,
         "p5": -8,
         "p6": -11,
+        "total_diff": -47
+      },
+      {
+        "competition": "SUPERLIGA",
+        "category": "A",
+        "gender": "feminino",
+        "season": "2026-2027",
+        "team": "BATAVO MACKENZIE",
+        "p1": 3,
+        "p2": -22,
+        "p3": 2,
+        "p4": -3,
+        "p5": -6,
+        "p6": -21,
         "total_diff": -47
       },
       {
