@@ -1,8 +1,8 @@
 {
   "status": "HEALTHY",
-  "started_at": "2026-11-22T21:18:00.555757-03:00",
-  "finished_at": "2026-11-22T21:18:26.475567-03:00",
-  "last_full_success": "2026-11-22T21:18:26.475567-03:00",
+  "started_at": "2026-11-23T04:46:02.577990-03:00",
+  "finished_at": "2026-11-23T04:46:29.052115-03:00",
+  "last_full_success": "2026-11-23T04:46:29.052115-03:00",
   "database_match_count": 660,
   "new_matches": 0,
   "updated_matches": 0,
