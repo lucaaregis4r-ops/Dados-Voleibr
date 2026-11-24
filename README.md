@@ -5,6 +5,12 @@
 Scouting de voleibol com Python, DuckDB, FastAPI e HTML estático. Quadras, matrizes
 de rotação e replay usam fontes reconciliadas; cada medida expõe amostra e origem.
 
+## Painel
+
+![Painel de análise tática do Atlas do Vôlei](docs/screenshots/atlas-volei-analise.png)
+
+*Captura da publicação em 21 de outubro de 2026. A cobertura varia conforme competição, temporada e dados disponíveis.*
+
 ## Executar
 
 ```bash
@@ -60,6 +66,9 @@ promovidos automaticamente. Não confundir associação, on/off e efeito causal.
 - [Caderno metodológico gerado do registry](docs/CADERNO_METODOLOGICO.md)
 - [Limitações, cobertura e operação](docs/LIMITACOES_ATLAS.md)
 - [Auditoria das fontes e definições](docs/AUDITORIA_ATLAS.md)
+- [Contexto do produto](docs/PRODUCT.md)
+- [Inventário de funcionalidades e arquitetura](docs/INVENTARIO_FUNCIONALIDADES.md)
+- [Plano de refatoração](docs/PLANO_REFATORACAO.md)
 
 ```bash
 python -m cbv backfill --competition superliga --season 2025-2026
