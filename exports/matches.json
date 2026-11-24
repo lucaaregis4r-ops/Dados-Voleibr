@@ -9135,6 +9135,36 @@
     "season": "2026-2027"
   },
   {
+    "match_id": 2585035,
+    "date": "2026-11-23T00:00:00",
+    "time_str": "20:25",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "feminino",
+    "home_team": "SESC RJ FLAMENGO",
+    "away_team": "OSASCO SÃO CRISTÓVÃO SAÚDE",
+    "home_sets": 3,
+    "away_sets": 1,
+    "validation_status": "VALID",
+    "created_at": "2026-11-24T04:46:13.816209",
+    "season": "2026-2027"
+  },
+  {
+    "match_id": 2585036,
+    "date": "2026-11-23T00:00:00",
+    "time_str": "17:50",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "feminino",
+    "home_team": "GERDAU MINAS",
+    "away_team": "SESI VÔLEI BAURU",
+    "home_sets": 2,
+    "away_sets": 3,
+    "validation_status": "VALID",
+    "created_at": "2026-11-24T04:46:13.177140",
+    "season": "2026-2027"
+  },
+  {
     "match_id": 2585052,
     "date": "2026-11-03T00:00:00",
     "time_str": "17:42",
