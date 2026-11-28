@@ -8595,6 +8595,36 @@
     "season": "2026-2027"
   },
   {
+    "match_id": 2584895,
+    "date": "2026-11-27T00:00:00",
+    "time_str": "18:08",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "NORDE VÔLEI",
+    "away_team": "SANEAGO GOIÁS VÔLEI",
+    "home_sets": 3,
+    "away_sets": 1,
+    "validation_status": "VALID",
+    "created_at": "2026-11-28T07:42:30.897853",
+    "season": "2026-2027"
+  },
+  {
+    "match_id": 2584896,
+    "date": "2026-11-27T00:00:00",
+    "time_str": "17:58",
+    "competition": "SUPERLIGA",
+    "category": "A",
+    "gender": "masculino",
+    "home_team": "SESI VÔLEI BAURU",
+    "away_team": "VIAPOL VÔLEI SÃO JOSÉ",
+    "home_sets": 3,
+    "away_sets": 0,
+    "validation_status": "VALID",
+    "created_at": "2026-11-28T07:42:30.842843",
+    "season": "2026-2027"
+  },
+  {
     "match_id": 2584917,
     "date": "2026-11-25T00:00:00",
     "time_str": "18:39",
